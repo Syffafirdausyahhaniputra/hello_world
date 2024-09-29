@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../dosen.dart'; // Impor halaman dosen
+import '../pimpinan.dart'; // Impor halaman pimpinan
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -38,12 +39,18 @@ class _LoginFormState extends State<LoginForm> {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    // Cek apakah username dan password sesuai
+    // Cek apakah username dan password sesuai untuk dosen atau pimpinan
     if (username == 'dosen' && password == '12345') {
       // Jika sesuai, navigasi ke halaman dosen
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const DosenPage()),
+      );
+    } else if (username == 'pimpinan' && password == '54321') {
+      // Jika sesuai, navigasi ke halaman pimpinan
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PimpinanPage()),
       );
     } else {
       // Jika tidak sesuai, tampilkan pesan error

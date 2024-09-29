@@ -34,7 +34,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               height: 130,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("lib/login/img/jti_polinema.png"),  // Ganti dengan path gambar yang benar
+                  image: AssetImage("lib/assets/jti_polinema.png"),  // Ganti dengan path gambar yang benar
                   fit: BoxFit.fill,
                 ),
               ),
