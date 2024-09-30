@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'bottombar.dart'; // Import your custom bottom nav bar
 
-class PimpinanPage extends StatelessWidget {
+class PimpinanPage extends StatefulWidget {
   const PimpinanPage({super.key});
+
+  @override
+  State<PimpinanPage> createState() => _PimpinanPageState();
+}
+
+class _PimpinanPageState extends State<PimpinanPage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,55 +57,17 @@ class PimpinanPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildInfoCard('110', 'Sertifikasi'),
-                  const SizedBox(width: 20),
-                  _buildInfoCard('10', 'Pelatihan'),
-                ],
-              ),
+              _buildInfoCard('110', 'Sertifikasi dan Pelatihan'), // Merged single card
               const SizedBox(height: 30),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFB509),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Text(
-                  'Bidang',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildGridCategories(),
+              _buildBidangSection(), // Call the updated "Bidang" section
               const SizedBox(height: 20),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF0D47A1),
-        selectedItemColor: const Color(0xFFEFB509),
-        unselectedItemColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.badge),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: '',
-          ),
-        ],
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
@@ -100,9 +76,10 @@ class PimpinanPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
+        color: Colors.white, // Set background color to white
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Colors.blue,
+          color: const Color(0xFF002366), // Border color to match the theme
           width: 2,
         ),
       ),
@@ -111,9 +88,9 @@ class PimpinanPage extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 30,
+              fontSize: 50, // Larger font size
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: Colors.black, // Black color for value
             ),
           ),
           Text(
@@ -121,9 +98,46 @@ class PimpinanPage extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: Colors.black, // Black color for label
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+    Widget _buildBidangSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF002366), // Outer blue container color
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: double.infinity, // Make sure the box stretches horizontally
+                height: 40, // Set a fixed height for the yellow box
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFB509), // Yellow background for "Bidang" title
+                  borderRadius: BorderRadius.circular(20), // Rounded corners to match the image
+                ),
+              ),
+              const Text(
+                'Bidang',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // Black text color for title
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildGridCategories(), // Build the grid inside the blue container
         ],
       ),
     );
@@ -150,16 +164,16 @@ class PimpinanPage extends StatelessWidget {
   Widget _buildCategoryCard(String title, String iconPath) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0D47A1), // Warna utama card (biru)
+        color: const Color(0xFF002366), // Blue color for the card
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20.0), // Padding luar untuk memberi jarak
+            padding: const EdgeInsets.all(20.0), // Padding around the image
             decoration: BoxDecoration(
-              color: Colors.white, // Latar belakang putih untuk seluruh bagian gambar + teks
+              color: Colors.white, // White background for image and text
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
@@ -176,7 +190,7 @@ class PimpinanPage extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black, // Warna teks hitam
+                    color: Colors.black, // Black text color
                   ),
                 ),
               ],
