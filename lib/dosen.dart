@@ -75,7 +75,7 @@ class Dashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(width),
-            SizedBox(height: height * 0.05),
+            SizedBox(height: height * 0.01),
             Text(
               'Selamat Datang',
               style: TextStyle(
@@ -84,14 +84,14 @@ class Dashboard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: height * 0.03),
+            SizedBox(height: height * 0.05),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildInfoCard(
-                  title: 'Sertifikasi',
+                  title: 'Sertifikasi dan Pelatihan',
                   value: '4',
-                  width: width * 0.4,
+                  width: width * 0.8,
                   borderColor: Colors.blue,
                 )
               ],
@@ -110,11 +110,11 @@ class Dashboard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(width: width * 0.05), // Space to match the layout
+          SizedBox(width: width * 0.55), // Space to match the layout
           Text(
             'Zulfa Ulinnuha',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -166,51 +166,71 @@ class Dashboard extends StatelessWidget {
   }
 
   Widget _buildRecommendationSection(double width, double height) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF002366),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              width: width,
+    return Stack(
+      clipBehavior: Clip.none, // Membiarkan title keluar dari batas container
+      children: [
+        // Container untuk daftar rekomendasi
+        Container(
+          margin: const EdgeInsets.only(top: 20), // Beri margin agar title punya ruang di atas
+          decoration: BoxDecoration(
+            color: const Color(0xFF002366),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: height * 0.02),
+                _buildRecommendationItem(
+                  title: 'AWS Certified Solutions Architect',
+                  subtitle: 'Cloud Computing',
+                  date: '20 Oktober 2024',
+                  width: width * 0.9, // Mengatur lebar container
+                ),
+                SizedBox(height: height * 0.02),
+                _buildRecommendationItem(
+                  title: 'AWS Certified Solutions Architect',
+                  subtitle: 'Cloud Computing',
+                  date: '20 Oktober 2024',
+                  width: width * 0.9, // Mengatur lebar container
+                ),
+                SizedBox(height: height * 0.02),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: _buildMoreButton(width),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Title "Rekomendasi" yang setengah di dalam dan setengah di luar container
+        Positioned(
+          top: 0, // Mengatur posisi vertikal agar setengah di dalam dan setengah di luar container
+          left: 2,
+          right: 2,
+          child: Align(
+            alignment: Alignment.center, // Menempatkan teks di tengah secara horizontal
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 84),
               decoration: BoxDecoration(
                 color: Color(0xFFEFB509),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(
-                child: Text(
-                  'Rekomendasi',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+              child: Text(
+                'Rekomendasi',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
+                textAlign: TextAlign.center, // Memastikan teks juga berada di tengah secara horizontal
               ),
             ),
-            SizedBox(height: height * 0.02),
-            _buildRecommendationItem(
-              title: 'AWS Certified Solutions Architect',
-              subtitle: 'Cloud Computing',
-              date: '20 Oktober 2024',
-            ),
-            SizedBox(height: height * 0.02),
-            _buildRecommendationItem(
-              title: 'AWS Certified Solutions Architect',
-              subtitle: 'Cloud Computing',
-              date: '20 Oktober 2024',
-            ),
-            SizedBox(height: height * 0.02),
-            _buildMoreButton(width),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -218,8 +238,10 @@ class Dashboard extends StatelessWidget {
     String title = '',
     String subtitle = '',
     String date = '',
+    double? width, // Tambahkan parameter optional untuk mengatur lebar
   }) {
     return Container(
+      width: width, // Set lebar container menggunakan parameter width
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -264,8 +286,8 @@ class Dashboard extends StatelessWidget {
         // Action for more button
       },
       child: Container(
-        width: width * 0.4,
-        padding: EdgeInsets.symmetric(vertical: 12),
+        width: width * 0.3,
+        padding: EdgeInsets.symmetric(vertical: 3),
         decoration: BoxDecoration(
           color: Color(0xFFEFB509),
           borderRadius: BorderRadius.circular(10),
