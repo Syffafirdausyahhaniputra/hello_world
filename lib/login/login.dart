@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 import '../dosen.dart'; // Impor halaman dosen
 import '../pimpinan.dart'; // Impor halaman pimpinan
 
@@ -69,15 +70,14 @@ class _LoginFormState extends State<LoginForm> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'LOGIN',
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: GoogleFonts.poppins(
             color: Colors.black,
             fontSize: 40,
-            fontFamily: 'Hammersmith One',
-            fontWeight: FontWeight.w400,
             letterSpacing: -0.90,
+            fontWeight: FontWeight.bold,
           ),
         ),
         SizedBox(height: screenHeight * 0.05),
@@ -94,12 +94,11 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
-                  'USERNAME',
-                  style: TextStyle(
+                child: Text(
+                  'Username',
+                  style: GoogleFonts.montserrat(
                     color: Colors.white,
-                    fontSize: 19,
-                    fontFamily: 'Hammersmith One',
+                    fontSize: 20,
                     fontWeight: FontWeight.w400,
                     letterSpacing: -0.38,
                   ),
@@ -123,12 +122,11 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
-                child: const Text(
-                  'PASSWORD',
-                  style: TextStyle(
+                child: Text(
+                  'Password',
+                  style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: 19,
-                    fontFamily: 'Hammersmith One',
+                    fontSize: 20,
                     fontWeight: FontWeight.w400,
                     letterSpacing: -0.38,
                   ),
@@ -162,12 +160,11 @@ class _LoginFormState extends State<LoginForm> {
                 onPressed: () {
                   _login(context); // Panggil fungsi login saat tombol ditekan
                 },
-                child: const Text(
+                child: Text(
                   'KIRIM',
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     color: Colors.black,
                     fontSize: 16,
-                    fontFamily: 'Hammersmith One',
                   ),
                 ),
               ),
