@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
 
-class DosenPage extends StatelessWidget {
+class DosenPage extends StatefulWidget {
   const DosenPage({super.key});
+
+  @override
+  _DosenPageState createState() => _DosenPageState();
+}
+
+class _DosenPageState extends State<DosenPage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    Dashboard(), // Halaman Dashboard
+    AssignmentPage(), // Halaman Assignment
+    NotificationPage(), // Halaman Notifikasi
+    ProfilePage(), // Halaman Profil
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update halaman aktif
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,57 +29,93 @@ class DosenPage extends StatelessWidget {
       theme: ThemeData.light(),
       home: Scaffold(
         body: SafeArea(
-          child: Dashboard(),
+          child: _pages[_selectedIndex], // Menampilkan halaman yang dipilih
         ),
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
     );
   }
 
-Widget _buildBottomNavigationBar() {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 5, right: 10, left: 10, top: 5), // Memberi jarak ke atas dari bagian bawah layar
-    child: Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF002366), // Warna latar belakang biru
-        borderRadius: BorderRadius.circular(20), // Border radius 20 di semua sisi
+  Widget _buildBottomNavigationBar() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5, right: 10, left: 10, top: 5), // Memberi jarak ke atas dari bagian bawah layar
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF002366), // Warna latar belakang biru
+          borderRadius: BorderRadius.circular(20), // Border radius 20 di semua sisi
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.home, isSelected: _selectedIndex == 0, index: 0), // Home
+            _buildNavItem(Icons.assignment, isSelected: _selectedIndex == 1, index: 1), // Assignment
+            _buildNavItem(Icons.notifications, isSelected: _selectedIndex == 2, index: 2), // Notifications
+            _buildNavItem(Icons.person, isSelected: _selectedIndex == 3, index: 3), // Person
+          ],
+        ),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, isSelected: true), // Home
-          _buildNavItem(Icons.assignment), // Assignment
-          _buildNavItem(Icons.notifications), // Notifications
-          _buildNavItem(Icons.person), // Person
-        ],
-      ),
-    ),
-  );
-}
+    );
+  }
 
-
-
-Widget _buildNavItem(IconData icon, {bool isSelected = false}) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
+  Widget _buildNavItem(IconData icon, {bool isSelected = false, required int index}) {
+    return GestureDetector(
+      onTap: () {
+        _onItemTapped(index); // Navigasi saat icon diklik
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isSelected ? Colors.amber[200] : Colors.amber,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.amber.withOpacity(0.6),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: Offset(0, 3), // shadow yang sedikit terangkat
+                  ),
+                ]
+              : [],
         ),
         child: Icon(
           icon,
-          size: 24,
+          size: isSelected ? 28 : 24, // Membesarkan icon saat dipilih
           color: isSelected ? const Color(0xFF002366) : Colors.black,
         ),
       ),
-    ],
-  );
+    );
+  }
 }
 
+// Contoh halaman dummy untuk navigasi
+class AssignmentPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Assignment Page'),
+    );
+  }
+}
+
+class NotificationPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Notification Page'),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Profile Page'),
+    );
+  }
 }
 
 class Dashboard extends StatelessWidget {
