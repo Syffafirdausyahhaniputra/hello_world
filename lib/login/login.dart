@@ -114,7 +114,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     border: InputBorder.none,
                   ),
                 ),
@@ -124,7 +124,7 @@ class _LoginFormState extends State<LoginForm> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Password',
-                  style: GoogleFonts.roboto(
+                  style: GoogleFonts.montserrat(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w400,
@@ -143,7 +143,7 @@ class _LoginFormState extends State<LoginForm> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     border: InputBorder.none,
                   ),
                 ),
