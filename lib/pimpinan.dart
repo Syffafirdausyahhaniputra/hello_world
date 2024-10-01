@@ -161,19 +161,21 @@ class _PimpinanPageState extends State<PimpinanPage> {
     );
   }
 
-  Widget _buildCategoryCard(String title, String iconPath) {
+    Widget _buildCategoryCard(String title, String iconPath) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF002366), // Blue color for the card
+        color: const Color(0xFF002366), // Warna biru untuk kartu
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20.0), // Padding around the image
+            width: 200, // Lebar tetap untuk gambar dan teks
+            height: 150, // Tinggi tetap untuk gambar dan teks
+            padding: const EdgeInsets.all(1.0), // Padding sekitar gambar
             decoration: BoxDecoration(
-              color: Colors.white, // White background for image and text
+              color: Colors.white, // Latar belakang putih untuk gambar dan teks
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
@@ -181,16 +183,16 @@ class _PimpinanPageState extends State<PimpinanPage> {
               children: [
                 Image.asset(
                   iconPath,
-                  height: 50,
+                  height: 70, // Ukuran tetap untuk gambar
                 ),
                 const SizedBox(height: 10),
                 Text(
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14, // Font size tetap
                     fontWeight: FontWeight.bold,
-                    color: Colors.black, // Black text color
+                    color: Colors.black, // Warna teks hitam
                   ),
                 ),
               ],
