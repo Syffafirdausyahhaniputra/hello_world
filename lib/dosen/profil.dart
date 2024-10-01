@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../login/login.dart'; // Pastikan mengimpor halaman login
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -66,11 +67,21 @@ class ProfilePage extends StatelessWidget {
               ),
               onTap: () {
                 // Aksi ketika "Keluar" ditekan
+                _logout(context); // Memanggil fungsi _logout
               },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _logout(BuildContext context) {
+    // Mengarahkan pengguna ke halaman login dan mencegah kembali ke profil
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false, // Menghapus semua rute sebelumnya
     );
   }
 }
