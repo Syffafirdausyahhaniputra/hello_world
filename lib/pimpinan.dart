@@ -106,42 +106,43 @@ class _PimpinanPageState extends State<PimpinanPage> {
     );
   }
 
-    Widget _buildBidangSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF002366), // Outer blue container color
-        borderRadius: BorderRadius.circular(20),
+Widget _buildBidangSection() {
+  return Stack(
+    clipBehavior: Clip.none, // Agar teks bisa keluar dari container biru
+    children: [
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF002366), // Warna biru untuk container
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.only(top: 30.0, left: 16.0, right: 16.0, bottom: 16.0),
+        child: _buildGridCategories(), // Isi dengan grid categories
       ),
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: double.infinity, // Make sure the box stretches horizontally
-                height: 40, // Set a fixed height for the yellow box
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFB509), // Yellow background for "Bidang" title
-                  borderRadius: BorderRadius.circular(20), // Rounded corners to match the image
-                ),
+      Positioned(
+        top: -20, // Agar setengah teks berada di luar container
+        left: 16, // Posisi teks di bagian kiri container
+        right: 16, // Tambahkan jarak pada kanan agar center
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 120.0, vertical: 8.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFB509), // Warna kuning untuk teks "Bidang"
+              borderRadius: BorderRadius.circular(20), // Membuat sudut membulat
+            ),
+            child: const Text(
+              'Bidang',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black, // Warna teks hitam
               ),
-              const Text(
-                'Bidang',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black, // Black text color for title
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 20),
-          _buildGridCategories(), // Build the grid inside the blue container
-        ],
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
 
   Widget _buildGridCategories() {
     return GridView.count(
