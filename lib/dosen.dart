@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'bottombar.dart'; // Import file bottombar.dart
+import 'dosen/riwayat.dart'; // Import file riwayat.dart (AssignmentPage)
+import 'dosen/notifikasi.dart'; // Import file notifikasi.dart (NotificationPage)
+import 'dosen/profil.dart'; // Import file profil.dart (ProfilePage)
 
 class DosenPage extends StatefulWidget {
   const DosenPage({super.key});
@@ -12,9 +16,9 @@ class _DosenPageState extends State<DosenPage> {
 
   final List<Widget> _pages = [
     Dashboard(), // Halaman Dashboard
-    AssignmentPage(), // Halaman Assignment
-    NotificationPage(), // Halaman Notifikasi
-    ProfilePage(), // Halaman Profil
+    HistoryPage(), // Halaman Assignment dari riwayat.dart
+    NotificationPage(), // Halaman Notifikasi dari notifikasi.dart
+    ProfilePage(), // Halaman Profil dari profil.dart
   ];
 
   void _onItemTapped(int index) {
@@ -31,89 +35,11 @@ class _DosenPageState extends State<DosenPage> {
         body: SafeArea(
           child: _pages[_selectedIndex], // Menampilkan halaman yang dipilih
         ),
-        bottomNavigationBar: _buildBottomNavigationBar(),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5, right: 10, left: 10, top: 5), // Memberi jarak ke atas dari bagian bawah layar
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF002366), // Warna latar belakang biru
-          borderRadius: BorderRadius.circular(20), // Border radius 20 di semua sisi
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home, isSelected: _selectedIndex == 0, index: 0), // Home
-            _buildNavItem(Icons.assignment, isSelected: _selectedIndex == 1, index: 1), // Assignment
-            _buildNavItem(Icons.notifications, isSelected: _selectedIndex == 2, index: 2), // Notifications
-            _buildNavItem(Icons.person, isSelected: _selectedIndex == 3, index: 3), // Person
-          ],
+        bottomNavigationBar: BottomNavBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped, // Pass the callback function
         ),
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, {bool isSelected = false, required int index}) {
-    return GestureDetector(
-      onTap: () {
-        _onItemTapped(index); // Navigasi saat icon diklik
-      },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isSelected ? Colors.amber[200] : Colors.amber,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: Colors.amber.withOpacity(0.6),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: Offset(0, 3), // shadow yang sedikit terangkat
-                  ),
-                ]
-              : [],
-        ),
-        child: Icon(
-          icon,
-          size: isSelected ? 28 : 24, // Membesarkan icon saat dipilih
-          color: isSelected ? const Color(0xFF002366) : Colors.black,
-        ),
-      ),
-    );
-  }
-}
-
-// Contoh halaman dummy untuk navigasi
-class AssignmentPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Assignment Page'),
-    );
-  }
-}
-
-class NotificationPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Notification Page'),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Profile Page'),
     );
   }
 }
@@ -227,7 +153,8 @@ class Dashboard extends StatelessWidget {
       children: [
         // Container untuk daftar rekomendasi
         Container(
-          margin: const EdgeInsets.only(top: 20), // Beri margin agar title punya ruang di atas
+          margin: const EdgeInsets.only(
+              top: 20), // Beri margin agar title punya ruang di atas
           decoration: BoxDecoration(
             color: const Color(0xFF002366),
             borderRadius: BorderRadius.circular(15),
@@ -263,11 +190,13 @@ class Dashboard extends StatelessWidget {
 
         // Title "Rekomendasi" yang setengah di dalam dan setengah di luar container
         Positioned(
-          top: 0, // Mengatur posisi vertikal agar setengah di dalam dan setengah di luar container
+          top:
+              0, // Mengatur posisi vertikal agar setengah di dalam dan setengah di luar container
           left: 2,
           right: 2,
           child: Align(
-            alignment: Alignment.center, // Menempatkan teks di tengah secara horizontal
+            alignment: Alignment
+                .center, // Menempatkan teks di tengah secara horizontal
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 7, horizontal: 84),
               decoration: BoxDecoration(
@@ -281,7 +210,8 @@ class Dashboard extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
-                textAlign: TextAlign.center, // Memastikan teks juga berada di tengah secara horizontal
+                textAlign: TextAlign
+                    .center, // Memastikan teks juga berada di tengah secara horizontal
               ),
             ),
           ),
