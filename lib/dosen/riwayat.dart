@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../header.dart'; // Import file header.dart
 
 class HistoryPage extends StatelessWidget {
   @override
@@ -13,8 +14,8 @@ class HistoryPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(width),
-              SizedBox(height: height * 0.02),
+              Header(userName: 'Zulfa Ulinnuha'), // Gunakan Header dari header.dart
+              SizedBox(height: height * 0.01),
               Text(
                 'Riwayat',
                 style: TextStyle(
@@ -51,29 +52,6 @@ class HistoryPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(double width) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(width: width * 0.55), // Space untuk menyeimbangkan layout
-          Text(
-            'Zulfa Ulinnuha',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Icon(
-            Icons.account_circle,
-            size: 24,
-          ),
-        ],
       ),
     );
   }

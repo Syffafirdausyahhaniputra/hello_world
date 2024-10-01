@@ -3,6 +3,7 @@ import 'bottombar.dart'; // Import file bottombar.dart
 import 'dosen/riwayat.dart'; // Import file riwayat.dart (AssignmentPage)
 import 'dosen/notifikasi.dart'; // Import file notifikasi.dart (NotificationPage)
 import 'dosen/profil.dart'; // Import file profil.dart (ProfilePage)
+import 'header.dart'; // Import file header.dart
 
 class DosenPage extends StatefulWidget {
   const DosenPage({super.key});
@@ -56,7 +57,7 @@ class Dashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(width),
+            Header(userName: 'Zulfa Ulinnuha'), // Gunakan Header dari header.dart
             SizedBox(height: height * 0.01),
             Text(
               'Selamat Datang',
@@ -85,30 +86,7 @@ class Dashboard extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildHeader(double width) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(width: width * 0.55), // Space to match the layout
-          Text(
-            'Zulfa Ulinnuha',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Icon(
-            Icons.account_circle,
-            size: 24,
-          ),
-        ],
-      ),
-    );
-  }
-
+  
   Widget _buildInfoCard({
     required String title,
     required String value,
