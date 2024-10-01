@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/pimpinan/dosenbidang.dart';
 import 'bottombar.dart'; // Import your custom bottom nav bar
 
 class PimpinanPage extends StatefulWidget {
@@ -162,8 +163,17 @@ Widget _buildBidangSection() {
     );
   }
 
-    Widget _buildCategoryCard(String title, String iconPath) {
-    return Container(
+   Widget _buildCategoryCard(String title, String iconPath) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DosenBidangPage(),
+        ),
+      );
+    },
+    child: Container(
       decoration: BoxDecoration(
         color: const Color(0xFF002366), // Warna biru untuk kartu
         borderRadius: BorderRadius.circular(10),
@@ -201,6 +211,7 @@ Widget _buildBidangSection() {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
