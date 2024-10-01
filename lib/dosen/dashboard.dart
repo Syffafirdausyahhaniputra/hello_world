@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../header.dart'; // Import file header.dart
+import '../header.dart'; // Import file header.dart (harus pastikan benar)
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboard
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'bottombar.dart'; // Import file bottombar.dart
-import 'dosen/dashboard.dart'; // Import file riwayat.dart (AssignmentPage)
+import 'bottombar.dart'; // Pastikan sudah benar
+import 'dosen/dashboard.dart'; // Import file dashboard.dart (Dashboard)
 import 'dosen/riwayat.dart'; // Import file riwayat.dart (AssignmentPage)
 import 'dosen/notifikasi.dart'; // Import file notifikasi.dart (NotificationPage)
 import 'dosen/profil.dart'; // Import file profil.dart (ProfilePage)
@@ -16,10 +16,10 @@ class _DosenPageState extends State<DosenPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    Dashboard(), // Halaman Dashboard
-    HistoryPage(), // Halaman Assignment dari riwayat.dart
-    NotificationPage(), // Halaman Notifikasi dari notifikasi.dart
-    ProfilePage(), // Halaman Profil dari profil.dart
+    Dashboard(), // Nama kelas Dashboard sudah sesuai dengan kelas di dashboard.dart
+    HistoryPage(), // Pastikan nama ini benar di riwayat.dart
+    NotificationPage(), // Pastikan nama ini benar di notifikasi.dart
+    ProfilePage(), // Pastikan nama ini benar di profil.dart
   ];
 
   void _onItemTapped(int index) {
