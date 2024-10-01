@@ -10,7 +10,7 @@ class DosenBidangPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -49,7 +49,7 @@ class DosenBidangPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               _buildSearchBox(),
               const SizedBox(height: 20),
               _buildDosenList(),
@@ -81,7 +81,9 @@ class DosenBidangPage extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: "CARI",
                 border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey), // Warna teks placeholder
               ),
+              style: TextStyle(color: Colors.black), // Warna teks input
             ),
           ),
         ],
@@ -92,6 +94,7 @@ class DosenBidangPage extends StatelessWidget {
   // Widget untuk daftar dosen
   Widget _buildDosenList() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: const Color(0xFF002366), // Warna biru untuk container background
         borderRadius: BorderRadius.circular(20),
@@ -134,7 +137,7 @@ class DosenBidangPage extends StatelessWidget {
             radius: 30,
             child: Icon(
               Icons.person,
-              color: isMain ? Colors.white : Colors.black, // Warna ikon
+              color:  Colors.black, // Warna ikon
               size: 30,
             ),
           ),

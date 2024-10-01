@@ -80,7 +80,7 @@ class _LoginFormState extends State<LoginForm> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: screenHeight * 0.05),
+        SizedBox(height: screenHeight * 0.03), // Menyesuaikan tinggi jarak
         Container(
           width: screenWidth * 0.85,
           padding: const EdgeInsets.all(20.0),
@@ -106,7 +106,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 10),
               Container(
-                height: 40,
+                height: 50, // Meningkatkan tinggi untuk input
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -134,7 +134,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
               const SizedBox(height: 10),
               Container(
-                height: 40,
+                height: 50, // Meningkatkan tinggi untuk input
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),

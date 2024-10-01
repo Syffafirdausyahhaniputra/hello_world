@@ -8,29 +8,6 @@ class RiwayatPage extends StatefulWidget {
 }
 
 class _RiwayatPageState extends State<RiwayatPage> {
-  int _selectedIndex = 1; // Indeks halaman awal diatur ke Riwayat (1)
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home'); // Navigasi ke halaman Home
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/riwayat'); // Halaman Riwayat saat ini
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/notifikasi'); // Navigasi ke halaman Notifikasi
-        break;
-      case 3:
-        Navigator.pushNamed(context, '/profil'); // Navigasi ke halaman Profil
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,31 +61,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.article),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: '',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFFEFB509), // Warna kuning untuk item yang dipilih
-        unselectedItemColor: Colors.white, // Warna putih untuk item yang tidak dipilih
-        backgroundColor: const Color(0xFF002366), // Warna biru untuk background bottom bar
-        onTap: _onItemTapped,
       ),
     );
   }
