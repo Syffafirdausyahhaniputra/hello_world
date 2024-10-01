@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../header.dart'; // Import file header.dart (harus pastikan benar)
+import '../header.dart'; // Pastikan sudah mengimpor file header.dart
+import 'rekomendasi.dart'; // Pastikan mengimpor halaman rekomendasi
 
-class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboard
+class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -36,13 +37,13 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
               ],
             ),
             SizedBox(height: height * 0.05),
-            _buildRecommendationSection(width, height),
+            _buildRecommendationSection(width, height, context), // Tambahkan context di sini
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildInfoCard({
     required String title,
     required String value,
@@ -81,14 +82,12 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
     );
   }
 
-  Widget _buildRecommendationSection(double width, double height) {
+  Widget _buildRecommendationSection(double width, double height, BuildContext context) {
     return Stack(
       clipBehavior: Clip.none, // Membiarkan title keluar dari batas container
       children: [
-        // Container untuk daftar rekomendasi
         Container(
-          margin: const EdgeInsets.only(
-              top: 20), // Beri margin agar title punya ruang di atas
+          margin: const EdgeInsets.only(top: 20), // Beri margin agar title punya ruang di atas
           decoration: BoxDecoration(
             color: const Color(0xFF002366),
             borderRadius: BorderRadius.circular(15),
@@ -115,22 +114,18 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
                 SizedBox(height: height * 0.02),
                 Align(
                   alignment: Alignment.bottomRight,
-                  child: _buildMoreButton(width),
+                  child: _buildMoreButton(width, context), // Tambahkan context di sini
                 ),
               ],
             ),
           ),
         ),
-
-        // Title "Rekomendasi" yang setengah di dalam dan setengah di luar container
         Positioned(
-          top:
-              0, // Mengatur posisi vertikal agar setengah di dalam dan setengah di luar container
+          top: 0,
           left: 2,
           right: 2,
           child: Align(
-            alignment: Alignment
-                .center, // Menempatkan teks di tengah secara horizontal
+            alignment: Alignment.center,
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 7, horizontal: 84),
               decoration: BoxDecoration(
@@ -144,8 +139,7 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
-                textAlign: TextAlign
-                    .center, // Memastikan teks juga berada di tengah secara horizontal
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -158,10 +152,10 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
     String title = '',
     String subtitle = '',
     String date = '',
-    double? width, // Tambahkan parameter optional untuk mengatur lebar
+    double? width,
   }) {
     return Container(
-      width: width, // Set lebar container menggunakan parameter width
+      width: width,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -200,10 +194,14 @@ class Dashboard extends StatelessWidget { // Pastikan nama kelas adalah Dashboar
     );
   }
 
-  Widget _buildMoreButton(double width) {
+  Widget _buildMoreButton(double width, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Action for more button
+        // Navigasi ke halaman rekomendasi
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RekomendasiPage()), // Panggil halaman RekomendasiPage
+        );
       },
       child: Container(
         width: width * 0.3,
