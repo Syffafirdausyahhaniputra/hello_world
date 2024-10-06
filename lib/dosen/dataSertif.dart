@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import the Header component
+import 'sertif.dart'; // Pastikan nama file dan path benar
 
 class DataSertifPage extends StatelessWidget {
   @override
@@ -61,8 +62,7 @@ class DataSertifPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.02),
-              _buildRecommendationList(
-                  width, height), // Recommendation list section
+              _buildSertifList(context, width, height), // Pass context here
             ],
           ),
         ),
@@ -70,7 +70,7 @@ class DataSertifPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationList(double width, double height) {
+  Widget _buildSertifList(BuildContext context, double width, double height) {
     // Example data, you can replace with dynamic data or a list
     List<Map<String, String>> recommendations = [
       {
@@ -84,14 +84,16 @@ class DataSertifPage extends StatelessWidget {
       children: recommendations.map((item) {
         return Column(
           children: [
-            _buildRecommendationItem(
+            _buildSertifItem(
+              context: context, // Pass context here
               title: item['title'] ?? '',
               subtitle: item['subtitle'] ?? '',
               date: item['date'] ?? '',
               width: width * 0.9,
             ),
             SizedBox(height: height * 0.02),
-             _buildRecommendationItem(
+            _buildSertifItem(
+              context: context, // Pass context here
               title: item['title'] ?? '',
               subtitle: item['subtitle'] ?? '',
               date: item['date'] ?? '',
@@ -104,48 +106,59 @@ class DataSertifPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationItem({
-    String title = '',
-    String subtitle = '',
-    String date = '',
-    double? width,
+  Widget _buildSertifItem({
+    required BuildContext context, // Add context as a parameter
+    required String title,
+    required String subtitle,
+    required String date,
+    required double width,
   }) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFF0D47A1), width: 5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context, // Use the passed context here
+          MaterialPageRoute(
+            builder: (context) => SertifPage(), // Halaman sertif.dart
           ),
-          SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 14,
+        );
+      },
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFF0D47A1), width: 5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            date,
-            style: TextStyle(
-              color: Colors.black38,
-              fontSize: 12,
+            SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 4),
+            Text(
+              date,
+              style: TextStyle(
+                color: Colors.black38,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
