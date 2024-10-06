@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import the Header component
 
-class RekomendasiPage extends StatelessWidget {
+class DataSertifPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -45,7 +45,7 @@ class RekomendasiPage extends StatelessWidget {
               ),
               SizedBox(height: height * 0.04),
               Text(
-                'Rekomendasi Sertifikasi dan Pelatihan',
+                'Data Sertifikasi dan Pelatihan',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -68,7 +68,7 @@ class RekomendasiPage extends StatelessWidget {
       {
         'title': 'AWS Certified Solutions Architect',
         'subtitle': 'Cloud Computing',
-        'date': '20 Oktober 2024',
+        'date': 'Berlaku hingga 19 Oktober 2025',
       },
     ];
 
@@ -107,7 +107,7 @@ class RekomendasiPage extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFF0D47A1), width: 5),
+        border: Border.all(color: const Color(0xFF0D47A1), width: 2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

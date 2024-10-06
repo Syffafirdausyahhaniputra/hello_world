@@ -68,8 +68,8 @@ class _DashboardPageState extends State<DashboardPage> {
         color: Colors.white, // Set background color to white
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFF002366), // Border color to match the theme
-          width: 2,
+          color: const Color(0xFF0D47A1), // Border color to match the theme
+          width: 5,
         ),
       ),
       child: Column(
@@ -102,7 +102,7 @@ class _DashboardPageState extends State<DashboardPage> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF002366), // Blue color for container
+            color: const Color(0xFF0D47A1), // Blue color for container
             borderRadius: BorderRadius.circular(20),
           ),
           padding: const EdgeInsets.only(top: 30.0, left: 16.0, right: 16.0, bottom: 16.0),
@@ -166,7 +166,7 @@ class _DashboardPageState extends State<DashboardPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF002366), // Blue color for card
+          color: const Color(0xFF0D47A1), // Blue color for card
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(

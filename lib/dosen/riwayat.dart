@@ -69,8 +69,8 @@ class HistoryPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Color(0xFF002366),
-          width: 3,
+          color: Color(0xFF0D47A1),
+          width: 5,
         ),
       ),
       child: Column(

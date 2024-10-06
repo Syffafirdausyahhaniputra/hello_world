@@ -68,7 +68,7 @@ class DosenBidangPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: const Color(0xFF002366), // Warna biru untuk border kotak pencarian
+          color: const Color(0xFF0D47A1), // Warna biru untuk border kotak pencarian
           width: 2,
         ),
       ),
@@ -96,7 +96,7 @@ class DosenBidangPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFF002366), // Warna biru untuk container background
+        color: const Color(0xFF0D47A1), // Warna biru untuk container background
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(16.0),

@@ -69,7 +69,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
   Widget _buildRiwayatList() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF002366), // Warna biru untuk container background
+        color: const Color(0xFF0D47A1), // Warna biru untuk container background
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(16.0),

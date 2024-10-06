@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Pastikan sudah mengimpor file header.dart
 import 'rekomendasi.dart'; // Pastikan mengimpor halaman rekomendasi
+import 'dataSertif.dart'; // Tambahkan import untuk DataSertif.dart
 
 class Dashboard extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class Dashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Header(userName: 'Zulfa Ulinnuha'), // Gunakan Header dari header.dart
+            Header(userName: 'Zulfa Ulinnuha'),
             SizedBox(height: height * 0.01),
             Text(
               'Selamat Datang',
@@ -32,12 +33,13 @@ class Dashboard extends StatelessWidget {
                   title: 'Sertifikasi dan Pelatihan',
                   value: '4',
                   width: width * 0.8,
-                  borderColor: Colors.blue,
+                  borderColor: const Color(0xFF0D47A1),
+                  context: context, // Tambahkan context untuk navigasi
                 )
               ],
             ),
             SizedBox(height: height * 0.05),
-            _buildRecommendationSection(width, height, context), // Tambahkan context di sini
+            _buildRecommendationSection(width, height, context),
           ],
         ),
       ),
@@ -49,35 +51,45 @@ class Dashboard extends StatelessWidget {
     required String value,
     required double width,
     required Color borderColor,
+    required BuildContext context, // Tambahkan context di sini
   }) {
-    return Container(
-      width: width,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(width: 3, color: borderColor),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
+    return GestureDetector( // Bungkus dengan GestureDetector
+      onTap: () {
+        // Navigasi ke halaman DataSertif
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DataSertifPage()), // Panggil halaman DataSertifPage
+        );
+      },
+      child: Container(
+        width: width,
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(width: 5, color: borderColor),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
+            SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -89,7 +101,7 @@ class Dashboard extends StatelessWidget {
         Container(
           margin: const EdgeInsets.only(top: 20), // Beri margin agar title punya ruang di atas
           decoration: BoxDecoration(
-            color: const Color(0xFF002366),
+            color: const Color(0xFF0D47A1),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Padding(

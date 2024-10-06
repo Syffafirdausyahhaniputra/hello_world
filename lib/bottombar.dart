@@ -16,7 +16,7 @@ class BottomNavBar extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 5, right: 10, left: 10, top: 5), // Padding around the navbar
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF002366), // Background color of the nav bar
+          color: const Color(0xFF0D47A1), // Background color of the nav bar
           borderRadius: BorderRadius.circular(20), // Rounded edges
         ),
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -48,9 +48,9 @@ class BottomNavBar extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.amber.withOpacity(0.6),
-                    spreadRadius: 3,
-                    blurRadius: 5,
+                    color: Colors.amber.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 1,
                     offset: const Offset(0, 3), // Shadow for selected icon
                   ),
                 ]
@@ -59,7 +59,7 @@ class BottomNavBar extends StatelessWidget {
         child: Icon(
           icon,
           size: isSelected ? 28 : 24, // Larger icon size when selected
-          color: isSelected ? const Color(0xFF002366) : Colors.black, // Color transition
+          color: isSelected ? Colors.black : Colors.black, // Color transition
         ),
       ),
     );
