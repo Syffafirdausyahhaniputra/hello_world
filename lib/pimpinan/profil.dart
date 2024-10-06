@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
-import '../bottombar.dart'; // Impor BottomNavBar dari file bottombar.dart
+import 'editprofil.dart'; // Impor halaman EditProfilPage dengan benar
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key); // Menambahkan super.key
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -13,7 +14,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView( // Menambahkan SingleChildScrollView untuk kemampuan scroll
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
           child: Column(
@@ -47,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     const Text(
-                      'Pimpinan Jurusan Teknologi Informasi', // Menyesuaikan deskripsi sesuai gambar
+                      'Pimpinan Jurusan Teknologi Informasi',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
@@ -58,9 +59,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 40.0),
               _buildProfileOption(context, Icons.person, 'Edit Profil'),
-              _buildProfileOption(context, Icons.note, 'Rekomendasi'), // Opsi Rekomendasi
-              _buildProfileOption(context, Icons.file_copy, 'Data Sertifikasi/Pelatihan'), // Opsi Data Sertifikasi/Pelatihan
-              _buildProfileOption(context, Icons.logout, 'Keluar', isLogout: true), // Opsi Keluar
+              _buildProfileOption(context, Icons.note, 'Rekomendasi'),
+              _buildProfileOption(context, Icons.file_copy, 'Data Sertifikasi/Pelatihan'),
+              _buildProfileOption(context, Icons.logout, 'Keluar', isLogout: true),
             ],
           ),
         ),
@@ -81,8 +82,13 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: () {
             if (isLogout) {
               _logout(context);
+            } else if (title == 'Edit Profil') {
+              // Navigasi ke halaman EditProfilPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditProfilPage()),
+              );
             } else {
-              // Tambahkan aksi yang relevan untuk opsi lainnya di sini
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Navigasi ke: $title')),
               );

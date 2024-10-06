@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'informasi.dart';
 
+// Halaman daftar dosen
 class DosenBidangPage extends StatelessWidget {
   const DosenBidangPage({Key? key}) : super(key: key);
 
@@ -42,7 +44,7 @@ class DosenBidangPage extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               const Text(
-                'Dosen Bidang (..)',
+                'Dosen Bidang',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -52,7 +54,7 @@ class DosenBidangPage extends StatelessWidget {
               const SizedBox(height: 10),
               _buildSearchBox(),
               const SizedBox(height: 20),
-              _buildDosenList(),
+              _buildDosenList(context), // Tambahkan parameter context untuk navigasi
             ],
           ),
         ),
@@ -92,7 +94,7 @@ class DosenBidangPage extends StatelessWidget {
   }
 
   // Widget untuk daftar dosen
-  Widget _buildDosenList() {
+  Widget _buildDosenList(BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -103,66 +105,79 @@ class DosenBidangPage extends StatelessWidget {
       child: Column(
         children: [
           _buildDosenItem(
+            context,
             name: "Zulfa Ulinnuha",
             description: "Dosen Jurusan Teknologi Informasi",
             isMain: true,
           ),
           const SizedBox(height: 16),
-          _buildDosenItem(name: "Nama Dosen Lain", description: "Bidang A"),
+          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang A"),
           const SizedBox(height: 16),
-          _buildDosenItem(name: "Nama Dosen Lain", description: "Bidang B"),
+          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang B"),
           const SizedBox(height: 16),
-          _buildDosenItem(name: "Nama Dosen Lain", description: "Bidang C"),
+          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang C"),
         ],
       ),
     );
   }
 
   // Widget untuk item dosen individual
-  Widget _buildDosenItem({
+  Widget _buildDosenItem(
+    BuildContext context, {
     required String name,
     required String description,
     bool isMain = false,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: const Color(0xFFEFB509), // Warna kuning untuk avatar
-            radius: 30,
-            child: Icon(
-              Icons.person,
-              color:  Colors.black, // Warna ikon
-              size: 30,
+    return GestureDetector(
+      onTap: () {
+        // Navigasi ke halaman SertifikasiPage saat dosen ditekan
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SertifikasiPage(dosenName: name),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: const Color(0xFFEFB509), // Warna kuning untuk avatar
+              radius: 30,
+              child: Icon(
+                Icons.person,
+                color: Colors.black, // Warna ikon
+                size: 30,
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
