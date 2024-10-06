@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import the Header component
+import 'descRekom.dart'; // Pastikan file ini sudah ada di path yang benar
 
 class RekomendasiPage extends StatelessWidget {
   @override
@@ -20,7 +21,7 @@ class RekomendasiPage extends StatelessWidget {
                   Header(
                       userName: 'Zulfa Ulinnuha'), // Reuse the Header component
                   Positioned(
-                    left: 10,
+                    left: 0,
                     top: 16,
                     child: GestureDetector(
                       onTap: () {
@@ -43,9 +44,17 @@ class RekomendasiPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: height * 0.04),
+              SizedBox(height: height * 0.02),
               Text(
-                'Rekomendasi Sertifikasi dan Pelatihan',
+                'Rekomendasi',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Sertifikasi dan Pelatihan',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -54,7 +63,7 @@ class RekomendasiPage extends StatelessWidget {
               ),
               SizedBox(height: height * 0.02),
               _buildRecommendationList(
-                  width, height), // Recommendation list section
+                  width, height, context), // Kirim context di sini
             ],
           ),
         ),
@@ -62,7 +71,8 @@ class RekomendasiPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationList(double width, double height) {
+  Widget _buildRecommendationList(
+      double width, double height, BuildContext context) {
     // Example data, you can replace with dynamic data or a list
     List<Map<String, String>> recommendations = [
       {
@@ -77,13 +87,15 @@ class RekomendasiPage extends StatelessWidget {
         return Column(
           children: [
             _buildRecommendationItem(
+              context: context, // Kirim context ke dalam item
               title: item['title'] ?? '',
               subtitle: item['subtitle'] ?? '',
               date: item['date'] ?? '',
               width: width * 0.9,
             ),
             SizedBox(height: height * 0.02),
-             _buildRecommendationItem(
+            _buildRecommendationItem(
+              context: context, // Kirim context ke dalam item
               title: item['title'] ?? '',
               subtitle: item['subtitle'] ?? '',
               date: item['date'] ?? '',
@@ -97,47 +109,59 @@ class RekomendasiPage extends StatelessWidget {
   }
 
   Widget _buildRecommendationItem({
+    required BuildContext context, // Tambahkan context sebagai parameter
     String title = '',
     String subtitle = '',
     String date = '',
     double? width,
   }) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFF0D47A1), width: 5),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () {
+        // Navigasi ke halaman descRekom.dart
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  DescRekomPage()), // Pastikan DescRekomPage diimpor
+        );
+      },
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFF0D47A1), width: 5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.black54,
-              fontSize: 14,
+            SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+              ),
             ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            date,
-            style: TextStyle(
-              color: Colors.black38,
-              fontSize: 12,
+            SizedBox(height: 4),
+            Text(
+              date,
+              style: TextStyle(
+                color: Colors.black38,
+                fontSize: 12,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

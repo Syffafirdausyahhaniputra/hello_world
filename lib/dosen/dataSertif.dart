@@ -20,7 +20,7 @@ class DataSertifPage extends StatelessWidget {
                   Header(
                       userName: 'Zulfa Ulinnuha'), // Reuse the Header component
                   Positioned(
-                    left: 10,
+                    left: 0,
                     top: 16,
                     child: GestureDetector(
                       onTap: () {
@@ -43,9 +43,17 @@ class DataSertifPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: height * 0.04),
+              SizedBox(height: height * 0.02),
               Text(
-                'Data Sertifikasi dan Pelatihan',
+                'Data',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'Sertifikasi dan Pelatihan',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -107,7 +115,7 @@ class DataSertifPage extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFF0D47A1), width: 2),
+        border: Border.all(color: const Color(0xFF0D47A1), width: 5),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

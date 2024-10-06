@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Pastikan sudah mengimpor file header.dart
-import 'rekomendasi.dart'; // Pastikan mengimpor halaman rekomendasi
-import 'dataSertif.dart'; // Tambahkan import untuk DataSertif.dart
+import 'dataSertif.dart';
+import 'rekomendasi.dart';
+import 'descRekom.dart'; // Tambahkan import untuk descRekom.dart
 
 class Dashboard extends StatelessWidget {
   @override
@@ -34,7 +35,7 @@ class Dashboard extends StatelessWidget {
                   value: '4',
                   width: width * 0.8,
                   borderColor: const Color(0xFF0D47A1),
-                  context: context, // Tambahkan context untuk navigasi
+                  context: context, 
                 )
               ],
             ),
@@ -51,14 +52,14 @@ class Dashboard extends StatelessWidget {
     required String value,
     required double width,
     required Color borderColor,
-    required BuildContext context, // Tambahkan context di sini
+    required BuildContext context, 
   }) {
-    return GestureDetector( // Bungkus dengan GestureDetector
+    return GestureDetector(
       onTap: () {
         // Navigasi ke halaman DataSertif
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DataSertifPage()), // Panggil halaman DataSertifPage
+          MaterialPageRoute(builder: (context) => DataSertifPage()), 
         );
       },
       child: Container(
@@ -96,10 +97,10 @@ class Dashboard extends StatelessWidget {
 
   Widget _buildRecommendationSection(double width, double height, BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none, // Membiarkan title keluar dari batas container
+      clipBehavior: Clip.none, 
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 20), // Beri margin agar title punya ruang di atas
+          margin: const EdgeInsets.only(top: 20),
           decoration: BoxDecoration(
             color: const Color(0xFF0D47A1),
             borderRadius: BorderRadius.circular(15),
@@ -114,19 +115,21 @@ class Dashboard extends StatelessWidget {
                   title: 'AWS Certified Solutions Architect',
                   subtitle: 'Cloud Computing',
                   date: '20 Oktober 2024',
-                  width: width * 0.9, // Mengatur lebar container
+                  width: width * 0.9,
+                  context: context, // Tambahkan context untuk navigasi
                 ),
                 SizedBox(height: height * 0.02),
                 _buildRecommendationItem(
                   title: 'AWS Certified Solutions Architect',
                   subtitle: 'Cloud Computing',
                   date: '20 Oktober 2024',
-                  width: width * 0.9, // Mengatur lebar container
+                  width: width * 0.9,
+                  context: context, // Tambahkan context untuk navigasi
                 ),
                 SizedBox(height: height * 0.02),
                 Align(
                   alignment: Alignment.bottomRight,
-                  child: _buildMoreButton(width, context), // Tambahkan context di sini
+                  child: _buildMoreButton(width, context),
                 ),
               ],
             ),
@@ -165,43 +168,53 @@ class Dashboard extends StatelessWidget {
     String subtitle = '',
     String date = '',
     double? width,
+    required BuildContext context, // Tambahkan context untuk navigasi
   }) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title.isNotEmpty)
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+    return GestureDetector( // Bungkus dengan GestureDetector
+      onTap: () {
+        // Navigasi ke halaman descRekom
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DescRekomPage()), // Panggil halaman DescRekomPage
+        );
+      },
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title.isNotEmpty)
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-          if (subtitle.isNotEmpty)
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
+            if (subtitle.isNotEmpty)
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 14,
+                ),
               ),
-            ),
-          if (date.isNotEmpty)
-            Text(
-              date,
-              style: TextStyle(
-                color: Colors.black38,
-                fontSize: 12,
+            if (date.isNotEmpty)
+              Text(
+                date,
+                style: TextStyle(
+                  color: Colors.black38,
+                  fontSize: 12,
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -212,7 +225,7 @@ class Dashboard extends StatelessWidget {
         // Navigasi ke halaman rekomendasi
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RekomendasiPage()), // Panggil halaman RekomendasiPage
+          MaterialPageRoute(builder: (context) => RekomendasiPage()),
         );
       },
       child: Container(
