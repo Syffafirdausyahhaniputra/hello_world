@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
-import 'editprofil.dart'; // Impor halaman EditProfilPage dengan benar
+import 'editprofil.dart';
+import 'datasertif.dart'; 
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key); // Menambahkan super.key
@@ -88,7 +89,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 context,
                 MaterialPageRoute(builder: (context) => const EditProfilPage()),
               );
-            } else {
+            }
+            else if (title == 'Data Sertifikasi/Pelatihan') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DataSertifPage()), // Mengarahkan ke halaman DataSertifPage
+              );
+            }
+
+             else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Navigasi ke: $title')),
               );
