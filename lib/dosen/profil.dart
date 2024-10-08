@@ -16,29 +16,29 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: Color(0xFF0D47A1),
-                    child: Icon(
+                    backgroundColor: const Color(0xFF0D47A1),
+                    child: const Icon(
                       Icons.person,
                       size: 40,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 16.0),
-                  Text(
+                  const SizedBox(height: 16.0),
+                  const Text(
                     'Zulfa Ulinnuha',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
+                  const Text(
                     '222222222',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Dosen Jurusan Teknologi Informasi',
                     style: TextStyle(
                       fontSize: 16,
@@ -48,10 +48,10 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 40.0),
+            const SizedBox(height: 40.0),
             ListTile(
-              leading: Icon(Icons.edit, color: Colors.black),
-              title: Text(
+              leading: const Icon(Icons.edit, color: Colors.black),
+              title: const Text(
                 'Edit Profil',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
@@ -59,21 +59,20 @@ class ProfilePage extends StatelessWidget {
                 // Aksi ketika "Edit Profil" ditekan
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const EditProfilPage()),
+                  MaterialPageRoute(builder: (context) => const EditProfilPage()),
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.black),
-              title: Text(
+              leading: const Icon(Icons.logout, color: Colors.black),
+              title: const Text(
                 'Keluar',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
               onTap: () {
                 // Aksi ketika "Keluar" ditekan
-                _logout(context); // Memanggil fungsi _logout
+                _showLogoutConfirmationDialog(context); // Menampilkan dialog konfirmasi
               },
             ),
           ],
@@ -82,8 +81,55 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  // Fungsi untuk menampilkan dialog konfirmasi
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF0D47A1), // Warna latar biru sesuai gambar
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Apakah anda ingin keluar?',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Menutup dialog
+                      _logout(context); // Panggil fungsi logout jika "Ya" ditekan
+                    },
+                    child: const Text(
+                      'Ya',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Menutup dialog jika "Tidak" ditekan
+                    },
+                    child: const Text(
+                      'Tidak',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Fungsi logout yang mengarahkan ke halaman login
   void _logout(BuildContext context) {
-    // Mengarahkan pengguna ke halaman login dan mencegah kembali ke profil
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
