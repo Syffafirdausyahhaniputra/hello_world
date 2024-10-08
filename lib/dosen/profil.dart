@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
+import 'editProfil.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -56,6 +57,11 @@ class ProfilePage extends StatelessWidget {
               ),
               onTap: () {
                 // Aksi ketika "Edit Profil" ditekan
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfilPage()),
+                );
               },
             ),
             Divider(),
