@@ -92,6 +92,7 @@ class ProfilePage extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 20),
               const Text(
                 'Apakah anda ingin keluar?',
                 style: TextStyle(color: Colors.white, fontSize: 18),
