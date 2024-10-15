@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editprofil.dart';
 import 'datasertif.dart'; 
+import 'rekomendasi.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key); // Menambahkan super.key
@@ -88,6 +90,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 MaterialPageRoute(builder: (context) => const EditProfilPage()),
               );
             }
+             else if (title == 'Rekomendasi') {
+              // Navigasi ke halaman RekomendasiPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RekomendasiPage()), // Navigasi ke RekomendasiPage
+              );
+             }
             else if (title == 'Data Sertifikasi/Pelatihan') {
               Navigator.push(
                 context,
