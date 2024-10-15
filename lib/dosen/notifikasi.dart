@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import file header.dart
+import 'deskripsiNotifikasi.dart'; // Import deskripsiNotifikasi.dart
 
 class NotificationPage extends StatelessWidget {
   @override
@@ -35,18 +36,27 @@ class NotificationPage extends StatelessWidget {
                 children: [
                   _buildTableHeader(), // Header Tabel
                   _buildTableRow(
+                    context: context, // Pass context for navigation
                     title: 'AWS Certified Solutions Architect',
                     category: 'Cloud Computing',
                     status: 'Diterima',
                     statusColor: Colors.green,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DeskripsiNotifikasiPage()),
+                      );
+                    },
                   ),
                   _buildTableRow(
+                    context: context,
                     title: 'AWS Certified Solutions Architect',
                     category: 'Cloud Computing',
                     status: 'Proses',
                     statusColor: Colors.grey,
                   ),
                   _buildTableRow(
+                    context: context,
                     title: 'AWS Certified Solutions Architect',
                     category: 'Cloud Computing',
                     status: 'Ditolak',
@@ -94,10 +104,12 @@ class NotificationPage extends StatelessWidget {
   }
 
   TableRow _buildTableRow({
+    required BuildContext context, // Include context parameter
     required String title,
     required String category,
     required String status,
     required Color statusColor,
+    VoidCallback? onTap, // Add onTap parameter
   }) {
     return TableRow(
       children: [
@@ -111,18 +123,21 @@ class NotificationPage extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: statusColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              status,
-              style: TextStyle(
-                color: Colors.white,
+          child: GestureDetector(
+            onTap: status == 'Diterima' ? onTap : null, // Handle tap for 'Diterima'
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: BorderRadius.circular(8),
               ),
-              textAlign: TextAlign.center,
+              child: Text(
+                status,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
