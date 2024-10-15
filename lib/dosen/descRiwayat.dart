@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import file header.dart
+import 'inputRiwayat.dart'; // Import the inputRiwayat.dart page
 
 class DescRiwayat extends StatelessWidget {
   @override
@@ -119,7 +120,13 @@ class DescRiwayat extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Tambahkan aksi saat tombol "PROGRES" ditekan
+                    // Navigasi ke halaman inputRiwayat.dart saat tombol PROGRES ditekan
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => InputHasilPage(), // Ensure this page exists
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,

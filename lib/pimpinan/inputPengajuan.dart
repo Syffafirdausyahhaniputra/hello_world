@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'notifikasiPengajuan.dart'; // Import halaman notifikasi
 
-class InputHasilPage extends StatelessWidget {
-  const InputHasilPage({Key? key}) : super(key: key);
+class PengajuanPage extends StatelessWidget {
+  const PengajuanPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class InputHasilPage extends StatelessWidget {
               const SizedBox(height: 20),
               Center(
                 child: Text(
-                  'INPUT HASIL',
+                  'PENGAJUAN',
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -32,7 +33,7 @@ class InputHasilPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              const InputHasilForm(),
+              const PengajuanForm(),
             ],
           ),
         ),
@@ -42,19 +43,22 @@ class InputHasilPage extends StatelessWidget {
   }
 }
 
-class InputHasilForm extends StatefulWidget {
-  const InputHasilForm({Key? key}) : super(key: key);
+class PengajuanForm extends StatefulWidget {
+  const PengajuanForm({Key? key}) : super(key: key);
 
   @override
-  _InputHasilFormState createState() => _InputHasilFormState();
+  _PengajuanFormState createState() => _PengajuanFormState();
 }
 
-class _InputHasilFormState extends State<InputHasilForm> {
-  final TextEditingController _tanggalAcaraController = TextEditingController();
+class _PengajuanFormState extends State<PengajuanForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nipController = TextEditingController();
+  String? _selectedBidang;
 
   @override
   void dispose() {
-    _tanggalAcaraController.dispose();
+    _nameController.dispose();
+    _nipController.dispose();
     super.dispose();
   }
 
@@ -64,7 +68,7 @@ class _InputHasilFormState extends State<InputHasilForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Tanggal Acara',
+          'Nama Dosen',
           style: GoogleFonts.montserrat(
             color: Colors.white,
             fontSize: 16,
@@ -78,18 +82,17 @@ class _InputHasilFormState extends State<InputHasilForm> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: TextField(
-            controller: _tanggalAcaraController,
+            controller: _nameController,
             decoration: const InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 20),
               border: InputBorder.none,
-              suffixIcon: Icon(Icons.calendar_today),
             ),
           ),
         ),
         const SizedBox(height: 16),
 
         Text(
-          'Unggah Dokumen',
+          'NIP',
           style: GoogleFonts.montserrat(
             color: Colors.white,
             fontSize: 16,
@@ -97,25 +100,53 @@ class _InputHasilFormState extends State<InputHasilForm> {
         ),
         const SizedBox(height: 8),
         Container(
-          height: 100,
+          height: 50,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.cloud_upload, size: 40, color: Colors.grey[400]),
-                const SizedBox(height: 8),
-                Text(
-                  'Unggah dokumen di sini',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+          child: TextField(
+            controller: _nipController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20),
+              border: InputBorder.none,
+              // suffixIcon: Icon(Icons.calendar_today),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        Text(
+          'Bidang',
+          style: GoogleFonts.montserrat(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: DropdownButtonFormField<String>(
+            value: _selectedBidang,
+            onChanged: (newValue) {
+              setState(() {
+                _selectedBidang = newValue;
+              });
+            },
+            items: <String>['Bidang 1', 'Bidang 2', 'Bidang 3']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20),
+              border: InputBorder.none,
             ),
           ),
         ),
@@ -131,7 +162,13 @@ class _InputHasilFormState extends State<InputHasilForm> {
               minimumSize: const Size(120, 40),
             ),
             onPressed: () {
-              // Implement submission logic here
+              // Navigasi ke halaman notifikasi
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationPage(),
+                ),
+              );
             },
             child: Text(
               'KIRIM',
@@ -146,4 +183,8 @@ class _InputHasilFormState extends State<InputHasilForm> {
       ],
     );
   }
+}
+
+class notifikasiPengajuan {
+  const notifikasiPengajuan();
 }

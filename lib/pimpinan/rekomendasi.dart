@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../header.dart'; // Pastikan header.dart sudah ada
-import 'profil.dart'; // Pastikan descRekom.dart sudah ada
+import 'package:hello_world/pimpinan/descRekomendasi.dart';
+import '../header.dart'; // Pastikan header.dart sudah ada\
 
 class RekomendasiPage extends StatelessWidget {
   @override
@@ -118,7 +118,7 @@ class RekomendasiPage extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ProfilePage()), // Pastikan DescRekomPage diimpor
+              builder: (context) => DescRekomPage()), // Pastikan DescRekomPage diimpor
         );
       },
       child: Container(
