@@ -76,7 +76,7 @@ class _PengajuanFormState extends State<PengajuanForm> {
         ),
         const SizedBox(height: 8),
         Container(
-          height: 50,
+          height: 45,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -110,7 +110,7 @@ class _PengajuanFormState extends State<PengajuanForm> {
             decoration: const InputDecoration(
               contentPadding: EdgeInsets.symmetric(horizontal: 20),
               border: InputBorder.none,
-              suffixIcon: Icon(Icons.calendar_today),
+              // suffixIcon: Icon(Icons.calendar_today),
             ),
           ),
         ),
