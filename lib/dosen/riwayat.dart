@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'descRiwayat.dart'; // Make sure to import this file
+import '../header.dart'; // Import file header.dart
 
 class HistoryPage extends StatelessWidget {
   @override
@@ -14,6 +14,7 @@ class HistoryPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Header(userName: 'Zulfa Ulinnuha'), // Gunakan Header dari header.dart
               SizedBox(height: height * 0.01),
               Text(
                 'Riwayat',
@@ -34,26 +35,20 @@ class HistoryPage extends StatelessWidget {
               ),
               SizedBox(height: height * 0.03),
               _buildCertificationItem(
-                context,
                 title: 'AWS Certified Solutions Architect',
                 subtitle: 'Cloud Computing',
                 status: 'PROSES',
-                description:
-                    'Online proctoring allows you to take an exam from your private space with remote monitoring...',
                 width: width * 0.9,
               ),
               SizedBox(height: height * 0.02),
               _buildCertificationItem(
-                context,
                 title: 'AWS Certified Solutions Architect',
                 subtitle: 'Cloud Computing',
                 status: 'SELESAI',
-                description:
-                    'This certification validates your ability to design distributed systems and apps on AWS...',
                 width: width * 0.9,
               ),
               SizedBox(height: height * 0.02),
-              // Add more items if necessary
+              // Tambahkan lebih banyak item jika perlu
             ],
           ),
         ),
@@ -61,69 +56,53 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCertificationItem(
-    BuildContext context, {
+  Widget _buildCertificationItem({
     required String title,
     required String subtitle,
     required String status,
-    required String description,
     required double width,
   }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DescRiwayat(
-              title: title,
-              subtitle: subtitle,
-              description: description,
-            ),
-          ),
-        );
-      },
-      child: Container(
-        width: width,
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Color(0xFF0D47A1),
-            width: 5,
-          ),
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color(0xFF0D47A1),
+          width: 5,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
-            Text(
-              subtitle,
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: Colors.black54,
+              fontSize: 14,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              status,
               style: TextStyle(
-                color: Colors.black54,
+                color: status == 'SELESAI' ? Colors.green : Colors.orange,
                 fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                status,
-                style: TextStyle(
-                  color: status == 'SELESAI' ? Colors.green : Colors.orange,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
