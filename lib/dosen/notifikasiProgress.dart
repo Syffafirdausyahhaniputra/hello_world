@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // Import halaman tujuan (descRekom.dart)
-import 'descRekom.dart';  // Ganti dengan path yang sesuai
+import 'descRiwayat.dart';  // Ganti dengan path yang sesuai
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class NotificationPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'PENGAJUAN BERHASIL DIKIRIM',
+                'PROGRES TELAH BERHASIL DIINPUT',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -48,7 +48,7 @@ class NotificationPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DescRekomPage(), // Pastikan kelas ini ada di descRekom.dart
+                      builder: (context) => DescRiwayat(), // Pastikan kelas ini ada di descRekom.dart
                     ),
                   );
                 },
