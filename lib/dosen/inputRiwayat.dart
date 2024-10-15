@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'notifikasiProgress.dart'; // Import halaman notifikasiProgress.dart
 
 class InputHasilPage extends StatelessWidget {
   const InputHasilPage({Key? key}) : super(key: key);
@@ -131,7 +132,13 @@ class _InputHasilFormState extends State<InputHasilForm> {
               minimumSize: const Size(120, 40),
             ),
             onPressed: () {
-              // Implement submission logic here
+              // Navigasi ke halaman notifikasiProgress.dart saat tombol KIRIM ditekan
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationPage(), // Pastikan kelas ini ada di notifikasiProgress.dart
+                ),
+              );
             },
             child: Text(
               'KIRIM',
