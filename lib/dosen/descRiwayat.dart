@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/dosen/inputRiwayat.dart';
 import '../header.dart'; // Import file header.dart
 import 'notifikasiProgress.dart'; // Import halaman notifikasiProgress.dart
 
@@ -124,7 +125,7 @@ class DescRiwayat extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NotificationPage(), // Pastikan kelas ini ada di notifikasiProgress.dart
+                        builder: (context) => const InputHasilPage(), // Pastikan kelas ini ada di notifikasiProgress.dart
                       ),
                     );
                   },
