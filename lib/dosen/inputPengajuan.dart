@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'notifikasiPengajuan.dart'; // Import halaman notifikasi
 
 class PengajuanPage extends StatelessWidget {
   const PengajuanPage({Key? key}) : super(key: key);
@@ -161,7 +162,13 @@ class _PengajuanFormState extends State<PengajuanForm> {
               minimumSize: const Size(120, 40),
             ),
             onPressed: () {
-              // Implement submission logic here
+              // Navigasi ke halaman notifikasi
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationPage(),
+                ),
+              );
             },
             child: Text(
               'KIRIM',
@@ -176,4 +183,8 @@ class _PengajuanFormState extends State<PengajuanForm> {
       ],
     );
   }
+}
+
+class notifikasiPengajuan {
+  const notifikasiPengajuan();
 }
