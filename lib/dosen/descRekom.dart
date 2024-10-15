@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import the Header component
+import 'inputPengajuan.dart'; // Import halaman InputPengajuan
 
 class DescRekomPage extends StatelessWidget {
   @override
@@ -139,7 +140,13 @@ class DescRekomPage extends StatelessWidget {
       alignment: Alignment.centerRight, // Posisi tombol di sebelah kanan
       child: GestureDetector(
         onTap: () {
-          // Handle ajukan button press
+          // Navigasi ke halaman inputPengajuan.dart saat tombol ditekan
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PengajuanPage(), // Pastikan halaman InputPengajuanPage diimpor
+            ),
+          );
         },
         child: Container(
           width: width * 0.3, // Sesuaikan lebar tombol
