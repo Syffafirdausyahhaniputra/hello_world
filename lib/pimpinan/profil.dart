@@ -10,8 +10,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedIndex = 3; // Index untuk halaman Profil
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           onTap: () {
             if (isLogout) {
-              _logout(context);
+              _showLogoutConfirmationDialog(context); // Menampilkan dialog konfirmasi
             } else if (title == 'Edit Profil') {
               // Navigasi ke halaman EditProfilPage
               Navigator.push(
@@ -108,7 +106,55 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-
+  
+  // Fungsi untuk menampilkan dialog konfirmasi
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF0D47A1), // Warna latar biru sesuai gambar
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Apakah anda ingin keluar?',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Menutup dialog
+                      _logout(context); // Panggil fungsi logout jika "Ya" ditekan
+                    },
+                    child: const Text(
+                      'Ya',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Menutup dialog jika "Tidak" ditekan
+                    },
+                    child: const Text(
+                      'Tidak',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
   void _logout(BuildContext context) {
     // Mengarahkan pengguna ke halaman login dan mencegah kembali ke profil
     Navigator.pushAndRemoveUntil(

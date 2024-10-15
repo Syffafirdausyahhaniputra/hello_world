@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'deskripsi.dart'; // Pastikan mengimpor halaman DeskripsiPage
 
 class DataSertifPage extends StatelessWidget {
   const DataSertifPage({Key? key}) : super(key: key);
@@ -53,7 +54,14 @@ class DataSertifPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Data                               Sertifikasi dan Pelatihan',
+              'Data',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              'Sertifikasi dan Pelatihan',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -70,10 +78,20 @@ class DataSertifPage extends StatelessWidget {
                   itemCount: 4, // Jumlah sertifikasi yang ditampilkan
                   padding: const EdgeInsets.all(16.0),
                   itemBuilder: (context, index) {
-                    return _buildSertifikasiItem(
-                      'AWS Certified Solutions Architect',
-                      'Cloud Computing',
-                      'Berlaku hingga 19 September 2025',
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DeskripsiPage(), // Navigasi ke halaman DeskripsiPage
+                          ),
+                        );
+                      },
+                      child: _buildSertifikasiItem(
+                        'AWS Certified Solutions Architect',
+                        'Cloud Computing',
+                        'Berlaku hingga 19 September 2025',
+                      ),
                     );
                   },
                 ),
