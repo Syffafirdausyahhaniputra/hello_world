@@ -16,7 +16,7 @@ class EditProfilPage extends StatelessWidget {
                 children: [
                   // Tombol Kembali ke Halaman Profil
                   IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_ios_new),
                     color: Colors.white,
                     onPressed: () {
                       Navigator.pop(context); // Navigasi kembali ke halaman sebelumnya
