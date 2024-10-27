@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../header.dart'; // Pastikan sudah mengimpor file header.dart
+import '../header.dart';
 import 'dataSertif.dart';
-import 'rekomendasi.dart';
-import 'descRekom.dart'; // Tambahkan import untuk descRekom.dart
+import 'sertif.dart';
 
 class Dashboard extends StatelessWidget {
   @override
@@ -27,20 +26,17 @@ class Dashboard extends StatelessWidget {
               ),
             ),
             SizedBox(height: height * 0.05),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildInfoCard(
-                  title: 'Sertifikasi dan Pelatihan',
-                  value: '4',
-                  width: width * 0.8,
-                  borderColor: const Color(0xFF0D47A1),
-                  context: context, 
-                )
-              ],
+            _buildInfoCard(
+              title: 'Sertifikasi dan Pelatihan',
+              value: '4',
+              width: width * 1,
+              borderColor: const Color(0xFF0D47A1),
+              context: context,
             ),
             SizedBox(height: height * 0.05),
-            _buildRecommendationSection(width, height, context),
+            _buildSection('Sertifikasi', context, width, height),
+            SizedBox(height: height * 0.02),
+            _buildSection('Pelatihan', context, width, height),
           ],
         ),
       ),
@@ -95,92 +91,105 @@ class Dashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationSection(double width, double height, BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none, 
+  Widget _buildSection(String title, BuildContext context, double width, double height) {
+  return Center(
+    child: Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 20),
+          width: width * 0.9,
+          margin: const EdgeInsets.only(top: 30),
+          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
           decoration: BoxDecoration(
             color: const Color(0xFF0D47A1),
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: height * 0.02),
-                _buildRecommendationItem(
-                  title: 'AWS Certified Solutions Architect',
-                  subtitle: 'Cloud Computing',
-                  date: '20 Oktober 2024',
-                  width: width * 0.9,
-                  context: context, // Tambahkan context untuk navigasi
-                ),
-                SizedBox(height: height * 0.02),
-                _buildRecommendationItem(
-                  title: 'AWS Certified Solutions Architect',
-                  subtitle: 'Cloud Computing',
-                  date: '20 Oktober 2024',
-                  width: width * 0.9,
-                  context: context, // Tambahkan context untuk navigasi
-                ),
-                SizedBox(height: height * 0.02),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: _buildMoreButton(width, context),
-                ),
-              ],
-            ),
+          child: Column(
+            children: [
+              _buildRecommendationItem(
+                title: 'AWS Certified Solutions Architect',
+                subtitle: 'Cloud Computing',
+                date: 'Berlaku hingga 19 September 2025',
+                width: width * 0.8,
+                context: context,
+              ),
+              _buildRecommendationItem(
+                title: 'AWS Certified Solutions Architect',
+                subtitle: 'Cloud Computing',
+                date: 'Berlaku hingga 19 September 2025',
+                width: width * 0.8,
+                context: context,
+              ),
+              SizedBox(height: 20),
+            ],
           ),
         ),
         Positioned(
           top: 0,
-          left: 2,
-          right: 2,
+          left: width * 0.1,
+          right: width * 0.1,
           child: Align(
             alignment: Alignment.center,
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 84),
+              padding: EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
                 color: Color(0xFFEFB509),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                'Rekomendasi',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              child: Center(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 10,
+          right: width * 0.05,
+          child: GestureDetector(
+            onTap: () {
+              // Navigasi atau aksi untuk menambahkan sertifikasi baru
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color(0xFFEFB509),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+                size: 24,
               ),
             ),
           ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildRecommendationItem({
     String title = '',
     String subtitle = '',
     String date = '',
     double? width,
-    required BuildContext context, // Tambahkan context untuk navigasi
+    required BuildContext context,
   }) {
-    return GestureDetector( // Bungkus dengan GestureDetector
+    return GestureDetector(
       onTap: () {
-        // Navigasi ke halaman descRekom
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DescRekomPage()), // Panggil halaman DescRekomPage
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => SertifPage()));
       },
       child: Container(
         width: width,
         padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -188,61 +197,29 @@ class Dashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (title.isNotEmpty)
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-            if (subtitle.isNotEmpty)
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 14,
-                ),
-              ),
-            if (date.isNotEmpty)
-              Text(
-                date,
-                style: TextStyle(
-                  color: Colors.black38,
-                  fontSize: 12,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMoreButton(double width, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Navigasi ke halaman rekomendasi
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RekomendasiPage()),
-        );
-      },
-      child: Container(
-        width: width * 0.3,
-        padding: EdgeInsets.symmetric(vertical: 3),
-        decoration: BoxDecoration(
-          color: Color(0xFFEFB509),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-          child: Text(
-            'More',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16,
             ),
-          ),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+              ),
+            ),
+            Text(
+              date,
+              style: TextStyle(
+                color: Colors.black38,
+                fontSize: 12,
+              ),
+            ),
+          ],
         ),
       ),
     );

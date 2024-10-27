@@ -51,13 +51,6 @@ class SertifPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: height * 0.01),
-              Center(
-                child: Image.asset(
-                  'lib/assets/sertif.png', // Mengambil gambar dari folder assets
-                  width: width * 0.7,
-                ),
-              ),
               SizedBox(height: height * 0.02),
               _buildCertificateDetails(width), // Menggabungkan InfoBox dan DescriptionBox
               SizedBox(height: height * 0.02),
