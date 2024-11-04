@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/dosen/dashboard.dart';
-import 'dataSertif.dart';
+import 'package:hello_world/dosen.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -48,7 +47,7 @@ class NotificationPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Dashboard(), // Pastikan kelas ini ada di descRekom.dart
+                      builder: (context) => DosenPage(), // Pastikan kelas ini ada di descRekom.dart
                     ),
                   );
                 },
