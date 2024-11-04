@@ -1,10 +1,31 @@
 import 'package:flutter/material.dart';
 
 class DeskripsiNotifikasiPage extends StatelessWidget {
+  final String status;
+
+  DeskripsiNotifikasiPage({required this.status});
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
+    Color statusColor;
+    String statusText;
+    bool showDownloadButton = false;
+
+    // Menentukan warna dan teks berdasarkan status
+    if (status == 'Diterima') {
+      statusColor = Colors.green;
+      statusText = 'Pengajuan Diterima';
+      showDownloadButton = true;
+    } else if (status == 'Proses') {
+      statusColor = Colors.grey;
+      statusText = 'Pengajuan masih dalam proses';
+    } else {
+      statusColor = Colors.red;
+      statusText = 'Pengajuan ditolak';
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -45,12 +66,12 @@ class DeskripsiNotifikasiPage extends StatelessWidget {
                 width: width,
                 padding: EdgeInsets.symmetric(vertical: 12.0),
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: statusColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
-                    'Pengajuan Diterima',
+                    statusText,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -114,31 +135,32 @@ class DeskripsiNotifikasiPage extends StatelessWidget {
               SizedBox(height: height * 0.03),
 
               // Row with text and download button
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Silahkan unduh surat tugas'),
-                    SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle download action
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.yellow[700], // Button color
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                      child: Text(
-                        'UNDUH',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+              if (showDownloadButton)
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Silahkan unduh surat tugas'),
+                      SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Handle download action
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.yellow[700],
+                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                        child: Text(
+                          'UNDUH',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -146,7 +168,6 @@ class DeskripsiNotifikasiPage extends StatelessWidget {
     );
   }
 
-  // Helper method to build each row in the information table
   Widget _buildTableRow(String title, String content) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -168,10 +189,4 @@ class DeskripsiNotifikasiPage extends StatelessWidget {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: DeskripsiNotifikasiPage(),
-  ));
 }

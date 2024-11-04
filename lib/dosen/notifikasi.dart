@@ -36,7 +36,7 @@ class NotificationPage extends StatelessWidget {
                 children: [
                   _buildTableHeader(), // Header Tabel
                   _buildTableRow(
-                    context: context, // Pass context for navigation
+                    context: context,
                     title: 'AWS Certified Solutions Architect',
                     category: 'Cloud Computing',
                     status: 'Diterima',
@@ -44,7 +44,9 @@ class NotificationPage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DeskripsiNotifikasiPage()),
+                        MaterialPageRoute(
+                          builder: (context) => DeskripsiNotifikasiPage(status: 'Diterima'),
+                        ),
                       );
                     },
                   ),
@@ -54,6 +56,14 @@ class NotificationPage extends StatelessWidget {
                     category: 'Cloud Computing',
                     status: 'Proses',
                     statusColor: Colors.grey,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeskripsiNotifikasiPage(status: 'Proses'),
+                        ),
+                      );
+                    },
                   ),
                   _buildTableRow(
                     context: context,
@@ -61,8 +71,15 @@ class NotificationPage extends StatelessWidget {
                     category: 'Cloud Computing',
                     status: 'Ditolak',
                     statusColor: Colors.red,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeskripsiNotifikasiPage(status: 'Ditolak'),
+                        ),
+                      );
+                    },
                   ),
-                  // Tambahkan lebih banyak baris jika perlu
                 ],
               ),
             ],
@@ -75,7 +92,7 @@ class NotificationPage extends StatelessWidget {
   TableRow _buildTableHeader() {
     return TableRow(
       decoration: BoxDecoration(
-        color: Colors.grey.shade200, // Warna latar belakang header
+        color: Colors.grey.shade200,
       ),
       children: [
         Padding(
@@ -104,12 +121,12 @@ class NotificationPage extends StatelessWidget {
   }
 
   TableRow _buildTableRow({
-    required BuildContext context, // Include context parameter
+    required BuildContext context,
     required String title,
     required String category,
     required String status,
     required Color statusColor,
-    VoidCallback? onTap, // Add onTap parameter
+    VoidCallback? onTap,
   }) {
     return TableRow(
       children: [
@@ -124,7 +141,7 @@ class NotificationPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
-            onTap: status == 'Diterima' ? onTap : null, // Handle tap for 'Diterima'
+            onTap: status == 'Diterima' || status == 'Proses' || status == 'Ditolak' ? onTap : null,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
