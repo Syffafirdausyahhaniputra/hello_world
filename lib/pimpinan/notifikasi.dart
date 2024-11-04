@@ -1,7 +1,11 @@
+
 import 'package:flutter/material.dart';
 import '../header.dart'; // Import file header.dart
+import 'verifikasiPengajuan.dart'; // Import halaman verifikasiPengajuan.dart
 
 class NotificationPage extends StatelessWidget {
+  const NotificationPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -13,9 +17,9 @@ class NotificationPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Header(userName: 'Zulfa Ulinnuha'), // Menggunakan header dari header.dart
+              const Header(userName: 'Zulfa Ulinnuha'), // Menggunakan header dari header.dart
               SizedBox(height: height * 0.01),
-              Text(
+              const Text(
                 'Notifikasi',
                 style: TextStyle(
                   color: Colors.black,
@@ -27,7 +31,7 @@ class NotificationPage extends StatelessWidget {
               // Membuat Tabel
               Table(
                 border: TableBorder.all(color: Colors.grey),
-                columnWidths: {
+                columnWidths: const {
                   0: FlexColumnWidth(3),
                   1: FlexColumnWidth(2),
                   2: FlexColumnWidth(2),
@@ -35,20 +39,23 @@ class NotificationPage extends StatelessWidget {
                 children: [
                   _buildTableHeader(), // Header Tabel
                   _buildTableRow(
+                    context,
                     title: 'AWS Certified Solutions Architect',
-                    category: 'Cloud Computing',
+                    category: 'Pengajuan',
                     status: 'Diterima',
                     statusColor: Colors.green,
                   ),
                   _buildTableRow(
+                    context,
                     title: 'AWS Certified Solutions Architect',
-                    category: 'Cloud Computing',
+                    category: 'Verifikasi',
                     status: 'Proses',
                     statusColor: Colors.grey,
                   ),
                   _buildTableRow(
+                    context,
                     title: 'AWS Certified Solutions Architect',
-                    category: 'Cloud Computing',
+                    category: 'Penunjukan',
                     status: 'Ditolak',
                     statusColor: Colors.red,
                   ),
@@ -67,23 +74,23 @@ class NotificationPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.grey.shade200, // Warna latar belakang header
       ),
-      children: [
+      children: const [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Text(
             'Nama',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Text(
-            'Kategori',
+            'Keterangan',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Text(
             'Status',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -93,7 +100,8 @@ class NotificationPage extends StatelessWidget {
     );
   }
 
-  TableRow _buildTableRow({
+  TableRow _buildTableRow(
+    BuildContext context, {
     required String title,
     required String category,
     required String status,
@@ -101,9 +109,24 @@ class NotificationPage extends StatelessWidget {
   }) {
     return TableRow(
       children: [
+        // Buat teks bisa diklik menggunakan GestureDetector
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(title),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VerifikasiPengajuanPage()), // Periksa apakah kelas sudah sesuai
+              );
+            },
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.blue, // Warna teks biru sebagai indikasi bisa diklik
+                decoration: TextDecoration.underline, // Garis bawah sebagai indikasi bisa diklik
+              ),
+            ),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -112,14 +135,14 @@ class NotificationPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: statusColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               status,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
               textAlign: TextAlign.center,
