@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'descRiwayat.dart';
 
 class RiwayatPage extends StatefulWidget {
-  const RiwayatPage({Key? key}) : super(key: key);
+  const RiwayatPage({super.key});
 
   @override
   _RiwayatPageState createState() => _RiwayatPageState();
@@ -14,9 +16,9 @@ class _RiwayatPageState extends State<RiwayatPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: const [
+          children: [
             Text(
               'Zulfa Ulinnuha',
               style: TextStyle(
@@ -110,49 +112,66 @@ class _RiwayatPageState extends State<RiwayatPage> {
   }
 
   // Widget untuk item riwayat individual
+  // riwayat.dart
+// Widget untuk item riwayat individual
   Widget _buildRiwayatItem({
     required String title,
     required String category,
     required String status,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                category,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
-          ),
-          Text(
-            status,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: status == "SELESAI" ? Colors.green : Colors.orange,
+    return InkWell(
+      onTap: () {
+        // Navigasi ke halaman deskripsi
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DescRiwayat(
+              title: title, // Kirim title
+              category: category, // Kirim category
+              status: status, // Kirim status
             ),
           ),
-        ],
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  category,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              status,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: status == "SELESAI" ? Colors.green : Colors.orange,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

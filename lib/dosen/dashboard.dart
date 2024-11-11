@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'inputData.dart';
 import '../header.dart';
 import 'dataSertif.dart';
 import 'sertif.dart';
@@ -48,14 +49,14 @@ class Dashboard extends StatelessWidget {
     required String value,
     required double width,
     required Color borderColor,
-    required BuildContext context, 
+    required BuildContext context,
   }) {
     return GestureDetector(
       onTap: () {
         // Navigasi ke halaman DataSertif
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DataSertifPage()), 
+          MaterialPageRoute(builder: (context) => DataSertifPage()),
         );
       },
       child: Container(
@@ -91,89 +92,92 @@ class Dashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, BuildContext context, double width, double height) {
-  return Center(
-    child: Stack(
-      children: [
-        Container(
-          width: width * 0.9,
-          margin: const EdgeInsets.only(top: 30),
-          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0D47A1),
-            borderRadius: BorderRadius.circular(15),
+  Widget _buildSection(
+      String title, BuildContext context, double width, double height) {
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            width: width * 0.9,
+            margin: const EdgeInsets.only(top: 30),
+            padding:
+                const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D47A1),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              children: [
+                _buildRecommendationItem(
+                  title: 'AWS Certified Solutions Architect',
+                  subtitle: 'Cloud Computing',
+                  date: 'Berlaku hingga 19 September 2025',
+                  width: width * 0.8,
+                  context: context,
+                ),
+                _buildRecommendationItem(
+                  title: 'AWS Certified Solutions Architect',
+                  subtitle: 'Cloud Computing',
+                  date: 'Berlaku hingga 19 September 2025',
+                  width: width * 0.8,
+                  context: context,
+                ),
+                SizedBox(height: 20),
+              ],
+            ),
           ),
-          child: Column(
-            children: [
-              _buildRecommendationItem(
-                title: 'AWS Certified Solutions Architect',
-                subtitle: 'Cloud Computing',
-                date: 'Berlaku hingga 19 September 2025',
-                width: width * 0.8,
-                context: context,
-              ),
-              _buildRecommendationItem(
-                title: 'AWS Certified Solutions Architect',
-                subtitle: 'Cloud Computing',
-                date: 'Berlaku hingga 19 September 2025',
-                width: width * 0.8,
-                context: context,
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: width * 0.1,
-          right: width * 0.1,
-          child: Align(
-            alignment: Alignment.center,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: Color(0xFFEFB509),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+          Positioned(
+            top: 0,
+            left: width * 0.1,
+            right: width * 0.1,
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(0xFFEFB509),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 10,
-          right: width * 0.05,
-          child: GestureDetector(
-            onTap: () {
-              // Navigasi atau aksi untuk menambahkan sertifikasi baru
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Color(0xFFEFB509),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
-                size: 24,
+          Positioned(
+            bottom: 10,
+            right: width * 0.05,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => InputDataPage()));
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color(0xFFEFB509),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                  size: 24,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildRecommendationItem({
     String title = '',
@@ -184,7 +188,8 @@ class Dashboard extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SertifPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SertifPage()));
       },
       child: Container(
         width: width,
