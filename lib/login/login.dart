@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
-import '../dosen.dart'; // Impor halaman dosen
-import '../pimpinan.dart'; // Impor halaman pimpinan
+import 'package:dio/dio.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../config.dart'; // Import file konfigurasi
+import '../dosen.dart';
+import '../pimpinan.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -31,32 +33,58 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  // Controller untuk input username dan password
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final Dio _dio = Dio();
 
   // Fungsi untuk melakukan login
-  void _login(BuildContext context) {
+  Future<void> _login(BuildContext context) async {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    // Cek apakah username dan password sesuai untuk dosen atau pimpinan
-    if (username == 'dosen' && password == '12345') {
-      // Jika sesuai, navigasi ke halaman dosen
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const DosenPage()),
+    try {
+      // Mengirim POST request ke API menggunakan URL dari Config
+      Response response = await _dio.post(
+        Config.loginEndpoint,
+        data: {
+          'username': username,
+          'password': password,
+        },
       );
-    } else if (username == 'pimpinan' && password == '54321') {
-      // Jika sesuai, navigasi ke halaman pimpinan
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PimpinanPage()),
-      );
-    } else {
-      // Jika tidak sesuai, tampilkan pesan error
+
+      // Cek status respons
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        String token = response.data['token'];
+        int roleId = response.data['user']['role_id'];
+
+        // Navigasi berdasarkan role_id
+        if (roleId == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const PimpinanPage()),
+          );
+        } else if (roleId == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DosenPage()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Role tidak valid')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Username atau password salah')),
+        );
+      }
+    } on DioError catch (e) {
+      String errorMessage = 'Terjadi kesalahan saat login';
+      if (e.response != null && e.response?.statusCode == 401) {
+        errorMessage = 'Username atau password salah';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
+        SnackBar(content: Text(errorMessage)),
       );
     }
   }
@@ -76,11 +104,10 @@ class _LoginFormState extends State<LoginForm> {
           style: GoogleFonts.poppins(
             color: Colors.black,
             fontSize: 40,
-            letterSpacing: -0.90,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: screenHeight * 0.03), // Menyesuaikan tinggi jarak
+        SizedBox(height: screenHeight * 0.03),
         Container(
           width: screenWidth * 0.85,
           padding: const EdgeInsets.all(20.0),
@@ -99,14 +126,12 @@ class _LoginFormState extends State<LoginForm> {
                   style: GoogleFonts.montserrat(
                     color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.38,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               Container(
-                height: 50, // Meningkatkan tinggi untuk input
+                height: 50,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -114,7 +139,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     border: InputBorder.none,
                   ),
                 ),
@@ -127,14 +152,12 @@ class _LoginFormState extends State<LoginForm> {
                   style: GoogleFonts.montserrat(
                     color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.38,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
               Container(
-                height: 50, // Meningkatkan tinggi untuk input
+                height: 50,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -143,7 +166,7 @@ class _LoginFormState extends State<LoginForm> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
                     border: InputBorder.none,
                   ),
                 ),
@@ -158,7 +181,7 @@ class _LoginFormState extends State<LoginForm> {
                   minimumSize: const Size(100, 40),
                 ),
                 onPressed: () {
-                  _login(context); // Panggil fungsi login saat tombol ditekan
+                  _login(context);
                 },
                 child: Text(
                   'KIRIM',
