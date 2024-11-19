@@ -1,47 +1,103 @@
 import 'package:flutter/material.dart';
-import 'inputData.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
+import '../Controller/DashboardController.dart';
+import '../Model/DataSertifikasiModel.dart';
+import '../Model/DataPelatihanModel.dart';
 import '../header.dart';
+import 'inputData.dart';
 import 'dataSertif.dart';
 import 'sertif.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
+  final String token;
+
+  Dashboard({required this.token});
+
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  String userName = 'Loading...';
+  int jumlahSertifikasiPelatihan = 0;
+  List<DataSertifikasiModel> sertifikasiList = [];
+  List<DataPelatihanModel> pelatihanList = [];
+  bool isLoading = true;
+
+  @override
+void initState() {
+  super.initState();
+  _loadDashboardData();
+}
+
+Future<void> _loadDashboardData() async {
+  try {
+    // Ambil token dari SharedPreferences jika diperlukan
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token') ?? widget.token;
+
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+
+    final data = await DashboardController.getDashboardData(token);
+
+    setState(() {
+      userName = data['user'].nama;
+      jumlahSertifikasiPelatihan = data['jumlahSertifikasiPelatihan'];
+      sertifikasiList = data['sertifikasi'];
+      pelatihanList = data['pelatihan'];
+      isLoading = false;
+    });
+  } catch (e) {
+    print('Error loading dashboard data: $e');
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Header(userName: 'Zulfa Ulinnuha'),
-            SizedBox(height: height * 0.01),
-            Text(
-              'Selamat Datang',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Header(userName: userName),
+                  SizedBox(height: height * 0.01),
+                  Text(
+                    'Selamat Datang',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: height * 0.05),
+                  _buildInfoCard(
+                    title: 'Sertifikasi dan Pelatihan',
+                    value: jumlahSertifikasiPelatihan.toString(),
+                    width: width * 1,
+                    borderColor: const Color(0xFF0D47A1),
+                    context: context,
+                  ),
+                  SizedBox(height: height * 0.05),
+                  _buildSection('Sertifikasi', context, width, height,
+                      dataList: sertifikasiList, isSertifikasi: true),
+                  SizedBox(height: height * 0.02),
+                  _buildSection('Pelatihan', context, width, height,
+                      dataList: pelatihanList, isSertifikasi: false),
+                ],
               ),
             ),
-            SizedBox(height: height * 0.05),
-            _buildInfoCard(
-              title: 'Sertifikasi dan Pelatihan',
-              value: '4',
-              width: width * 1,
-              borderColor: const Color(0xFF0D47A1),
-              context: context,
-            ),
-            SizedBox(height: height * 0.05),
-            _buildSection('Sertifikasi', context, width, height),
-            SizedBox(height: height * 0.02),
-            _buildSection('Pelatihan', context, width, height),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildInfoCard({
@@ -53,7 +109,6 @@ class Dashboard extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        // Navigasi ke halaman DataSertif
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => DataSertifPage()),
@@ -93,37 +148,42 @@ class Dashboard extends StatelessWidget {
   }
 
   Widget _buildSection(
-      String title, BuildContext context, double width, double height) {
-    return Center(
+  String title,
+  BuildContext context,
+  double width,
+  double height, {
+  required List<dynamic> dataList,
+  required bool isSertifikasi,
+}) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal, // Atur agar scroll horizontal
+    child: Center(
       child: Stack(
         children: [
           Container(
             width: width * 0.9,
             margin: const EdgeInsets.only(top: 30),
-            padding:
-                const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
             decoration: BoxDecoration(
               color: const Color(0xFF0D47A1),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Column(
-              children: [
-                _buildRecommendationItem(
-                  title: 'AWS Certified Solutions Architect',
-                  subtitle: 'Cloud Computing',
-                  date: 'Berlaku hingga 19 September 2025',
+              children: dataList.map((data) {
+                return _buildRecommendationItem(
+                  title: isSertifikasi
+                      ? (data as DataSertifikasiModel).namaSertifikasi
+                      : (data as DataPelatihanModel).namaPelatihan,
+                  subtitle: isSertifikasi
+                      ? (data as DataSertifikasiModel).bidangSertifikasi
+                      : (data as DataPelatihanModel).bidangPelatihan,
+                  date: isSertifikasi
+                      ? (data as DataSertifikasiModel).masaBerlaku
+                      : (data as DataPelatihanModel).masaBerlaku,
                   width: width * 0.8,
                   context: context,
-                ),
-                _buildRecommendationItem(
-                  title: 'AWS Certified Solutions Architect',
-                  subtitle: 'Cloud Computing',
-                  date: 'Berlaku hingga 19 September 2025',
-                  width: width * 0.8,
-                  context: context,
-                ),
-                SizedBox(height: 20),
-              ],
+                );
+              }).toList(),
             ),
           ),
           Positioned(
@@ -151,33 +211,12 @@ class Dashboard extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            bottom: 10,
-            right: width * 0.05,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InputDataPage()));
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEFB509),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.black,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildRecommendationItem({
     String title = '',

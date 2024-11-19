@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'bottombar.dart'; // Pastikan sudah benar
 import 'dosen/dashboard.dart'; // Import file dashboard.dart (Dashboard)
-import 'dosen/riwayat.dart'; // Import file riwayat.dart (AssignmentPage)
+import 'dosen/riwayat.dart'; // Import file riwayat.dart (HistoryPage)
 import 'dosen/notifikasi.dart'; // Import file notifikasi.dart (NotificationPage)
 import 'dosen/profil.dart'; // Import file profil.dart (ProfilePage)
 
 class DosenPage extends StatefulWidget {
-  const DosenPage({super.key});
+  final String token; // Tambahkan parameter token
+
+  const DosenPage({super.key, required this.token});
 
   @override
   _DosenPageState createState() => _DosenPageState();
@@ -15,12 +17,20 @@ class DosenPage extends StatefulWidget {
 class _DosenPageState extends State<DosenPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    Dashboard(), // Nama kelas Dashboard sudah sesuai dengan kelas di dashboard.dart
-    HistoryPage(), // Pastikan nama ini benar di riwayat.dart
-    NotificationPage(), // Pastikan nama ini benar di notifikasi.dart
-    ProfilePage(), // Pastikan nama ini benar di profil.dart
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Inisialisasi halaman dengan token
+    _pages = [
+      Dashboard(token: widget.token), // Pass token ke Dashboard
+      HistoryPage(),
+      NotificationPage(),
+      ProfilePage(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

@@ -47,7 +47,7 @@ class NotificationPage extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DosenPage(), // Pastikan kelas ini ada di descRekom.dart
+                      builder: (context) => DosenPage(token: 'your-auth-token'), // Pastikan kelas ini ada di descRekom.dart
                     ),
                   );
                 },

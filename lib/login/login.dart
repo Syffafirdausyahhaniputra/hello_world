@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../config.dart'; // Import file konfigurasi
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config.dart';
+import '../Controller/LoginController.dart'; // Import LoginController
 import '../dosen.dart';
 import '../pimpinan.dart';
 
@@ -35,56 +36,51 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final Dio _dio = Dio();
+  final LoginController _loginController = LoginController(Config.baseUrl);
 
-  // Fungsi untuk melakukan login
-  Future<void> _login(BuildContext context) async {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+  Future<void> _handleLogin(BuildContext context) async {
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
 
-    try {
-      // Mengirim POST request ke API menggunakan URL dari Config
-      Response response = await _dio.post(
-        Config.loginEndpoint,
-        data: {
-          'username': username,
-          'password': password,
-        },
+    // Validasi input kosong
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Username dan password wajib diisi')),
       );
+      return;
+    }
 
-      // Cek status respons
-      if (response.statusCode == 200 && response.data['success'] == true) {
-        String token = response.data['token'];
-        int roleId = response.data['user']['role_id'];
+    // Panggil metode login dari LoginController
+    final result = await _loginController.login(username, password);
 
-        // Navigasi berdasarkan role_id
-        if (roleId == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PimpinanPage()),
-          );
-        } else if (roleId == 3) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const DosenPage()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Role tidak valid')),
-          );
-        }
+    if (result['success']) {
+      // Simpan token di SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', result['data']['token']);
+
+      int roleId = result['data']['user']['role_id'];
+      // Navigasi berdasarkan role_id
+      if (roleId == 2) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PimpinanPage()),
+        );
+      } else if (roleId == 3) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DosenPage(token: result['data']['token']),
+          ),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Username atau password salah')),
+          const SnackBar(content: Text('Role tidak valid')),
         );
       }
-    } on DioError catch (e) {
-      String errorMessage = 'Terjadi kesalahan saat login';
-      if (e.response != null && e.response?.statusCode == 401) {
-        errorMessage = 'Username atau password salah';
-      }
+    } else {
+      // Tampilkan pesan kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+        SnackBar(content: Text(result['message'] ?? 'Login gagal')),
       );
     }
   }
@@ -181,7 +177,7 @@ class _LoginFormState extends State<LoginForm> {
                   minimumSize: const Size(100, 40),
                 ),
                 onPressed: () {
-                  _login(context);
+                  _handleLogin(context);
                 },
                 child: Text(
                   'KIRIM',
