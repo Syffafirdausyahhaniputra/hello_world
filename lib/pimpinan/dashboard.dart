@@ -1,5 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hello_world/config.dart'; // Impor Config
+import 'package:hello_world/Model/UserModel.dart';
 import 'package:hello_world/pimpinan/dosenbidang.dart';
+import 'package:hello_world/Controller/DashboardController.dart';
+
+
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -9,6 +17,86 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  UserModel? user;
+  int jumlahSertifikasiPelatihan = 0;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboardData();
+  }
+
+    Future<void> _loadDashboardData() async {
+  try {
+    // Mendapatkan token dari SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      throw Exception('Token tidak ditemukan');
+    }
+
+    // Panggil API menggunakan URL dari Config
+    final response = await http.get(
+      Uri.parse(Config.dashboardEndpoint), // Menggunakan Config
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    // Debugging status code
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+
+      if (jsonData['success'] == true) {
+        final data = jsonData['data'];
+
+        // Pastikan data bidang di-handle dengan aman
+        final bidangList = data['bidang'] ?? [];
+        if (bidangList is! List) {
+          throw Exception('Invalid bidang format');
+        }
+
+        // Update state dengan data yang diterima
+        setState(() {
+          user = data['user'] != null
+              ? UserModel(
+                  userId: 0,
+                  roleId: data['user']['role_id'] ?? 0,
+                  username: '',
+                  nama: data['user']['nama'] ?? '-',
+                  nip: '',
+                  avatar: '',
+                )
+              : null;
+
+          jumlahSertifikasiPelatihan = data['jumlahSertifikasiPelatihan'] ?? 0;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Response success is false');
+      }
+    } else {
+      throw Exception(
+          'Failed to load dashboard: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    print('Error loading dashboard data: $e');
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,58 +105,62 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: const [
+          children: [
             Text(
-              'Zulfa Ulinnuha',
-              style: TextStyle(
+              user?.nama ?? 'Loading...',
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: 8),
-            Icon(
+            const SizedBox(width: 8),
+            const Icon(
               Icons.account_circle,
               color: Colors.black,
             ),
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Selamat Datang',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Selamat Datang',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildInfoCard(
+                      jumlahSertifikasiPelatihan.toString(),
+                      'Sertifikasi dan Pelatihan',
+                    ),
+                    const SizedBox(height: 30),
+                    _buildBidangSection(),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              _buildInfoCard('110', 'Sertifikasi dan Pelatihan'), // Merged single card
-              const SizedBox(height: 30),
-              _buildBidangSection(), // Call the updated "Bidang" section
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
-  // Info Card to display certification details
   Widget _buildInfoCard(String value, String label) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white, // Set background color to white
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFF0D47A1), // Border color to match the theme
+          color: const Color(0xFF0D47A1),
           width: 5,
         ),
       ),
@@ -77,9 +169,9 @@ class _DashboardPageState extends State<DashboardPage> {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 50, // Larger font size
+              fontSize: 50,
               fontWeight: FontWeight.bold,
-              color: Colors.black, // Black color for value
+              color: Colors.black,
             ),
           ),
           Text(
@@ -87,7 +179,7 @@ class _DashboardPageState extends State<DashboardPage> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black, // Black color for label
+              color: Colors.black,
             ),
           ),
         ],
@@ -95,36 +187,35 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Build section for "Bidang"
   Widget _buildBidangSection() {
     return Stack(
-      clipBehavior: Clip.none, // To allow text to overflow outside container
+      clipBehavior: Clip.none,
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF0D47A1), // Blue color for container
+            color: const Color(0xFF0D47A1),
             borderRadius: BorderRadius.circular(20),
           ),
           padding: const EdgeInsets.only(top: 30.0, left: 16.0, right: 16.0, bottom: 16.0),
-          child: _buildGridCategories(), // Fill with grid categories
+          child: _buildGridCategories(),
         ),
         Positioned(
-          top: -20, // Place text partially outside container
-          left: 16, // Align to left with padding
-          right: 16, // Maintain same padding for right side
+          top: -20,
+          left: 16,
+          right: 16,
           child: Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 120.0, vertical: 8.0),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFB509), // Yellow color for "Bidang" text background
-                borderRadius: BorderRadius.circular(20), // Round corners
+                color: const Color(0xFFEFB509),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
                 'Bidang',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black, // Text color set to black
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -134,27 +225,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // Grid categories for different areas of expertise
-  Widget _buildGridCategories() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 20,
-      crossAxisSpacing: 20,
-      children: [
-        _buildCategoryCard('Pemrograman', 'lib/assets/progamming.png'),
-        _buildCategoryCard('RPL', 'lib/assets/rpl.png'),
-        _buildCategoryCard('Database', 'lib/assets/database.png'),
-        _buildCategoryCard('Manajemen SI', 'lib/assets/information_management.png'),
-        _buildCategoryCard('Cyber Security', 'lib/assets/cyber_security.png'),
-        _buildCategoryCard('Data Mining', 'lib/assets/data_mining.png'),
-      ],
-    );
-  }
-
-  // Card for individual category
-  Widget _buildCategoryCard(String title, String iconPath) {
+  Widget _buildCategoryCard(String title, String iconPath, BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -166,18 +237,18 @@ class _DashboardPageState extends State<DashboardPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0D47A1), // Blue color for card
+          color: const Color(0xFF0D47A1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 200, // Fixed width for image and text
-              height: 150, // Fixed height for image and text
-              padding: const EdgeInsets.all(1.0), // Padding around image
+              width: 200,
+              height: 150,
+              padding: const EdgeInsets.all(1.0),
               decoration: BoxDecoration(
-                color: Colors.white, // White background for image and text
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -185,16 +256,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   Image.asset(
                     iconPath,
-                    height: 70, // Fixed size for image
+                    height: 70,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     title,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 14, // Fixed font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black, // Text color set to black
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -203,6 +274,24 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildGridCategories() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 20,
+      children: [
+        _buildCategoryCard('Pemrograman', 'lib/assets/progamming.png', context),
+        _buildCategoryCard('RPL', 'lib/assets/rpl.png', context),
+        _buildCategoryCard('Database', 'lib/assets/database.png', context),
+        _buildCategoryCard('Manajemen SI', 'lib/assets/information_management.png', context),
+        _buildCategoryCard('Cyber Security', 'lib/assets/cyber_security.png', context),
+        _buildCategoryCard('Data Mining', 'lib/assets/data_mining.png', context),
+      ],
     );
   }
 }

@@ -24,26 +24,28 @@ class DashboardController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Parsing user
-        final user = UserModel.fromJson(data['data']['user'] ?? {});
+        // Pastikan data user memiliki key 'nama'
+        final user = data['data']['user'] ?? {};
+        final userName = user['nama'] ?? 'Pengguna';
 
-        // Parsing data sertifikasi
+        // Parsing data sertifikasi dan pelatihan
         final sertifikasi = (data['data']['sertifikasi'] as List)
             .map((e) => DataSertifikasiModel.fromJson(e))
             .toList();
 
-        // Parsing data pelatihan
         final pelatihan = (data['data']['pelatihan'] as List)
             .map((e) => DataPelatihanModel.fromJson(e))
             .toList();
 
+        // Parsing jumlah sertifikasi dan pelatihan
         final jumlahSertifikasi = data['data']['jumlahSertifikasi'] ?? 0;
         final jumlahPelatihan = data['data']['jumlahPelatihan'] ?? 0;
         final jumlahSertifikasiPelatihan =
             data['data']['jumlahSertifikasiPelatihan'] ?? 0;
 
+        // Kembalikan data ke dashboard.dart
         return {
-          'user': user,
+          'user': {'nama': userName}, // Hanya mengembalikan nama pengguna
           'jumlahSertifikasi': jumlahSertifikasi,
           'jumlahPelatihan': jumlahPelatihan,
           'jumlahSertifikasiPelatihan': jumlahSertifikasiPelatihan,
@@ -60,3 +62,4 @@ class DashboardController {
     }
   }
 }
+
