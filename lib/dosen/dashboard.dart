@@ -211,6 +211,29 @@ Future<void> _loadDashboardData() async {
               ),
             ),
           ),
+          Positioned(
+            bottom: 10,
+            right: width * 0.05,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => InputDataPage()));
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color(0xFFEFB509),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     ),
