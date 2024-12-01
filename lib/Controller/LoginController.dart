@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:hello_world/config.dart';
 import 'package:http/http.dart' as http;
+import 'package:hello_world/core/sharedPref.dart';
 
 class LoginController {
   final String baseUrl;
@@ -8,7 +10,8 @@ class LoginController {
 
   // Fungsi untuk melakukan login
   Future<Map<String, dynamic>> login(String username, String password) async {
-    final url = Uri.parse('$baseUrl/api/login');
+    final url = Uri.parse(Config.loginEndpoint);
+
     try {
       // Mengirim request POST
       final response = await http.post(
@@ -22,9 +25,14 @@ class LoginController {
         }),
       );
 
+      print(response.body);
+
       // Memproses respons
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        // Menyimpan token ke shared preferences
+        await Sharedpref.saveToken(data['token']);
         return {
           'success': true,
           'data': data,

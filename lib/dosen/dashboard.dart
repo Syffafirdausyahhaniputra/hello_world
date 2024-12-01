@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/core/sharedPref.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
 import '../Controller/DashboardController.dart';
 import '../Model/DataSertifikasiModel.dart';
@@ -25,37 +26,37 @@ class _DashboardState extends State<Dashboard> {
   bool isLoading = true;
 
   @override
-void initState() {
-  super.initState();
-  _loadDashboardData();
-}
-
-Future<void> _loadDashboardData() async {
-  try {
-    // Ambil token dari SharedPreferences jika diperlukan
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token') ?? widget.token;
-
-    if (token == null) {
-      throw Exception('Token is missing');
-    }
-
-    final data = await DashboardController.getDashboardData(token);
-
-    setState(() {
-      userName = data['user'].nama;
-      jumlahSertifikasiPelatihan = data['jumlahSertifikasiPelatihan'];
-      sertifikasiList = data['sertifikasi'];
-      pelatihanList = data['pelatihan'];
-      isLoading = false;
-    });
-  } catch (e) {
-    print('Error loading dashboard data: $e');
-    setState(() {
-      isLoading = false;
-    });
+  void initState() {
+    super.initState();
+    _loadDashboardData();
   }
-}
+
+  Future<void> _loadDashboardData() async {
+    try {
+      // Ambil token dari SharedPreferences jika diperlukan
+      final token = await Sharedpref.getToken();
+
+      if (token == '') {
+        throw Exception('Token is missing');
+      }
+
+      final data = await DashboardController.getDashboardData(token);
+
+      setState(() {
+        userName = data['user']['nama'];
+        jumlahSertifikasiPelatihan = data['jumlahSertifikasiPelatihan'];
+        print(jumlahSertifikasiPelatihan);
+        sertifikasiList = data['sertifikasi'];
+        pelatihanList = data['pelatihan'];
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading dashboard data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,98 +149,98 @@ Future<void> _loadDashboardData() async {
   }
 
   Widget _buildSection(
-  String title,
-  BuildContext context,
-  double width,
-  double height, {
-  required List<dynamic> dataList,
-  required bool isSertifikasi,
-}) {
-  return SingleChildScrollView(
-    scrollDirection: Axis.horizontal, // Atur agar scroll horizontal
-    child: Center(
-      child: Stack(
-        children: [
-          Container(
-            width: width * 0.9,
-            margin: const EdgeInsets.only(top: 30),
-            padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D47A1),
-              borderRadius: BorderRadius.circular(15),
+    String title,
+    BuildContext context,
+    double width,
+    double height, {
+    required List<dynamic> dataList,
+    required bool isSertifikasi,
+  }) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal, // Atur agar scroll horizontal
+      child: Center(
+        child: Stack(
+          children: [
+            Container(
+              width: width * 0.9,
+              margin: const EdgeInsets.only(top: 30),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D47A1),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                children: dataList.map((data) {
+                  return _buildRecommendationItem(
+                    title: isSertifikasi
+                        ? (data as DataSertifikasiModel).namaSertifikasi
+                        : (data as DataPelatihanModel).namaPelatihan,
+                    subtitle: isSertifikasi
+                        ? (data as DataSertifikasiModel).bidangSertifikasi
+                        : (data as DataPelatihanModel).bidangPelatihan,
+                    date: isSertifikasi
+                        ? (data as DataSertifikasiModel).masaBerlaku
+                        : (data as DataPelatihanModel).masaBerlaku,
+                    width: width * 0.8,
+                    context: context,
+                  );
+                }).toList(),
+              ),
             ),
-            child: Column(
-              children: dataList.map((data) {
-                return _buildRecommendationItem(
-                  title: isSertifikasi
-                      ? (data as DataSertifikasiModel).namaSertifikasi
-                      : (data as DataPelatihanModel).namaPelatihan,
-                  subtitle: isSertifikasi
-                      ? (data as DataSertifikasiModel).bidangSertifikasi
-                      : (data as DataPelatihanModel).bidangPelatihan,
-                  date: isSertifikasi
-                      ? (data as DataSertifikasiModel).masaBerlaku
-                      : (data as DataPelatihanModel).masaBerlaku,
-                  width: width * 0.8,
-                  context: context,
-                );
-              }).toList(),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: width * 0.1,
-            right: width * 0.1,
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFEFB509),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Center(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+            Positioned(
+              top: 0,
+              left: width * 0.1,
+              right: width * 0.1,
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEFB509),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 10,
-            right: width * 0.05,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InputDataPage()));
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEFB509),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.black,
-                  size: 24,
+            Positioned(
+              bottom: 10,
+              right: width * 0.05,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => InputDataPage()));
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEFB509),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.black,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildRecommendationItem({
     String title = '',
