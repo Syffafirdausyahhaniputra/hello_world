@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'bottombar.dart'; // Pastikan sudah benar
 import 'pimpinan/dashboard.dart'; // Import file dashboard.dart (Dashboard)
-import 'pimpinan/riwayat.dart'; // Import file riwayat.dart (AssignmentPage)
+import 'pimpinan/kompetensi.dart'; // Import file riwayat.dart (AssignmentPage)
 import 'pimpinan/notifikasi.dart'; // Import file notifikasi.dart (NotificationPage)
 import 'pimpinan/profil.dart'; // Import file profil.dart (ProfilePage)
 
@@ -17,7 +17,7 @@ class _PimpinanPageState extends State<PimpinanPage> {
 
   final List<Widget> _pages = [
     DashboardPage(), // Nama kelas Dashboard sudah sesuai dengan kelas di dashboard.dart
-    RiwayatPage(), // Pastikan nama ini benar di riwayat.dart
+    KompetensiProdiPage(), // Pastikan nama ini benar di riwayat.dart
     NotificationPage(), // Pastikan nama ini benar di notifikasi.dart
     ProfilePage(), // Pastikan nama ini benar di profil.dart
   ];
