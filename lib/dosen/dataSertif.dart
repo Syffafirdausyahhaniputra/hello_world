@@ -149,7 +149,7 @@ class _DataSertifPageState extends State<DataSertifPage> {
                       id: item.id,
                       title: item.namaPelatihan ?? '',
                       subtitle: item.bidangPelatihan ?? '',
-                      date: item.masaBerlaku ?? '',
+                      date: item.tanggal ?? '',
                       width: width * 0.9,
                     ),
                     SizedBox(height: height * 0.02),

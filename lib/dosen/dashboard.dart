@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/core/sharedPref.dart';
+import 'package:hello_world/dosen/pelatihan.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
 import '../Controller/DashboardController.dart';
 import '../Model/DataSertifikasiModel.dart';
@@ -184,10 +185,11 @@ class _DashboardState extends State<Dashboard> {
                         : (data as DataPelatihanModel).bidangPelatihan,
                     date: isSertifikasi
                         ? (data as DataSertifikasiModel).masaBerlaku
-                        : (data as DataPelatihanModel).masaBerlaku,
+                        : (data as DataPelatihanModel).tanggal,
                     id: isSertifikasi
                         ? (data as DataSertifikasiModel).id
                         : (data as DataPelatihanModel).id,
+                    isSertifikasi: isSertifikasi,
                     width: width * 0.8,
                     context: context,
                   );
@@ -254,12 +256,18 @@ class _DashboardState extends State<Dashboard> {
     String date = '',
     required int id,
     double? width,
+    required bool isSertifikasi,
     required BuildContext context,
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => SertifPage(id: id)));
+        if (isSertifikasi) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => SertifPage(id: id)));
+        } else {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PelatihanPage(id: id)));
+        }
       },
       child: Container(
         width: width,

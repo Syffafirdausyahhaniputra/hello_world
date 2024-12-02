@@ -23,4 +23,7 @@ class Config {
 
   static const String detailSertifikasiEndpoint =
       '$baseUrl/api/sertifikasi/show';
+  static const String detailPelatihanEndpoint =
+      '$baseUrl/api/pelatihan/show';
+
 }
