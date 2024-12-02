@@ -164,8 +164,11 @@ class _DashboardState extends State<Dashboard> {
             Container(
               width: width * 0.9,
               margin: const EdgeInsets.only(top: 30),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              padding: const EdgeInsets.only(
+                  top: 24.0,
+                  left: 16.0,
+                  right: 16.0,
+                  bottom: 48.0), // Ruang untuk ikon
               decoration: BoxDecoration(
                 color: const Color(0xFF0D47A1),
                 borderRadius: BorderRadius.circular(15),
@@ -214,7 +217,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             Positioned(
-              bottom: 10,
+              bottom: 10, // Pastikan ikon ada di dalam section
               right: width * 0.05,
               child: GestureDetector(
                 onTap: () {

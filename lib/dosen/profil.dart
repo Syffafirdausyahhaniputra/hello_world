@@ -1,93 +1,142 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan ini
 import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editProfil.dart';
+import '../Controller/ProfileDosenController.dart'; // Mengimpor controller
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: const Color(0xFF0D47A1),
-                    child: const Icon(
-                      Icons.person,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Zulfa Ulinnuha',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    '222222222',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const Text(
-                    'Dosen Jurusan Teknologi Informasi',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40.0),
-            ListTile(
-              leading: const Icon(Icons.edit, color: Colors.black),
-              title: const Text(
-                'Edit Profil',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              onTap: () {
-                // Aksi ketika "Edit Profil" ditekan
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EditProfilPage()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.black),
-              title: const Text(
-                'Keluar',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              onTap: () {
-                // Aksi ketika "Keluar" ditekan
-                _showLogoutConfirmationDialog(context); // Menampilkan dialog konfirmasi
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? profileData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
   }
 
-  // Fungsi untuk menampilkan dialog konfirmasi
+  Future<void> _fetchProfile() async {
+  try {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token == null) {
+      _showError('Token tidak ditemukan. Harap login kembali.');
+      setState(() {
+        isLoading = false;
+      });
+      _logout(context);
+      return;
+    }
+
+    final response = await ProfileDosenController.fetchDosenProfile(token);
+
+    if (response['success']) {
+      setState(() {
+        profileData = response['data']; // Gunakan data mentah dari API
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      _showError(response['message'] ?? 'Terjadi kesalahan saat memuat profil.');
+    }
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+    _showError('Terjadi kesalahan: $e');
+  }
+}
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    ));
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : profileData == null
+            ? const Center(child: Text('Data tidak tersedia'))
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
+                  children: [
+                    Center(
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: profileData?['avatar'] != null
+                                ? NetworkImage(profileData!['avatar']) as ImageProvider
+                                : null,
+                            child: profileData?['avatar'] == null
+                                ? const Icon(Icons.person, size: 50, color: Colors.white)
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            profileData?['nama'] ?? 'Nama tidak tersedia',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            profileData?['nip'] ?? 'NIP tidak tersedia',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ListTile(
+                      leading: const Icon(Icons.edit, color: Colors.black),
+                      title: const Text(
+                        'Edit Profil',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditProfilPage()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.logout, color: Colors.black),
+                      title: const Text(
+                        'Keluar',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                      onTap: () => _showLogoutConfirmationDialog(context),
+                    ),
+                  ],
+                ),
+              ),
+  );
+}
+
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF0D47A1), // Warna latar biru sesuai gambar
+          backgroundColor: const Color(0xFF0D47A1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -103,22 +152,14 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // Menutup dialog
-                      _logout(context); // Panggil fungsi logout jika "Ya" ditekan
+                      Navigator.of(context).pop();
+                      _logout(context);
                     },
-                    child: const Text(
-                      'Ya',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+                    child: const Text('Ya', style: TextStyle(color: Colors.white, fontSize: 16)),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Menutup dialog jika "Tidak" ditekan
-                    },
-                    child: const Text(
-                      'Tidak',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Tidak', style: TextStyle(color: Colors.white, fontSize: 16)),
                   ),
                 ],
               ),
@@ -129,12 +170,11 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Fungsi logout yang mengarahkan ke halaman login
   void _logout(BuildContext context) {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
-      (Route<dynamic> route) => false, // Menghapus semua rute sebelumnya
+      (Route<dynamic> route) => false,
     );
   }
 }
