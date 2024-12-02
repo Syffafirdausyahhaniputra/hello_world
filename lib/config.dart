@@ -14,6 +14,8 @@ class Config {
    // Endpoint untuk dashboard
   static const String dashboar2dEndpoint = '$baseUrl/api/dashboard2';
 
+  static const String dosenProfile = '$baseUrl/api/profiledosen';
+  
   // Endpoint untuk mendapatkan semua data
   static const String listAllDataEndpoint = '$baseUrl/api/listData';
 }
