@@ -3,118 +3,138 @@ import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editprofil.dart';
 import 'datasertif.dart'; 
 import 'rekomendasi.dart';
+import '../Controller/ProfileController.dart'; // Mengimpor controller
+import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan ini
 
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key); // Menambahkan super.key
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? profileData;
+  bool isLoading = true;
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Column(
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+  try {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    if (token == null) {
+      _showError('Token tidak ditemukan. Harap login kembali.');
+      setState(() {
+        isLoading = false;
+      });
+      _logout(context);
+      return;
+    }
+
+    final response = await ProfileController.fetchProfile(token);
+
+    if (response['success']) {
+      setState(() {
+        profileData = response['data']; // Gunakan data mentah dari API
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      _showError(response['message'] ?? 'Terjadi kesalahan saat memuat profil.');
+    }
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+    _showError('Terjadi kesalahan: $e');
+  }
+}
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    ));
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : profileData == null
+            ? const Center(child: Text('Data tidak tersedia'))
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
                   children: [
-                    CircleAvatar(
-                      radius: 50, // Memperbesar ukuran avatar
-                      backgroundColor: const Color(0xFF002366),
-                      child: const Icon(
-                        Icons.person,
-                        size: 50,
-                        color: Colors.white,
+                    Center(
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: profileData?['avatar'] != null
+                                ? NetworkImage(profileData!['avatar']) as ImageProvider
+                                : null,
+                            child: profileData?['avatar'] == null
+                                ? const Icon(Icons.person, size: 50, color: Colors.white)
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            profileData?['nama'] ?? 'Nama tidak tersedia',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            profileData?['nip'] ?? 'NIP tidak tersedia',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16.0),
-                    const Text(
-                      'Zulfa Ulinnuha',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20),
+                    ListTile(
+                      leading: const Icon(Icons.edit, color: Colors.black),
+                      title: const Text(
+                        'Edit Profil',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditProfilPage()),
+                        );
+                      },
                     ),
-                    const Text(
-                      '222222222',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.logout, color: Colors.black),
+                      title: const Text(
+                        'Keluar',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                       ),
-                    ),
-                    const Text(
-                      'Pimpinan Jurusan Teknologi Informasi',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      onTap: () => _showLogoutConfirmationDialog(context),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40.0),
-              _buildProfileOption(context, Icons.person, 'Edit Profil'),
-              _buildProfileOption(context, Icons.note, 'Rekomendasi'),
-              _buildProfileOption(context, Icons.file_copy, 'Data Sertifikasi/Pelatihan'),
-              _buildProfileOption(context, Icons.logout, 'Keluar', isLogout: true),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  );
+}
 
-  // Fungsi untuk membuat item ListTile
-  Widget _buildProfileOption(BuildContext context, IconData icon, String title, {bool isLogout = false}) {
-    return Column(
-      children: [
-        ListTile(
-          leading: Icon(icon, color: Colors.black),
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-          onTap: () {
-            if (isLogout) {
-              _showLogoutConfirmationDialog(context); // Menampilkan dialog konfirmasi
-            } else if (title == 'Edit Profil') {
-              // Navigasi ke halaman EditProfilPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const EditProfilPage()),
-              );
-            }
-             else if (title == 'Rekomendasi') {
-              // Navigasi ke halaman RekomendasiPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RekomendasiPage()), // Navigasi ke RekomendasiPage
-              );
-             }
-            else if (title == 'Data Sertifikasi/Pelatihan') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DataSertifPage()), // Mengarahkan ke halaman DataSertifPage
-              );
-            }
 
-             else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Navigasi ke: $title')),
-              );
-            }
-          },
-        ),
-        const Divider(),
-      ],
-    );
-  }
   
   // Fungsi untuk menampilkan dialog konfirmasi
   void _showLogoutConfirmationDialog(BuildContext context) {
