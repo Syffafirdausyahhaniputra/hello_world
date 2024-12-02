@@ -15,7 +15,7 @@ class DataPelatihanModel {
 
   factory DataPelatihanModel.fromJson(Map<String, dynamic> json) {
     return DataPelatihanModel(
-      id: json['id'] ?? 0,
+      id: json['id_pelatihan'] ?? 0,
       dosenId: json['dosen_id'] ?? 0,
       namaPelatihan: json['nama_pelatihan'] ?? '-',
       bidangPelatihan: json['bidang_pelatihan'] ?? '-',

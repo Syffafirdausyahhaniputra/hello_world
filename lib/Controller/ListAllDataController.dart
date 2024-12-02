@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../core/sharedPref.dart';
+import '../Model/DataSertifikasiModel.dart';
+import '../Model/DataPelatihanModel.dart';
 
 class ListAllDataController {
   ListAllDataController() {
@@ -28,8 +30,19 @@ class ListAllDataController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
+        final sertifikasi = (data['data']['sertifikasi'] as List)
+            .map((e) => DataSertifikasiModel.fromJson(e))
+            .toList();
+
+        final pelatihan = (data['data']['pelatihan'] as List)
+            .map((e) => DataPelatihanModel.fromJson(e))
+            .toList();
+
         // Kembalikan data ke dashboard.dart
-        return {'data': data['data'].map((e) => e).toList()};
+        return {
+          'sertifikasi': sertifikasi,
+          'pelatihan': pelatihan,
+        };
       } else {
         print('Error loading data: ${response.statusCode} - ${response.body}');
         throw Exception('Failed to load data');

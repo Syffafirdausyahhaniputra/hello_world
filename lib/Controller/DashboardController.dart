@@ -43,6 +43,8 @@ class DashboardController {
         final jumlahSertifikasiPelatihan =
             data['data']['jumlahSertifikasiPelatihan'] ?? 0;
 
+        print('Data loaded successfully');
+
         // Kembalikan data ke dashboard.dart
         return {
           'user': {'nama': userName}, // Hanya mengembalikan nama pengguna

@@ -185,6 +185,9 @@ class _DashboardState extends State<Dashboard> {
                     date: isSertifikasi
                         ? (data as DataSertifikasiModel).masaBerlaku
                         : (data as DataPelatihanModel).masaBerlaku,
+                    id: isSertifikasi
+                        ? (data as DataSertifikasiModel).id
+                        : (data as DataPelatihanModel).id,
                     width: width * 0.8,
                     context: context,
                   );
@@ -249,13 +252,14 @@ class _DashboardState extends State<Dashboard> {
     String title = '',
     String subtitle = '',
     String date = '',
+    required int id,
     double? width,
     required BuildContext context,
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SertifPage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => SertifPage(id: id)));
       },
       child: Container(
         width: width,

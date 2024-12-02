@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hello_world/Controller/ListAllDataController.dart';
 import '../header.dart'; // Import the Header component
 import 'sertif.dart'; // Pastikan nama file dan path benar
+import 'package:hello_world/Model/DataSertifikasiModel.dart';
+import 'package:hello_world/Model/DataPelatihanModel.dart';
 
 class DataSertifPage extends StatefulWidget {
   @override
@@ -11,7 +13,8 @@ class DataSertifPage extends StatefulWidget {
 }
 
 class _DataSertifPageState extends State<DataSertifPage> {
-  List<Map<String, dynamic>> data = [];
+  List<DataSertifikasiModel> sertifikasiList = [];
+  List<DataPelatihanModel> pelatihanList = [];
   bool isLoading = true;
 
   @override
@@ -24,19 +27,10 @@ class _DataSertifPageState extends State<DataSertifPage> {
     try {
       final result = await ListAllDataController.getListAllData();
       setState(() {
-        var res = result['data']; // Cast the data to a list of maps
-
-        // Example data, you can replace with dynamic data or a list
-        data = List.generate(
-          res.length,
-          (index) => {
-            'title': res[index]['nama'] ?? '',
-            'subtitle': res[index]['bidang'] ?? '',
-            'date': res[index]['masa_berlaku'] ?? '',
-          },
-        );
-        print('Data loaded successfully');
-        print(res);
+        print(result);
+        sertifikasiList = result['sertifikasi'];
+        pelatihanList = result['pelatihan'];
+        print(sertifikasiList);
         isLoading = false;
       });
     } catch (e) {
@@ -122,28 +116,49 @@ class _DataSertifPageState extends State<DataSertifPage> {
     // Example data, you can replace with dynamic data or a list
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.blue[900],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: data.map((item) {
-          return Column(
-            children: [
-              _buildSertifItem(
-                context: context, // Pass context here
-                title: item['title'] ?? '',
-                subtitle: item['subtitle'] ?? '',
-                date: item['date'] ?? '',
-                width: width * 0.9,
-              ),
-              SizedBox(height: height * 0.02),
-            ],
-          );
-        }).toList(),
-      ),
-    );
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.blue[900],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Column(
+              children: sertifikasiList.map((item) {
+                return Column(
+                  children: [
+                    _buildSertifItem(
+                      context: context, // Pass context here
+                      id: item.id,
+                      title: item.namaSertifikasi ?? '',
+                      subtitle: item.bidangSertifikasi ?? '',
+                      date: item.masaBerlaku ?? '',
+                      width: width * 0.9,
+                    ),
+                    SizedBox(height: height * 0.02),
+                  ],
+                );
+              }).toList(),
+            ),
+            Column(
+              children: pelatihanList.map((item) {
+                return Column(
+                  children: [
+                    _buildSertifItem(
+                      context: context, // Pass context here
+                      id: item.id,
+                      title: item.namaPelatihan ?? '',
+                      subtitle: item.bidangPelatihan ?? '',
+                      date: item.masaBerlaku ?? '',
+                      width: width * 0.9,
+                    ),
+                    SizedBox(height: height * 0.02),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
+        ));
   }
 
   Widget _buildSertifItem({
@@ -152,13 +167,14 @@ class _DataSertifPageState extends State<DataSertifPage> {
     required String subtitle,
     required String date,
     required double width,
+    required int id,
   }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context, // Use the passed context here
           MaterialPageRoute(
-            builder: (context) => SertifPage(), // Halaman sertif.dart
+            builder: (context) => SertifPage(id: id), // Halaman sertif.dart
           ),
         );
       },

@@ -15,7 +15,7 @@ class DataSertifikasiModel {
 
   factory DataSertifikasiModel.fromJson(Map<String, dynamic> json) {
     return DataSertifikasiModel(
-      id: json['id'] ?? 0,
+      id: json['id_sertifikasi'] ?? 0,
       dosenId: json['dosen_id'] ?? 0,
       namaSertifikasi: json['nama_sertifikasi'] ?? '-',
       bidangSertifikasi: json['bidang_sertifikasi'] ?? '-',
