@@ -29,25 +29,10 @@ class NotificationPage extends StatelessWidget {
               _buildNotificationCard(
                 context,
                 title: 'AWS Certified Solutions Architect',
-                category: 'Pengajuan',
-                status: 'Diterima',
-                statusColor: Colors.green,
-              ),
-              _buildNotificationCard(
-                context,
-                title: 'AWS Certified Solutions Architect',
                 category: 'Verifikasi',
                 status: 'Proses',
                 statusColor: Colors.grey,
               ),
-              _buildNotificationCard(
-                context,
-                title: 'AWS Certified Solutions Architect',
-                category: 'Penunjukan',
-                status: 'Ditolak',
-                statusColor: Colors.red,
-              ),
-              // Tambahkan lebih banyak notifikasi jika diperlukan
             ],
           ),
         ),
