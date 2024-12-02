@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editprofil.dart';
-import 'datasertif.dart'; 
-import 'rekomendasi.dart';
 import '../Controller/ProfileController.dart'; // Mengimpor controller
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan ini
 
