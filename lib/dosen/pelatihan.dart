@@ -119,7 +119,7 @@ class _PelatihanPageState extends State<PelatihanPage> {
         children: [
           // Informasi pelatihan
           Text(
-            'Bidang\t\t: ${data['level']}',
+            'Tingkat\t\t: ${data['level']}',
             style: TextStyle(
               fontSize: 16,
             ),
@@ -137,7 +137,7 @@ class _PelatihanPageState extends State<PelatihanPage> {
             ),
           ),
           Text(
-            'Berlaku Hingga\t: ${data['lokasi']}',
+            'Bertempat\t: ${data['lokasi']}',
             style: TextStyle(
               fontSize: 16,
             ),
