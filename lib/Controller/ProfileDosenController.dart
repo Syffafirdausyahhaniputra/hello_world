@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:hello_world/Model/BidangModel.dart';
-import 'package:hello_world/Model/MatkulModel.dart';
 import 'package:http/http.dart' as http;
 import '../config.dart';
 
@@ -74,74 +73,64 @@ class ProfileDosenController {
     }
   }
 
-  // Fungsi untuk mengambil data mata kuliah
-  static Future<List<MatkulModel>> fetchMatkul(String token) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://api.example.com/matkul'), // Ganti dengan endpoint mata kuliah
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body)['data'];
-        return data.map((e) => MatkulModel.fromJson(e)).toList();
-      } else {
-        throw Exception('Gagal mengambil data mata kuliah');
-      }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan: $e');
-    }
-  }
-
-  // Fungsi untuk mengirim data profil yang diperbarui
+  /// Memperbarui profil dosen.
   Future<Map<String, dynamic>> updateDosenProfile({
     required String token,
     required String username,
     required String nama,
     required String nip,
-    required int? bidangId,
-    required int? mkId,
-    required String oldPassword,
-    required String password,
+    int? bidangId,
+    int? mkId,
+    String? oldPassword,
+    String? password,
     File? avatar,
   }) async {
+    final url = Uri.parse(Config.dosenProfile);
+
     try {
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://api.example.com/updateProfile'), // Ganti dengan endpoint update
-      );
+      final request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['username'] = username
+        ..fields['nama'] = nama
+        ..fields['nip'] = nip;
 
-      // Header
-      request.headers['Authorization'] = 'Bearer $token';
-
-      // Tambahkan data ke dalam request
-      request.fields['username'] = username;
-      request.fields['nama'] = nama;
-      request.fields['nip'] = nip;
       if (bidangId != null) request.fields['bidang_id'] = bidangId.toString();
       if (mkId != null) request.fields['mk_id'] = mkId.toString();
-      request.fields['old_password'] = oldPassword;
-      request.fields['password'] = password;
-
-      // Tambahkan avatar jika ada
+      if (oldPassword != null) request.fields['old_password'] = oldPassword;
+      if (password != null) request.fields['password'] = password;
       if (avatar != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('avatar', avatar.path),
+        final avatarStream = http.ByteStream(avatar.openRead());
+        final avatarLength = await avatar.length();
+        final multipartFile = http.MultipartFile(
+          'avatar',
+          avatarStream,
+          avatarLength,
+          filename: avatar.path.split('/').last,
         );
+        request.files.add(multipartFile);
       }
 
       final response = await request.send();
 
       if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        return jsonDecode(responseBody);
+        final responseData = jsonDecode(await response.stream.bytesToString());
+        return {
+          'success': responseData['success'],
+          'message': responseData['message'],
+          'data': responseData['data'],
+        };
       } else {
-        throw Exception('Gagal memperbarui profil');
+        return {
+          'success': false,
+          'message':
+              'Gagal memperbarui profil. Kode status: ${response.statusCode}',
+        };
       }
     } catch (e) {
-      throw Exception('Terjadi kesalahan: $e');
+      return {
+        'success': false,
+        'message': 'Terjadi kesalahan: $e',
+      };
     }
   }
 }

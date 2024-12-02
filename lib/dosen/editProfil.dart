@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../Controller/ProfileDosenController.dart';
-import '../Model/BidangModel.dart';
-import '../Model/MatkulModel.dart';
 
 class EditProfilPage extends StatelessWidget {
   final String token; // Tambahkan token untuk autentikasi
@@ -14,7 +12,7 @@ class EditProfilPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView( // Menambahkan SingleChildScrollView untuk scrollable
+        child: SingleChildScrollView(  // Menambahkan SingleChildScrollView untuk scrollable
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Column(
@@ -77,42 +75,24 @@ class _EditProfileFormState extends State<EditProfileForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nipController = TextEditingController();
+  final TextEditingController _fieldController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   File? _avatar; // File untuk avatar
+
   final ImagePicker _picker = ImagePicker();
 
-  int? _selectedFieldId; // ID bidang yang dipilih
-  int? _selectedCourseId; // ID mata kuliah yang dipilih
-
-  List<BidangModel> _fields = []; // Data bidang dari API
-  List<MatkulModel> _courses = []; // Data mata kuliah dari API
-
   @override
-  void initState() {
-    super.initState();
-    _fetchData(); // Memuat data bidang dan mata kuliah
-  }
-
-  Future<void> _fetchData() async {
-    // Simulasi fetch data bidang dan mata kuliah dari API
-    final bidangResponse = await ProfileDosenController.fetchDataBidang(widget.token);
-    final matkulResponse = await ProfileDosenController.fetchDataMatkul(widget.token);
-
-    if (bidangResponse['success'] && matkulResponse['success']) {
-      setState(() {
-        _fields = (bidangResponse['data'] as List)
-            .map((e) => BidangModel.fromJson(e))
-            .toList();
-        _courses = (matkulResponse['data'] as List)
-            .map((e) => MatkulModel.fromJson(e))
-            .toList();
-      });
-    } else {
-      // Handle error
-      print('Gagal memuat data bidang atau mata kuliah');
-    }
+  void dispose() {
+    _usernameController.dispose();
+    _nameController.dispose();
+    _nipController.dispose();
+    _fieldController.dispose();
+    _courseController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickAvatar() async {
@@ -130,8 +110,8 @@ class _EditProfileFormState extends State<EditProfileForm> {
       username: _usernameController.text.trim(),
       nama: _nameController.text.trim(),
       nip: _nipController.text.trim(),
-      bidangId: _selectedFieldId, // Mengirim ID bidang yang dipilih
-      mkId: _selectedCourseId,  // Mengirim ID mata kuliah yang dipilih
+      bidangId: int.tryParse(_fieldController.text.trim()),
+      mkId: int.tryParse(_courseController.text.trim()),
       oldPassword: _oldPasswordController.text.trim(),
       password: _passwordController.text.trim(),
       avatar: _avatar,
@@ -177,7 +157,94 @@ class _EditProfileFormState extends State<EditProfileForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Input Bidang (Dropdown)
+        // Input Username
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Username',
+            style: GoogleFonts.montserrat(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: screenWidth * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _usernameController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Input Nama
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Nama',
+            style: GoogleFonts.montserrat(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: screenWidth * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Input NIP
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'NIP',
+            style: GoogleFonts.montserrat(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: screenWidth * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _nipController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Input Bidang
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -196,26 +263,17 @@ class _EditProfileFormState extends State<EditProfileForm> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: DropdownButton<int>(
-            isExpanded: true,
-            value: _selectedFieldId,
-            hint: const Text('Pilih Bidang'),
-            items: _fields.map((field) {
-              return DropdownMenuItem<int>(
-                value: field.bidangId,
-                child: Text(field.bidangNama),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedFieldId = value;
-              });
-            },
+          child: TextField(
+            controller: _fieldController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
           ),
         ),
         const SizedBox(height: 16),
 
-        // Input Mata Kuliah (Dropdown)
+        // Input Mata Kuliah
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
@@ -234,24 +292,81 @@ class _EditProfileFormState extends State<EditProfileForm> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: DropdownButton<int>(
-            isExpanded: true,
-            value: _selectedCourseId,
-            hint: const Text('Pilih Mata Kuliah'),
-            items: _courses.map((course) {
-              return DropdownMenuItem<int>(
-                value: course.mkId,
-                child: Text(course.mkNama),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedCourseId = value;
-              });
-            },
+          child: TextField(
+            controller: _courseController,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
           ),
         ),
         const SizedBox(height: 16),
+
+        // Input Password
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Password Lama',
+            style: GoogleFonts.montserrat(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: screenWidth * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _oldPasswordController,
+            obscureText: true,  // Menyembunyikan input password
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Password Baru',
+            style: GoogleFonts.montserrat(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: screenWidth * 0.9,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: _passwordController,
+            obscureText: true,  // Menyembunyikan input password
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Pilih Avatar
+        ElevatedButton.icon(
+          onPressed: _pickAvatar,
+          icon: const Icon(Icons.image),
+          label: const Text('Pilih Avatar'),
+        ),
+        const SizedBox(height: 30),
 
         // Tombol Simpan
         ElevatedButton(
