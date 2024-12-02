@@ -184,7 +184,7 @@ class _DashboardState extends State<Dashboard> {
                         : (data as DataPelatihanModel).bidangPelatihan,
                     date: isSertifikasi
                         ? (data as DataSertifikasiModel).masaBerlaku
-                        : (data as DataPelatihanModel).masaBerlaku,
+                        : (data as DataPelatihanModel).tanggal,
                     id: isSertifikasi
                         ? (data as DataSertifikasiModel).id
                         : (data as DataPelatihanModel).id,
