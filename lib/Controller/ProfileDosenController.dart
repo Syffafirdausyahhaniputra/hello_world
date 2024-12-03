@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:hello_world/Model/BidangModel.dart';
 import 'package:http/http.dart' as http;
 import '../config.dart';
 
@@ -18,9 +16,6 @@ class ProfileDosenController {
           'Accept': 'application/json',
         },
       ).timeout(const Duration(seconds: 10));
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -52,29 +47,8 @@ class ProfileDosenController {
     }
   }
 
-  // Fungsi untuk mengambil data bidang
-  static Future<List<BidangModel>> fetchBidang(String token) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://api.example.com/bidang'), // Ganti dengan endpoint bidang
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body)['data'];
-        return data.map((e) => BidangModel.fromJson(e)).toList();
-      } else {
-        throw Exception('Gagal mengambil data bidang');
-      }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan: $e');
-    }
-  }
-
   /// Memperbarui profil dosen.
-  Future<Map<String, dynamic>> updateDosenProfile({
+  static Future<Map<String, dynamic>> updateDosenProfile({
     required String token,
     required String username,
     required String nama,
@@ -94,10 +68,18 @@ class ProfileDosenController {
         ..fields['nama'] = nama
         ..fields['nip'] = nip;
 
-      if (bidangId != null) request.fields['bidang_id'] = bidangId.toString();
-      if (mkId != null) request.fields['mk_id'] = mkId.toString();
-      if (oldPassword != null) request.fields['old_password'] = oldPassword;
-      if (password != null) request.fields['password'] = password;
+      if (bidangId != null) {
+        request.fields['bidang_id'] = bidangId.toString();
+      }
+      if (mkId != null) {
+        request.fields['mk_id'] = mkId.toString();
+      }
+      if (oldPassword != null) {
+        request.fields['old_password'] = oldPassword;
+      }
+      if (password != null) {
+        request.fields['password'] = password;
+      }
       if (avatar != null) {
         final avatarStream = http.ByteStream(avatar.openRead());
         final avatarLength = await avatar.length();
@@ -114,11 +96,18 @@ class ProfileDosenController {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(await response.stream.bytesToString());
-        return {
-          'success': responseData['success'],
-          'message': responseData['message'],
-          'data': responseData['data'],
-        };
+        if (responseData['success']) {
+          return {
+            'success': true,
+            'message': responseData['message'],
+            'data': responseData['data'],
+          };
+        } else {
+          return {
+            'success': false,
+            'message': responseData['message'] ?? 'Gagal memperbarui profil.',
+          };
+        }
       } else {
         return {
           'success': false,
