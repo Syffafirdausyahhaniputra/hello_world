@@ -1,8 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'verifikasiPengajuan.dart'; // Import halaman verifikasiPengajuan.dart
+import '../Controller/NotifikasiPimpinanController.dart'; // Import halaman verifikasiPengajuan.dart
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
+
+  @override
+  _NotificationPageState createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  final NotifikasiPimpinanController _controller =
+      NotifikasiPimpinanController();
+  late Future<List<dynamic>> _notifikasiFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifikasi();
+  }
+
+  Future<void> _fetchNotifikasi() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      setState(() {
+        _notifikasiFuture = _controller.list(token: token);
+      });
+    } else {
+      // Jika token tidak ditemukan, handle dengan error atau pesan tertentu
+      setState(() {
+        _notifikasiFuture = Future.error('Token tidak ditemukan');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +57,58 @@ class NotificationPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.03),
-              // Daftar notifikasi menggunakan card
-              _buildNotificationCard(
-                context,
-                title: 'AWS Certified Solutions Architect',
-                category: 'Verifikasi',
-                status: 'Proses',
-                statusColor: Colors.grey,
+              FutureBuilder<List<dynamic>>(
+                future: _notifikasiFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error: ${snapshot.error}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Tidak ada notifikasi',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  } else {
+                    return Column(
+                      children: snapshot.data!.map((item) {
+                        return _buildNotificationCard(
+                          context,
+                          title: item['nama'] ?? 'Tidak ada nama',
+                          category: item['type'] ?? 'Tidak ada kategori',
+                          status: item['status'] ?? 'Tidak ada status',
+                          statusColor: _getStatusColor(item['status']),
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status) {
+      case 'Proses':
+        return Colors.grey;
+      case 'Diterima':
+        return Colors.green;
+      case 'Ditolak':
+        return Colors.red;
+      default:
+        return Colors.blueGrey;
+    }
   }
 
   Widget _buildNotificationCard(
