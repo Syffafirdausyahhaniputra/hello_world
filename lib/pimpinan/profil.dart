@@ -113,7 +113,7 @@ Widget build(BuildContext context) {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const EditProfilPage()),
+                          MaterialPageRoute(builder: (context) => const EditProfilPage(token: '',)),
                         );
                       },
                     ),

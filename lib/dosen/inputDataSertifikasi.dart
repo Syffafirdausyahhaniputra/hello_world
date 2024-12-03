@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'notifikasiInputData.dart'; // Import halaman notifikasi
 
-class InputDataPage extends StatelessWidget {
-  const InputDataPage({Key? key}) : super(key: key);
+class InputDataSertifikasiPage extends StatelessWidget {
+  const InputDataSertifikasiPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

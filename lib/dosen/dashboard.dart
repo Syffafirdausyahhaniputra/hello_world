@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/core/sharedPref.dart';
+import 'package:hello_world/dosen/inputDataPelatihan.dart';
+import 'package:hello_world/dosen/inputDataSertifikasi.dart';
 import 'package:hello_world/dosen/pelatihan.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
 import '../Controller/DashboardController.dart';
 import '../Model/DataSertifikasiModel.dart';
 import '../Model/DataPelatihanModel.dart';
 import '../header.dart';
-import 'inputData.dart';
+// import 'inputData.dart';
 import 'dataSertif.dart';
 import 'sertif.dart';
 
@@ -196,57 +198,69 @@ class _DashboardState extends State<Dashboard> {
                 }).toList(),
               ),
             ),
+            
             Positioned(
-              top: 0,
-              left: width * 0.1,
-              right: width * 0.1,
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFEFB509),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+            top: 0,
+            left: width * 0.1,
+            right: width * 0.1,
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(0xFFEFB509),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
             ),
-            Positioned(
-              bottom: 10, // Pastikan ikon ada di dalam section
-              right: width * 0.05,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => InputDataPage()));
-                },
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFEFB509),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.black,
-                    size: 24,
-                  ),
+          ),
+          Positioned(
+            bottom: 10, // Pastikan ikon ada di dalam section
+            right: width * 0.05,
+            child: GestureDetector(
+              onTap: () {
+                if (isSertifikasi) {
+                  // Arahkan ke halaman input sertifikasi
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => InputDataSertifikasiPage()),
+                  );
+                } else {
+                  // Arahkan ke halaman input pelatihan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => InputDataPelatihanPage()),
+                  );
+                }
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color(0xFFEFB509),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.black,
+                  size: 24,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    ),
     );
   }
 
