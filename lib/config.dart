@@ -1,6 +1,6 @@
 class Config {
   // URL dasar API
-  static const String baseUrl = 'http://172.16.14.77:8000';
+  static const String baseUrl = 'http://192.168.69.112:8000';
 
   // Endpoint untuk login
   static const String loginEndpoint = '$baseUrl/api/login';
@@ -25,5 +25,13 @@ class Config {
       '$baseUrl/api/sertifikasi/show';
   static const String detailPelatihanEndpoint =
       '$baseUrl/api/pelatihan/show';
+
+  // kompetensi prodi
+  static const String kompetensiList='$baseUrl/api/kompetensi/list';
+  static const String kompetensiEndpoint='$baseUrl/api/kompetensi/{prodi_kode}/show_ajax';
+
+  static const String inputPelatihan='$baseUrl/api/pelatihan/create';
+  static const String inputpelatihan='$baseUrl/api/pelatihan/store';
+
 
 }

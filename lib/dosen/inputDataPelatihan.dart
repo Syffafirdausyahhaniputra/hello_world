@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hello_world/Model/pelatihanModel.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hello_world/config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../Controller/pelatihanController.dart';
 
 class InputDataPelatihanPage extends StatefulWidget {
   const InputDataPelatihanPage({Key? key}) : super(key: key);
@@ -17,7 +16,7 @@ class InputDataPelatihanPage extends StatefulWidget {
 
 class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
   final PelatihanController _controller = PelatihanController();
-  
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _periodeController = TextEditingController();
   final TextEditingController _startDateController = TextEditingController();
@@ -66,7 +65,6 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
   }
 
   Future<void> _submitForm() async {
-    // Validation
     if (_nameController.text.isEmpty ||
         _selectedLevelId == null ||
         _selectedVendorId == null ||
@@ -85,6 +83,7 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
 
     try {
       final pelatihan = PelatihanModel(
+        pelatihanId: 0,
         namaPelatihan: _nameController.text,
         tanggal: DateTime.parse(_startDateController.text),
         tanggalAkhir: DateTime.parse(_endDateController.text),
@@ -92,7 +91,8 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
         vendorId: _selectedVendorId!,
         bidangId: _selectedBidangId!,
         mkId: _selectedMataKuliahId!,
-        periode: _periodeController.text, pelatihanId: null, kuota: null, lokasi: '',
+        periode: _periodeController.text,
+        // pelatihanId: null,
       );
 
       await _controller.addPelatihan(pelatihan);
@@ -116,90 +116,102 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0D47A1),
+        title: Text(
+          'Input Data Pelatihan',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
           child: isLoading
               ? Center(child: CircularProgressIndicator())
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back button and title remain the same
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildTextField('Nama Pelatihan', _nameController),
-                            _buildDropdownField(
-                              'Level', 
-                              _selectedLevelId, 
-                              _levels.map((level) => {'id': level['id'], 'name': level['name']}).toList()
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTextField('Nama Pelatihan', _nameController),
+                      _buildDropdownField('Level', _selectedLevelId, _levels),
+                      _buildDateField('Tanggal Mulai', _startDateController),
+                      _buildDropdownField('Vendor', _selectedVendorId, _vendors),
+                      _buildDateField('Tanggal Akhir', _endDateController),
+                      _buildDropdownField('Bidang', _selectedBidangId, _bidangs),
+                      _buildDropdownField(
+                          'Mata Kuliah', _selectedMataKuliahId, _matkuls),
+                      _buildTextField('Periode', _periodeController),
+                      const SizedBox(height: 30),
+                      Center(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFEFB509),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            _buildDateField('Tanggal Mulai', _startDateController),
-                            _buildDropdownField(
-                              'Vendor', 
-                              _selectedVendorId, 
-                              _vendors.map((vendor) => {'id': vendor['id'], 'name': vendor['name']}).toList()
+                            minimumSize: const Size(120, 40),
+                          ),
+                          onPressed: _submitForm,
+                          child: Text(
+                            'KIRIM',
+                            style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                            _buildDateField('Tanggal Akhir', _endDateController),
-                            _buildDropdownField(
-                              'Bidang', 
-                              _selectedBidangId, 
-                              _bidangs.map((bidang) => {'id': bidang['id'], 'name': bidang['name']}).toList()
-                            ),
-                            _buildDropdownField(
-                              'Mata Kuliah', 
-                              _selectedMataKuliahId, 
-                              _matkuls.map((mk) => {'id': mk['id'], 'name': mk['name']}).toList()
-                            ),
-                            _buildTextField('Periode', _periodeController),
-                            const SizedBox(height: 30),
-                            Center(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFEFB509),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  minimumSize: const Size(120, 40),
-                                ),
-                                onPressed: _submitForm,
-                                child: Text(
-                                  'KIRIM',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
         ),
       ),
-      backgroundColor: const Color(0xFF0D47A1),
     );
   }
 
   Widget _buildTextField(String label, TextEditingController controller) {
-    // Existing implementation remains the same
-    // ...
-  }
-
-  Widget _buildDropdownField(String label, int? selectedValue, List<Map<String, dynamic>> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.white,
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: 'Masukkan $label',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildDropdownField(
+      String label, int? selectedValue, List<dynamic> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.montserrat(
+            color: Colors.black,
             fontSize: 16,
           ),
         ),
@@ -215,15 +227,15 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
             onChanged: (newValue) {
               setState(() {
                 if (label == 'Level') _selectedLevelId = newValue;
-                else if (label == 'Vendor') _selectedVendorId = newValue;
-                else if (label == 'Bidang') _selectedBidangId = newValue;
-                else if (label == 'Mata Kuliah') _selectedMataKuliahId = newValue;
+                if (label == 'Vendor') _selectedVendorId = newValue;
+                if (label == 'Bidang') _selectedBidangId = newValue;
+                if (label == 'Mata Kuliah') _selectedMataKuliahId = newValue;
               });
             },
-            items: items.map<DropdownMenuItem<int>>((Map<String, dynamic> value) {
+            items: items.map<DropdownMenuItem<int>>((item) {
               return DropdownMenuItem<int>(
-                value: value['id'],
-                child: Text(value['name']),
+                value: item['id'],
+                child: Text(item['name']),
               );
             }).toList(),
             decoration: const InputDecoration(
@@ -238,7 +250,49 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
   }
 
   Widget _buildDateField(String label, TextEditingController controller) {
-    // Existing implementation remains the same
-    // ...
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.montserrat(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2101),
+            );
+
+            if (pickedDate != null) {
+              setState(() {
+                controller.text = pickedDate.toIso8601String().split('T')[0];
+              });
+            }
+          },
+          child: AbsorbPointer(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Pilih tanggal',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
   }
 }
