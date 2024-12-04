@@ -1,6 +1,6 @@
 class Config {
   // URL dasar API
-  static const String baseUrl = 'http://192.168.69.15:8000';
+  static const String baseUrl = 'http://192.168.69.112:8000';
 
   // Endpoint untuk login
   static const String loginEndpoint = '$baseUrl/api/login';
