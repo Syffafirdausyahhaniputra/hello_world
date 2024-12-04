@@ -101,13 +101,13 @@ class _NotificationPageState extends State<NotificationPage> {
   Color _getStatusColor(String? status) {
     switch (status) {
       case 'Proses':
-        return Colors.grey;
+        return Colors.blueGrey;
       case 'Diterima':
         return Colors.green;
       case 'Ditolak':
         return Colors.red;
       default:
-        return Colors.blueGrey;
+        return Colors.grey;
     }
   }
 
@@ -139,7 +139,7 @@ class _NotificationPageState extends State<NotificationPage> {
               Icon(
                 Icons.notifications,
                 size: 40,
-                color: statusColor,
+                color: Colors.orange,
               ),
               const SizedBox(width: 16),
               Expanded(

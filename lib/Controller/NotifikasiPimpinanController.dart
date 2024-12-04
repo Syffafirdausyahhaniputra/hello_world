@@ -5,11 +5,14 @@ import '../config.dart'; // Import Config
 class NotifikasiPimpinanController {
   // Mendapatkan daftar notifikasi
   Future<List<dynamic>> list({required String token}) async {
-    final url = Uri.parse(Config.notifikasiPimpinanListEndpoint); // Perbaiki endpoint
+    final url =
+        Uri.parse(Config.notifikasiPimpinanListEndpoint); // Perbaiki endpoint
     final response = await http.get(
       url,
-      headers: {'Authorization': 'Bearer $token',
-          'Accept': 'application/json',}, // Tambahkan header autentikasi
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      }, // Tambahkan header autentikasi
     );
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
@@ -30,7 +33,8 @@ class NotifikasiPimpinanController {
     required int id,
     required String token,
   }) async {
-    final url = Uri.parse('${Config.baseUrl}/notifikasi-pimpinan/show/$type/$id');
+    final url =
+        Uri.parse('${Config.baseUrl}/notifikasiPimpinan/show/$type/$id');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $token'},
@@ -54,7 +58,8 @@ class NotifikasiPimpinanController {
     required String status,
     required String token,
   }) async {
-    final url = Uri.parse('${Config.baseUrl}/notifikasi-pimpinan/verify/$type/$id');
+    final url =
+        Uri.parse('${Config.baseUrl}/notifikasiPimpinan/verify/$type/$id');
     final body = jsonEncode({'status': status});
 
     final response = await http.put(
