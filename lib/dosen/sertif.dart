@@ -1,7 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/Controller/DetailSertifikasi.dart';
 import '../header.dart'; // Import the Header component
 
-class SertifPage extends StatelessWidget {
+class SertifPage extends StatefulWidget {
+  final int id;
+
+  SertifPage({required this.id});
+
+  @override
+  _SertifPageState createState() => _SertifPageState();
+}
+
+class _SertifPageState extends State<SertifPage> {
+  final Detailsertifikasi _detailsertifikasi = Detailsertifikasi();
+
+  Map<String, dynamic> data = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() async {
+    // Load data here
+    var res = await _detailsertifikasi.getDetailSertifikasi(widget.id);
+    print(res);
+    setState(() {
+      data = res;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -42,18 +71,34 @@ class SertifPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: height * 0.02),
-              Text(
-                'AWS Certified Solutions Architect',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                ),
+              FutureBuilder(
+                future: _detailsertifikasi.getDetailSertifikasi(widget.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: height * 0.02),
+                        Text(
+                          data['nama_sertif'] ?? 'Sertifikasi',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 27,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: height * 0.02),
+                        _buildCertificateDetails(width),
+                        SizedBox(height: height * 0.02),
+                      ],
+                    );
+                  }
+                },
               ),
-              SizedBox(height: height * 0.02),
-              _buildCertificateDetails(width), // Menggabungkan InfoBox dan DescriptionBox
-              SizedBox(height: height * 0.02),
             ],
           ),
         ),
@@ -74,19 +119,19 @@ class SertifPage extends StatelessWidget {
         children: [
           // Informasi Sertifikasi
           Text(
-            'Bidang\t\t: Cloud Computing',
+            'Bidang\t\t: ${data['bidang'] ?? 'Teknologi Informasi'}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           Text(
-            'Tanggal Acara\t: 20 Januari 2021',
+            'Tanggal Acara\t: 20 ${data['tanggal']}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           Text(
-            'Berlaku Hingga\t: 19 September 2025',
+            'Berlaku Hingga\t: ${data['masa_berlaku'] ?? '20 September 2024'}',
             style: TextStyle(
               fontSize: 16,
             ),

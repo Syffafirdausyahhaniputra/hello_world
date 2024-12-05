@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/core/sharedPref.dart';
+import 'package:hello_world/dosen/inputDataPelatihan.dart';
+import 'package:hello_world/dosen/inputDataSertifikasi.dart';
+import 'package:hello_world/dosen/pelatihan.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
 import '../Controller/DashboardController.dart';
 import '../Model/DataSertifikasiModel.dart';
 import '../Model/DataPelatihanModel.dart';
 import '../header.dart';
-import 'inputData.dart';
+// import 'inputData.dart';
 import 'dataSertif.dart';
 import 'sertif.dart';
 
@@ -164,8 +167,11 @@ class _DashboardState extends State<Dashboard> {
             Container(
               width: width * 0.9,
               margin: const EdgeInsets.only(top: 30),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
+              padding: const EdgeInsets.only(
+                  top: 24.0,
+                  left: 16.0,
+                  right: 16.0,
+                  bottom: 48.0), // Ruang untuk ikon
               decoration: BoxDecoration(
                 color: const Color(0xFF0D47A1),
                 borderRadius: BorderRadius.circular(15),
@@ -181,7 +187,11 @@ class _DashboardState extends State<Dashboard> {
                         : (data as DataPelatihanModel).bidangPelatihan,
                     date: isSertifikasi
                         ? (data as DataSertifikasiModel).masaBerlaku
-                        : (data as DataPelatihanModel).masaBerlaku,
+                        : (data as DataPelatihanModel).tanggal,
+                    id: isSertifikasi
+                        ? (data as DataSertifikasiModel).id
+                        : (data as DataPelatihanModel).id,
+                    isSertifikasi: isSertifikasi,
                     width: width * 0.8,
                     context: context,
                   );
@@ -214,12 +224,24 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             Positioned(
-              bottom: 10,
+              bottom: 10, // Pastikan ikon ada di dalam section
               right: width * 0.05,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => InputDataPage()));
+                  if (isSertifikasi) {
+                    // Arahkan ke halaman input sertifikasi
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => InputDataSertifikasiPage()),
+                    );
+                  } else {
+                    // Arahkan ke halaman input pelatihan
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => InputDataPelatihanPage()),
+                    // );
+                  }
                 },
                 child: Container(
                   width: 40,
@@ -246,13 +268,20 @@ class _DashboardState extends State<Dashboard> {
     String title = '',
     String subtitle = '',
     String date = '',
+    required int id,
     double? width,
+    required bool isSertifikasi,
     required BuildContext context,
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SertifPage()));
+        if (isSertifikasi) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => SertifPage(id: id)));
+        } else {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PelatihanPage(id: id)));
+        }
       },
       child: Container(
         width: width,

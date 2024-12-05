@@ -1,12 +1,51 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:hello_world/Controller/ListAllDataController.dart';
 import '../header.dart'; // Import the Header component
 import 'sertif.dart'; // Pastikan nama file dan path benar
+import 'package:hello_world/Model/DataSertifikasiModel.dart';
+import 'package:hello_world/Model/DataPelatihanModel.dart';
 
-class DataSertifPage extends StatelessWidget {
+class DataSertifPage extends StatefulWidget {
+  @override
+  _DataSertifPageState createState() => _DataSertifPageState();
+}
+
+class _DataSertifPageState extends State<DataSertifPage> {
+  List<DataSertifikasiModel> sertifikasiList = [];
+  List<DataPelatihanModel> pelatihanList = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final result = await ListAllDataController.getListAllData();
+      setState(() {
+        print(result);
+        sertifikasiList = result['sertifikasi'];
+        pelatihanList = result['pelatihan'];
+        print(sertifikasiList);
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    if (isLoading) {
+      _loadData();
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -62,7 +101,10 @@ class DataSertifPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.02),
-              _buildSertifList(context, width, height), // Pass context here
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : _buildSertifList(
+                      context, width, height), // Pass context here
             ],
           ),
         ),
@@ -72,38 +114,51 @@ class DataSertifPage extends StatelessWidget {
 
   Widget _buildSertifList(BuildContext context, double width, double height) {
     // Example data, you can replace with dynamic data or a list
-    List<Map<String, String>> recommendations = [
-      {
-        'title': 'AWS Certified Solutions Architect',
-        'subtitle': 'Cloud Computing',
-        'date': 'Berlaku hingga 19 Oktober 2025',
-      },
-    ];
 
-    return Column(
-      children: recommendations.map((item) {
-        return Column(
+    return Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.blue[900],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
           children: [
-            _buildSertifItem(
-              context: context, // Pass context here
-              title: item['title'] ?? '',
-              subtitle: item['subtitle'] ?? '',
-              date: item['date'] ?? '',
-              width: width * 0.9,
+            Column(
+              children: sertifikasiList.map((item) {
+                return Column(
+                  children: [
+                    _buildSertifItem(
+                      context: context, // Pass context here
+                      id: item.id,
+                      title: item.namaSertifikasi ?? '',
+                      subtitle: item.bidangSertifikasi ?? '',
+                      date: item.masaBerlaku ?? '',
+                      width: width * 0.9,
+                    ),
+                    SizedBox(height: height * 0.02),
+                  ],
+                );
+              }).toList(),
             ),
-            SizedBox(height: height * 0.02),
-            _buildSertifItem(
-              context: context, // Pass context here
-              title: item['title'] ?? '',
-              subtitle: item['subtitle'] ?? '',
-              date: item['date'] ?? '',
-              width: width * 0.9,
+            Column(
+              children: pelatihanList.map((item) {
+                return Column(
+                  children: [
+                    _buildSertifItem(
+                      context: context, // Pass context here
+                      id: item.id,
+                      title: item.namaPelatihan ?? '',
+                      subtitle: item.bidangPelatihan ?? '',
+                      date: item.tanggal ?? '',
+                      width: width * 0.9,
+                    ),
+                    SizedBox(height: height * 0.02),
+                  ],
+                );
+              }).toList(),
             ),
-            SizedBox(height: height * 0.02),
           ],
-        );
-      }).toList(),
-    );
+        ));
   }
 
   Widget _buildSertifItem({
@@ -112,13 +167,14 @@ class DataSertifPage extends StatelessWidget {
     required String subtitle,
     required String date,
     required double width,
+    required int id,
   }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context, // Use the passed context here
           MaterialPageRoute(
-            builder: (context) => SertifPage(), // Halaman sertif.dart
+            builder: (context) => SertifPage(id: id), // Halaman sertif.dart
           ),
         );
       },
@@ -127,7 +183,6 @@ class DataSertifPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: const Color(0xFF0D47A1), width: 5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -141,7 +196,7 @@ class DataSertifPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 2),
             Text(
               subtitle,
               style: TextStyle(
@@ -149,7 +204,7 @@ class DataSertifPage extends StatelessWidget {
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 2),
             Text(
               date,
               style: TextStyle(

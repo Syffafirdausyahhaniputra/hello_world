@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hello_world/config.dart'; // Impor Config
 import 'package:hello_world/Model/UserModel.dart';
 import 'package:hello_world/pimpinan/dosenbidang.dart';
-import 'package:hello_world/Controller/DashboardController.dart';
+import 'package:hello_world/Controller/Dashboard2Controller.dart';
 
 
 
@@ -27,7 +27,7 @@ class _DashboardPageState extends State<DashboardPage> {
     _loadDashboardData();
   }
 
-    Future<void> _loadDashboardData() async {
+  Future<void> _loadDashboardData() async {
   try {
     // Mendapatkan token dari SharedPreferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -39,7 +39,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     // Panggil API menggunakan URL dari Config
     final response = await http.get(
-      Uri.parse(Config.dashboardEndpoint), // Menggunakan Config
+      Uri.parse(Config.dashboar2dEndpoint),
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         "Accept": "application/json",
@@ -47,7 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
       },
     );
 
-    // Debugging status code
+    // Debugging status code dan body
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
 
@@ -57,13 +57,6 @@ class _DashboardPageState extends State<DashboardPage> {
       if (jsonData['success'] == true) {
         final data = jsonData['data'];
 
-        // Pastikan data bidang di-handle dengan aman
-        final bidangList = data['bidang'] ?? [];
-        if (bidangList is! List) {
-          throw Exception('Invalid bidang format');
-        }
-
-        // Update state dengan data yang diterima
         setState(() {
           user = data['user'] != null
               ? UserModel(
@@ -80,8 +73,25 @@ class _DashboardPageState extends State<DashboardPage> {
           isLoading = false;
         });
       } else {
-        throw Exception('Response success is false');
+        throw Exception(jsonData['message'] ?? 'Terjadi kesalahan pada respon API');
       }
+    } else if (response.statusCode == 404) {
+      setState(() {
+        isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Data Tidak Ditemukan"),
+          content: const Text("Dosen tidak ditemukan untuk user ini."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
     } else {
       throw Exception(
           'Failed to load dashboard: ${response.statusCode} - ${response.body}');
@@ -93,6 +103,31 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 }
+
+
+Future<void> _handleUnauthorized() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('token'); // Hapus token lama
+  // Tampilkan dialog login ulang
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Session Expired'),
+        content: const Text('Please log in again.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/login');
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
 
 

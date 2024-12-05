@@ -6,9 +6,9 @@ import '../Model/UserModel.dart';
 import '../Model/DataSertifikasiModel.dart';
 import '../Model/DataPelatihanModel.dart';
 
-class DashboardController {
+class Dashboard2Controller {
   static Future<Map<String, dynamic>> getDashboardData(String token) async {
-    final url = Uri.parse(Config.dashboardEndpoint);
+    final url = Uri.parse(Config.dashboar2dEndpoint);
 
     final headers = {
       'Authorization': 'Bearer $token',
@@ -21,6 +21,9 @@ class DashboardController {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
+      if (response.statusCode == 401) {
+      throw Exception('Unauthorized. Token tidak valid.');
+    }
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
@@ -43,8 +46,6 @@ class DashboardController {
         final jumlahSertifikasiPelatihan =
             data['data']['jumlahSertifikasiPelatihan'] ?? 0;
 
-        print('Data loaded successfully');
-
         // Kembalikan data ke dashboard.dart
         return {
           'user': {'nama': userName}, // Hanya mengembalikan nama pengguna
@@ -54,10 +55,12 @@ class DashboardController {
           'sertifikasi': sertifikasi,
           'pelatihan': pelatihan,
         };
-      } else {
-        print('Error loading data: ${response.statusCode} - ${response.body}');
-        throw Exception('Failed to load dashboard data');
-      }
+        
+      } else if (response.statusCode == 404) {
+      throw Exception('Dosen tidak ditemukan untuk user ini.');
+    } else {
+      throw Exception('Failed to load dashboard data: ${response.statusCode}');
+    }
     } catch (e) {
       print('Error loading dashboard data: $e');
       throw Exception('Failed to load dashboard data');
