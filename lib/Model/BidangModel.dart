@@ -13,9 +13,9 @@ class BidangModel {
   // Factory method to create BidangModel from JSON
   factory BidangModel.fromJson(Map<String, dynamic> json) {
     return BidangModel(
-      bidangId: json['bidang_id'] ?? 0,
-      bidangKode: json['bidang_kode'] ?? '',
-      bidangNama: json['bidang_nama'] ?? '',
+      bidangId: json['bidang_id'] as int,
+      bidangKode: json['bidang_kode'] as String,
+      bidangNama: json['bidang_nama'] as String,
     );
   }
 

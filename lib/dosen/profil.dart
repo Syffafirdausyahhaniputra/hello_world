@@ -38,6 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (response['success']) {
         setState(() {
           profileData = response['data']; // Gunakan data mentah dari API
+          print(profileData);
           isLoading = false;
         });
       } else {
