@@ -246,12 +246,6 @@ class _EditProfileFormState extends State<EditProfileForm> {
         const SizedBox(height: 16),
         _buildTextField("NIP", _nipController, false),
         const SizedBox(height: 16),
-        _buildTextField("Old Password", _oldPasswordController, false,
-            obscureText: true),
-        const SizedBox(height: 16),
-        _buildTextField("Password", _passwordController, false,
-            obscureText: true),
-        const SizedBox(height: 16),
         _buildDropdownBidang("Bidang", _bidangList, _selectedBidang, (value) {
           setState(() {
             _selectedBidang = value;
@@ -264,6 +258,12 @@ class _EditProfileFormState extends State<EditProfileForm> {
             _selectedMatkul = value;
           });
         }),
+        const SizedBox(height: 16),
+        _buildTextField("Old Password", _oldPasswordController, false,
+            obscureText: true),
+        const SizedBox(height: 16),
+        _buildTextField("Password", _passwordController, false,
+            obscureText: true),
         const SizedBox(height: 30),
         ElevatedButton(
           onPressed: _saveProfile,
