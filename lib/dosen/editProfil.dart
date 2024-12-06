@@ -69,6 +69,8 @@ class _EditProfileFormState extends State<EditProfileForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nipController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   List<BidangModel> _bidangList = [];
   List<MatkulModel> _matkulList = [];
@@ -182,6 +184,8 @@ class _EditProfileFormState extends State<EditProfileForm> {
         'nip': _nipController.text,
         'bidang_id': _selectedBidang.toString(),
         'mk_id': _selectedMatkul.toString(),
+        'password': _passwordController.text,
+        'old_password': _oldPasswordController.text,
       };
 
       final request = http.MultipartRequest(
@@ -242,6 +246,12 @@ class _EditProfileFormState extends State<EditProfileForm> {
         const SizedBox(height: 16),
         _buildTextField("NIP", _nipController, false),
         const SizedBox(height: 16),
+        _buildTextField("Old Password", _oldPasswordController, false,
+            obscureText: true),
+        const SizedBox(height: 16),
+        _buildTextField("Password", _passwordController, false,
+            obscureText: true),
+        const SizedBox(height: 16),
         _buildDropdownBidang("Bidang", _bidangList, _selectedBidang, (value) {
           setState(() {
             _selectedBidang = value;
@@ -271,7 +281,8 @@ class _EditProfileFormState extends State<EditProfileForm> {
   }
 
   Widget _buildTextField(
-      String label, TextEditingController controller, bool readOnly) {
+      String label, TextEditingController controller, bool readOnly,
+      {bool obscureText = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -287,6 +298,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
           child: TextField(
             controller: controller,
             readOnly: readOnly,
+            obscureText: obscureText,
             decoration: const InputDecoration(
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 20, vertical: 15),
