@@ -34,7 +34,7 @@ class NotifikasiPimpinanController {
     required String token,
   }) async {
     final url =
-        Uri.parse('${Config.baseUrl}/notifikasiPimpinan/show/$type/$id');
+        Uri.parse('${Config.baseUrl}/api/notifikasiPimpinan/show/$type/$id');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $token'},
@@ -59,7 +59,7 @@ class NotifikasiPimpinanController {
     required String token,
   }) async {
     final url =
-        Uri.parse('${Config.baseUrl}/notifikasiPimpinan/verify/$type/$id');
+        Uri.parse('${Config.baseUrl}/api/notifikasiPimpinan/verify/$type/$id');
     final body = jsonEncode({'status': status});
 
     final response = await http.put(
@@ -70,7 +70,8 @@ class NotifikasiPimpinanController {
       },
       body: body,
     );
-
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
       try {
         return jsonDecode(response.body);

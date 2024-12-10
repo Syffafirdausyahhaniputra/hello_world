@@ -1,191 +1,185 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../controller/NotifikasiPimpinanController.dart';
 
 class VerifikasiPengajuanPage extends StatelessWidget {
+  final String type;
+  final int id;
+  final String token;
+  final NotifikasiPimpinanController _controller = NotifikasiPimpinanController();
+
+  VerifikasiPengajuanPage({
+    required this.type,
+    required this.id,
+    required this.token,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA), // Latar belakang abu-abu lembut
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  // Tombol Back
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Judul
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Pengajuan',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D47A1),
-                      ),
+      backgroundColor: const Color(0xFFF5F6FA),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0D47A1),
+        elevation: 0,
+        title: Text(
+          'Verifikasi Pengajuan',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _controller.show(type: type, id: id, token: token),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Terjadi kesalahan: ${snapshot.error}',
+                style: GoogleFonts.poppins(color: Colors.red, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return Center(
+              child: Text(
+                'Data tidak ditemukan.',
+                style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
+              ),
+            );
+          }
+
+          final data = snapshot.data!;
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Judul Dinamis
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Pengajuan $type',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: const Color(0xFF0D47A1),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  // Informasi Pengajuan
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
+                ),
+                const SizedBox(height: 20),
+                // Informasi Pengajuan
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildInfoItem(Icons.person, 'Nama', 'Zulfa Ulinnuha'),
-                            _buildInfoItem(Icons.badge, 'NIP', '2241760119'),
-                            _buildInfoItem(Icons.description, 'Jenis', 'Sertifikasi'),
-                            const Divider(thickness: 1, height: 30),
-                            _buildInfoItem(Icons.domain, 'Bidang', 'Cloud Computing'),
-                            const Text(
-                              'Mata Kuliah:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _buildMataKuliahList([
-                              'Jaringan Komputer',
-                              'Konsep Teknologi Informasi',
-                            ]),
-                            const Divider(thickness: 1, height: 30),
-                            _buildInfoItem(
-                                Icons.event, 'Tanggal Acara', '20 Januari 2021'),
-                            _buildInfoItem(Icons.date_range, 'Berlaku Hingga',
-                                '19 September 2025'),
-                            _buildInfoItem(Icons.business, 'Vendor', 'Kemendikbud'),
-                            _buildInfoItem(Icons.category, 'Jenis', 'Profesi'),
-                            _buildInfoItem(Icons.timeline, 'Periode', '2024 – ganjil'),
+                            _buildInfoItem('Judul', data['Nama $type'] ?? '-'),
+                            _buildInfoItem('Bidang', data['Bidang'] ?? '-'),
+                            _buildInfoItem('Tanggal', data['Tanggal'] ?? '-'),
+                            _buildInfoItem('Mata Kuliah', data['Mata Kuliah'] ?? '-'),
+                            _buildInfoItem('Kuota', data['Kuota'] ?? '-'),
+                            _buildInfoItem('Biaya', data['Biaya'] ?? '-'),
+                            _buildInfoItem('Lokasi', data['Lokasi'] ?? '-'),
+                            _buildInfoItem('Vendor', data['Vendor'] ?? '-'),
+                            _buildInfoItem('Periode', data['Periode'] ?? '-'),
+                            _buildInfoItem('Dosen', _buildDosenList(data['Dosen'] ?? [])),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  // Tombol Aksi
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildActionButton(
-                        label: 'Tolak',
-                        icon: Icons.close,
-                        color: Colors.red,
-                        onPressed: () {
-                          // Logic untuk menolak
-                        },
-                      ),
-                      _buildActionButton(
-                        label: 'Setuju',
-                        icon: Icons.check,
-                        color: Colors.green,
-                        onPressed: () {
-                          // Logic untuk menyetujui
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+                const SizedBox(height: 20),
+                // Tombol Verifikasi
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildActionButton(
+                      label: 'Tolak',
+                      icon: Icons.close,
+                      color: Colors.red,
+                      onPressed: () => _verify(context, 'Ditolak'),
+                    ),
+                    _buildActionButton(
+                      label: 'Setuju',
+                      icon: Icons.check,
+                      color: Colors.green,
+                      onPressed: () => _verify(context, 'Diterima'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String label, String value) {
+  Widget _buildInfoItem(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Color(0xFF0D47A1), size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          value is Widget
+              ? value
+              : Text(
+                  value.toString(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
                     color: Colors.black54,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const Divider(thickness: 1, height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildMataKuliahList(List<String> mataKuliah) {
+  Widget _buildDosenList(List<dynamic> dosen) {
+    if (dosen.isEmpty) {
+      return Text(
+        '-',
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: mataKuliah.map((mk) {
+      children: dosen.map((dosenName) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: Row(
             children: [
-              const Icon(Icons.circle, size: 8, color: Colors.grey),
+              const Icon(Icons.person, size: 18, color: Colors.grey),
               const SizedBox(width: 8),
               Text(
-                mk,
-                style: const TextStyle(fontSize: 16, color: Colors.black),
+                dosenName,
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
               ),
             ],
           ),
@@ -205,7 +199,7 @@ class VerifikasiPengajuanPage extends StatelessWidget {
       icon: Icon(icon, color: Colors.white),
       label: Text(
         label,
-        style: const TextStyle(fontSize: 16, color: Colors.white),
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
@@ -215,5 +209,24 @@ class VerifikasiPengajuanPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _verify(BuildContext context, String status) async {
+    try {
+      final result = await _controller.verify(
+        type: type,
+        id: id,
+        status: status,
+        token: token,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'])),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memproses: $e')),
+      );
+    }
   }
 }

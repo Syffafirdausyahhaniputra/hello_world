@@ -77,16 +77,39 @@ class _NotificationPageState extends State<NotificationPage> {
                       ),
                     );
                   } else {
-                    return Column(
-                      children: snapshot.data!.map((item) {
-                        return _buildNotificationCard(
-                          context,
-                          title: item['nama'] ?? 'Tidak ada nama',
-                          category: item['type'] ?? 'Tidak ada kategori',
-                          status: item['status'] ?? 'Tidak ada status',
-                          statusColor: _getStatusColor(item['status']),
+                    return FutureBuilder<String?>(
+                      future: SharedPreferences.getInstance()
+                          .then((prefs) => prefs.getString('token')),
+                      builder: (context, tokenSnapshot) {
+                        if (tokenSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final token = tokenSnapshot.data;
+
+                        if (token == null) {
+                          return const Center(
+                              child: Text('Token tidak ditemukan.'));
+                        }
+
+                        return Column(
+                          children: snapshot.data!.map((item) {
+                            return _buildNotificationCard(
+                              context,
+                              title: item['nama'] ?? 'Tidak ada nama',
+                              category: item['type'] ?? 'Tidak ada kategori',
+                              status: item['status'] ?? 'Tidak ada status',
+                              statusColor: _getStatusColor(item['status']),
+                              id: item['id'], // Pastikan item memiliki field id
+                              type: item[
+                                  'type'], // Pastikan item memiliki field type
+                              token: token,
+                            );
+                          }).toList(),
                         );
-                      }).toList(),
+                      },
                     );
                   }
                 },
@@ -117,12 +140,21 @@ class _NotificationPageState extends State<NotificationPage> {
     required String category,
     required String status,
     required Color statusColor,
+    required int id, // Tambahkan parameter id
+    required String type, // Tambahkan parameter type
+    required String token, // Tambahkan parameter token
   }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => VerifikasiPengajuanPage()),
+          MaterialPageRoute(
+            builder: (context) => VerifikasiPengajuanPage(
+              type: type, // Kirimkan type
+              id: id, // Kirimkan id
+              token: token, // Kirimkan token
+            ),
+          ),
         );
       },
       child: Card(
