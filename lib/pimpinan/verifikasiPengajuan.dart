@@ -46,7 +46,7 @@ class VerifikasiPengajuanPage extends StatelessWidget {
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Pengajuan Dosen',
+                      'Pengajuan',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

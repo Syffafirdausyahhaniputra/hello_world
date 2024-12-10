@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan ini
+import 'package:cached_network_image/cached_network_image.dart';
 import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editProfil.dart';
 import '../Controller/ProfileDosenController.dart'; // Mengimpor controller
@@ -79,14 +80,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundImage: profileData?['avatar'] != null
-                                  ? NetworkImage(profileData!['avatar'])
-                                      as ImageProvider
-                                  : null,
-                              child: profileData?['avatar'] == null
-                                  ? const Icon(Icons.person,
-                                      size: 50, color: Colors.white)
-                                  : null,
+                              backgroundImage: CachedNetworkImageProvider(
+                                  profileData!['avatar']),
+                              child: const Icon(Icons.person,
+                                  size: 50, color: Colors.white),
                             ),
                             const SizedBox(height: 16),
                             Text(
