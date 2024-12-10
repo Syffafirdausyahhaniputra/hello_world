@@ -3,7 +3,7 @@ import '../login/login.dart'; // Pastikan mengimpor halaman login
 import 'editprofil.dart';
 import '../Controller/ProfileController.dart'; // Mengimpor controller
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan ini
-
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -21,39 +21,40 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _fetchProfile() async {
-  try {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token');
 
-    if (token == null) {
-      _showError('Token tidak ditemukan. Harap login kembali.');
+      if (token == null) {
+        _showError('Token tidak ditemukan. Harap login kembali.');
+        setState(() {
+          isLoading = false;
+        });
+        _logout(context);
+        return;
+      }
+
+      final response = await ProfileController.fetchProfile(token);
+
+      if (response['success']) {
+        setState(() {
+          profileData = response['data']; // Gunakan data mentah dari API
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        _showError(
+            response['message'] ?? 'Terjadi kesalahan saat memuat profil.');
+      }
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
-      _logout(context);
-      return;
+      _showError('Terjadi kesalahan: $e');
     }
-
-    final response = await ProfileController.fetchProfile(token);
-
-    if (response['success']) {
-      setState(() {
-        profileData = response['data']; // Gunakan data mentah dari API
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      _showError(response['message'] ?? 'Terjadi kesalahan saat memuat profil.');
-    }
-  } catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    _showError('Terjadi kesalahan: $e');
   }
-}
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -63,85 +64,86 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : profileData == null
-            ? const Center(child: Text('Data tidak tersedia'))
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView(
-                  children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: profileData?['avatar'] != null
-                                ? NetworkImage(profileData!['avatar']) as ImageProvider
-                                : null,
-                            child: profileData?['avatar'] == null
-                                ? const Icon(Icons.person, size: 50, color: Colors.white)
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            profileData?['nama'] ?? 'Nama tidak tersedia',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : profileData == null
+              ? const Center(child: Text('Data tidak tersedia'))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView(
+                    children: [
+                      Center(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundImage: CachedNetworkImageProvider(
+                                  profileData!['avatar']),
                             ),
-                          ),
-                          Text(
-                            profileData?['nip'] ?? 'NIP tidak tersedia',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
+                            const SizedBox(height: 16),
+                            Text(
+                              profileData?['nama'] ?? 'Nama tidak tersedia',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              profileData?['nip'] ?? 'NIP tidak tersedia',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    ListTile(
-                      leading: const Icon(Icons.edit, color: Colors.black),
-                      title: const Text(
-                        'Edit Profil',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      const SizedBox(height: 20),
+                      ListTile(
+                        leading: const Icon(Icons.edit, color: Colors.black),
+                        title: const Text(
+                          'Edit Profil',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EditProfilPage(
+                                      token: '',
+                                    )),
+                          );
+                        },
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const EditProfilPage(token: '',)),
-                        );
-                      },
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.logout, color: Colors.black),
-                      title: const Text(
-                        'Keluar',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      const Divider(),
+                      ListTile(
+                        leading: const Icon(Icons.logout, color: Colors.black),
+                        title: const Text(
+                          'Keluar',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        onTap: () => _showLogoutConfirmationDialog(context),
                       ),
-                      onTap: () => _showLogoutConfirmationDialog(context),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-  );
-}
+    );
+  }
 
-
-  
   // Fungsi untuk menampilkan dialog konfirmasi
   void _showLogoutConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF0D47A1), // Warna latar biru sesuai gambar
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor:
+              const Color(0xFF0D47A1), // Warna latar biru sesuai gambar
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -157,7 +159,8 @@ Widget build(BuildContext context) {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Menutup dialog
-                      _logout(context); // Panggil fungsi logout jika "Ya" ditekan
+                      _logout(
+                          context); // Panggil fungsi logout jika "Ya" ditekan
                     },
                     child: const Text(
                       'Ya',
@@ -166,7 +169,8 @@ Widget build(BuildContext context) {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // Menutup dialog jika "Tidak" ditekan
+                      Navigator.of(context)
+                          .pop(); // Menutup dialog jika "Tidak" ditekan
                     },
                     child: const Text(
                       'Tidak',
@@ -181,7 +185,7 @@ Widget build(BuildContext context) {
       },
     );
   }
-  
+
   void _logout(BuildContext context) {
     // Mengarahkan pengguna ke halaman login dan mencegah kembali ke profil
     Navigator.pushAndRemoveUntil(
