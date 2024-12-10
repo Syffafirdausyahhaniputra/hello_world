@@ -82,8 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               radius: 50,
                               backgroundImage: CachedNetworkImageProvider(
                                   profileData!['avatar']),
-                              child: const Icon(Icons.person,
-                                  size: 50, color: Colors.white),
                             ),
                             const SizedBox(height: 16),
                             Text(
