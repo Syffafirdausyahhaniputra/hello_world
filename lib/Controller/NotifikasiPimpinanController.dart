@@ -5,20 +5,23 @@ import '../config.dart'; // Import Config
 class NotifikasiPimpinanController {
   // Mendapatkan daftar notifikasi
   Future<List<dynamic>> list({required String token}) async {
-    final url =
-        Uri.parse(Config.notifikasiPimpinanListEndpoint); // Perbaiki endpoint
+    final url = Uri.parse('${Config.baseUrl}/api/notifikasiPimpinan/list');
     final response = await http.get(
       url,
       headers: {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
-      }, // Tambahkan header autentikasi
+      },
     );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       try {
-        return jsonDecode(response.body);
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        if (json['success'] == true) {
+          return json['data']; // Mengembalikan daftar notifikasi
+        } else {
+          throw Exception(json['message'] ?? 'Gagal memuat data notifikasi.');
+        }
       } catch (e) {
         throw Exception('Format data tidak valid: ${response.body}');
       }
@@ -33,16 +36,33 @@ class NotifikasiPimpinanController {
     required int id,
     required String token,
   }) async {
-    final url =
-        Uri.parse('${Config.baseUrl}/api/notifikasiPimpinan/show/$type/$id');
+    final endpoint = type.toLowerCase() == 'sertifikasi'
+        ? 'show/sertifikasi/$id'
+        : 'show/pelatihan/$id';
+    final url = Uri.parse('${Config.baseUrl}/api/notifikasiPimpinan/$endpoint');
     final response = await http.get(
       url,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
     );
+
+    print('Type: $type');
+    print('ID: $id');
+    print('Token: $token');
+
+    print('Response Code: ${response.statusCode}');
+    print('Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       try {
-        return jsonDecode(response.body);
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        if (json['success'] == true) {
+          return json['data']; // Mengembalikan detail notifikasi
+        } else {
+          throw Exception(json['message'] ?? 'Gagal memuat detail notifikasi.');
+        }
       } catch (e) {
         throw Exception('Format data tidak valid: ${response.body}');
       }
@@ -67,14 +87,15 @@ class NotifikasiPimpinanController {
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: body,
     );
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       try {
-        return jsonDecode(response.body);
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        return json; // Mengembalikan respons verifikasi
       } catch (e) {
         throw Exception('Format data tidak valid: ${response.body}');
       }

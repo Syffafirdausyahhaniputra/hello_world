@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'verifikasiPengajuan.dart'; // Import halaman verifikasiPengajuan.dart
-import '../Controller/NotifikasiPimpinanController.dart'; // Import halaman verifikasiPengajuan.dart
+import '../Controller/NotifikasiPimpinanController.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -13,7 +13,8 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   final NotifikasiPimpinanController _controller =
       NotifikasiPimpinanController();
-  late Future<List<dynamic>> _notifikasiFuture;
+  Future<List<dynamic>>? _notifikasiFuture;
+  String? _token; // Tambahkan properti token
 
   @override
   void initState() {
@@ -26,10 +27,10 @@ class _NotificationPageState extends State<NotificationPage> {
     final token = prefs.getString('token');
     if (token != null) {
       setState(() {
+        _token = token; // Simpan token
         _notifikasiFuture = _controller.list(token: token);
       });
     } else {
-      // Jika token tidak ditemukan, handle dengan error atau pesan tertentu
       setState(() {
         _notifikasiFuture = Future.error('Token tidak ditemukan');
       });
@@ -38,62 +39,45 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: height * 0.01),
-              const Text(
-                'Notifikasi',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: height * 0.03),
-              FutureBuilder<List<dynamic>>(
-                future: _notifikasiFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${snapshot.error}',
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Tidak ada notifikasi',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    );
-                  } else {
-                    return FutureBuilder<String?>(
-                      future: SharedPreferences.getInstance()
-                          .then((prefs) => prefs.getString('token')),
-                      builder: (context, tokenSnapshot) {
-                        if (tokenSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        final token = tokenSnapshot.data;
-
-                        if (token == null) {
-                          return const Center(
-                              child: Text('Token tidak ditemukan.'));
-                        }
-
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: constraints.maxHeight * 0.01),
+                  const Text(
+                    'Notifikasi',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.03),
+                  FutureBuilder<List<dynamic>>(
+                    future: _notifikasiFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Error: ${snapshot.error}',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Tidak ada notifikasi',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                      } else {
                         return Column(
                           children: snapshot.data!.map((item) {
                             return _buildNotificationCard(
@@ -102,21 +86,19 @@ class _NotificationPageState extends State<NotificationPage> {
                               category: item['type'] ?? 'Tidak ada kategori',
                               status: item['status'] ?? 'Tidak ada status',
                               statusColor: _getStatusColor(item['status']),
-                              id: item['id'], // Pastikan item memiliki field id
-                              type: item[
-                                  'type'], // Pastikan item memiliki field type
-                              token: token,
+                              id: item['id'],
+                              type: item['type'],
                             );
                           }).toList(),
                         );
-                      },
-                    );
-                  }
-                },
+                      }
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -125,10 +107,8 @@ class _NotificationPageState extends State<NotificationPage> {
     switch (status) {
       case 'Proses':
         return Colors.blueGrey;
-      case 'Diterima':
+      case 'Selesai':
         return Colors.green;
-      case 'Ditolak':
-        return Colors.red;
       default:
         return Colors.grey;
     }
@@ -140,22 +120,27 @@ class _NotificationPageState extends State<NotificationPage> {
     required String category,
     required String status,
     required Color statusColor,
-    required int id, // Tambahkan parameter id
-    required String type, // Tambahkan parameter type
-    required String token, // Tambahkan parameter token
+    required int id,
+    required String type,
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerifikasiPengajuanPage(
-              type: type, // Kirimkan type
-              id: id, // Kirimkan id
-              token: token, // Kirimkan token
+        if (_token != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerifikasiPengajuanPage(
+                type: type,
+                id: id,
+                token: _token!, // Pastikan token dikirim
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Token tidak ditemukan')),
+          );
+        }
       },
       child: Card(
         elevation: 4,
@@ -168,7 +153,7 @@ class _NotificationPageState extends State<NotificationPage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
+              const Icon(
                 Icons.notifications,
                 size: 40,
                 color: Colors.orange,

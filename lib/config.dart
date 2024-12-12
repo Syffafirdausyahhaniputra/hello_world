@@ -1,6 +1,6 @@
 class Config {
   // URL dasar API
-  static const String baseUrl = 'http://192.168.31.189:8000';
+  static const String baseUrl = 'http://192.168.31.250:8000';
 
   // Endpoint untuk login
   static const String loginEndpoint = '$baseUrl/api/login';
@@ -25,14 +25,6 @@ class Config {
   static const String detailSertifikasiEndpoint =
       '$baseUrl/api/sertifikasi/show';
   static const String detailPelatihanEndpoint = '$baseUrl/api/pelatihan/show';
-
-  // Endpoint untuk notifikasi pimpinan
-  static const String notifikasiPimpinanListEndpoint =
-      '$baseUrl/api/notifikasiPimpinan/list';
-  static const String notifikasiPimpinanShowEndpoint =
-      '$baseUrl/api/notifikasiPimpinan/show';
-  static const String notifikasiPimpinanVerifyEndpoint =
-      '$baseUrl/api/notifikasiPimpinan/verify';
 
   // kompetensi prodi
   static const String kompetensiList = '$baseUrl/api/kompetensi/list';
