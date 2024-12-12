@@ -1,27 +1,32 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hello_world/config.dart';
 import 'package:image_picker/image_picker.dart';
-import '../Controller/ProfileController.dart';
+import 'package:http/http.dart' as http;
+
 
 class EditProfilPage extends StatelessWidget {
-  final String token; // Tambahkan token untuk autentikasi
   const EditProfilPage({super.key, required this.token});
+
+  final String token;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(  // Menambahkan SingleChildScrollView untuk scrollable
+        child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: Column(
               children: [
                 Row(
                   children: [
-                    // Tombol Kembali ke Halaman Profil
                     IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back_ios_new),
                       color: Colors.white,
                       onPressed: () {
                         Navigator.pop(context);
@@ -39,18 +44,6 @@ class EditProfilPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Avatar Gambar Profil
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.person,
-                    size: 50,
-                    color: const Color(0xFF0D47A1),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                // Form Edit Profil
                 EditProfileForm(token: token),
               ],
             ),
@@ -63,87 +56,118 @@ class EditProfilPage extends StatelessWidget {
 }
 
 class EditProfileForm extends StatefulWidget {
-  final String token; // Tambahkan token untuk autentikasi
   const EditProfileForm({super.key, required this.token});
+
+  final String token;
 
   @override
   _EditProfileFormState createState() => _EditProfileFormState();
 }
 
 class _EditProfileFormState extends State<EditProfileForm> {
-  // Controller untuk input form
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nipController = TextEditingController();
-  final TextEditingController _fieldController = TextEditingController();
-  final TextEditingController _courseController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  File? _avatar; // File untuk avatar
 
-  final ImagePicker _picker = ImagePicker();
+  File? _selectedAvatar;
+  bool _isLoading = true;
+  String? avatarUrl;
 
   @override
-  void dispose() {
-    _usernameController.dispose();
-    _nameController.dispose();
-    _nipController.dispose();
-    _fieldController.dispose();
-    _courseController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _fetchInitialData();
+  }
+
+  Future<void> _fetchInitialData() async {
+    try {
+      // Fetch data from API
+      final profileData = await _fetchProfile(widget.token);
+
+
+      setState(() {
+        avatarUrl = profileData['avatar'];
+        _usernameController.text = profileData['username'];
+        _nameController.text = profileData['nama'];
+        _nipController.text = profileData['nip'];
+
+
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat data: $e')),
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchProfile(String token) async {
+    final response = await http.get(
+      Uri.parse(Config.profile),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return json.decode(response.body)['data'];
+    } else {
+      throw Exception('Failed to load profile');
+    }
   }
 
   Future<void> _pickAvatar() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _avatar = File(pickedFile.path);
+        _selectedAvatar = File(pickedFile.path);
       });
     }
   }
 
-  Future<void> _updateProfile() async {
-    final response = await ProfileController().updateProfile(
-      token: widget.token,
-      username: _usernameController.text.trim(),
-      nama: _nameController.text.trim(),
-      nip: _nipController.text.trim(),
-      oldPassword: _oldPasswordController.text.trim(),
-      password: _passwordController.text.trim(),
-      avatar: _avatar,
-    );
+  Future<void> _saveProfile() async {
+    try {
+      final header = {
+        'Authorization': 'Bearer ${widget.token}',
+      };
 
-    if (response['success']) {
-      // Tampilkan dialog sukses
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Berhasil'),
-          content: Text(response['message']),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Tampilkan dialog error
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Gagal'),
-          content: Text(response['message']),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+      final data = {
+        'username': _usernameController.text,
+        'nama': _nameController.text,
+        'nip': _nipController.text,
+        'password': _passwordController.text,
+        'old_password': _oldPasswordController.text,
+      };
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse(Config.profile),
+      )
+        ..headers.addAll(header)
+        ..fields.addAll(data);
+      if (_selectedAvatar != null) {
+        request.files.add(
+            await http.MultipartFile.fromPath('avatar', _selectedAvatar!.path));
+      }
+      print(request.headers);
+      final response = await request.send();
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profil berhasil diperbarui')),
+        );
+      } else {
+        throw Exception('Gagal menyimpan profil');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
       );
     }
   }
@@ -152,236 +176,78 @@ class _EditProfileFormState extends State<EditProfileForm> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Input Username
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Username',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: screenWidth * 0.9,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _usernameController,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
-            ),
+        GestureDetector(
+          onTap: _pickAvatar,
+          child: CircleAvatar(
+            radius: 50,
+            backgroundImage: _selectedAvatar != null
+                ? FileImage(_selectedAvatar!)
+                : avatarUrl != null
+                    ? NetworkImage(avatarUrl ?? '')
+                    : null,
+            child: _selectedAvatar == null && avatarUrl == null
+                ? const Icon(Icons.person, size: 50, color: Colors.white)
+                : null,
           ),
         ),
         const SizedBox(height: 16),
-
-        // Input Nama
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Nama',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: screenWidth * 0.9,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
+        _buildTextField("Username", _usernameController, true),
         const SizedBox(height: 16),
-
-        // Input NIP
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'NIP',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: screenWidth * 0.9,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _nipController,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
+        _buildTextField("Nama", _nameController, false),
         const SizedBox(height: 16),
-
-        // // Input Bidang
-        // Align(
-        //   alignment: Alignment.centerLeft,
-        //   child: Text(
-        //     'Bidang',
-        //     style: GoogleFonts.montserrat(
-        //       color: Colors.white,
-        //       fontSize: 16,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
-        // Container(
-        //   width: screenWidth * 0.9,
-        //   height: 50,
-        //   decoration: BoxDecoration(
-        //     color: Colors.white,
-        //     borderRadius: BorderRadius.circular(20),
-        //   ),
-        //   child: TextField(
-        //     controller: _fieldController,
-        //     decoration: const InputDecoration(
-        //       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        //       border: InputBorder.none,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(height: 16),
-
-        // // Input Mata Kuliah
-        // Align(
-        //   alignment: Alignment.centerLeft,
-        //   child: Text(
-        //     'Mata Kuliah',
-        //     style: GoogleFonts.montserrat(
-        //       color: Colors.white,
-        //       fontSize: 16,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
-        // Container(
-        //   width: screenWidth * 0.9,
-        //   height: 50,
-        //   decoration: BoxDecoration(
-        //     color: Colors.white,
-        //     borderRadius: BorderRadius.circular(20),
-        //   ),
-        //   child: TextField(
-        //     controller: _courseController,
-        //     decoration: const InputDecoration(
-        //       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        //       border: InputBorder.none,
-        //     ),
-        //   ),
-        // ),
-        // const SizedBox(height: 16),
-
-        // Input Password
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Password Lama',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: screenWidth * 0.9,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _oldPasswordController,
-            obscureText: true,  // Menyembunyikan input password
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
+        _buildTextField("NIP", _nipController, false),
         const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Password Baru',
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: screenWidth * 0.9,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _passwordController,
-            obscureText: true,  // Menyembunyikan input password
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
-            ),
-          ),
-        ),
         const SizedBox(height: 16),
-
-        // Pilih Avatar
-        ElevatedButton.icon(
-          onPressed: _pickAvatar,
-          icon: const Icon(Icons.image),
-          label: const Text('Pilih Avatar'),
-        ),
+        _buildTextField("Old Password", _oldPasswordController, false,
+            obscureText: true),
+        const SizedBox(height: 16),
+        _buildTextField("Password", _passwordController, false,
+            obscureText: true),
         const SizedBox(height: 30),
-
-        // Tombol Simpan
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFEFB509),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            minimumSize: Size(screenWidth * 0.5, 50),
-          ),
-          onPressed: _updateProfile,
+          onPressed: _saveProfile,
           child: Text(
             'SIMPAN',
             style: GoogleFonts.poppins(
               color: Colors.black,
               fontSize: 18,
               fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField(
+      String label, TextEditingController controller, bool readOnly,
+      {bool obscureText = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16)),
+        const SizedBox(height: 8),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: controller,
+            readOnly: readOnly,
+            obscureText: obscureText,
+            decoration: const InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              border: InputBorder.none,
             ),
           ),
         ),

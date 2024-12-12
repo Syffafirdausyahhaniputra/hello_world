@@ -1,175 +1,158 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hello_world/Model/pelatihanModel.dart';
-import 'package:hello_world/config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../Controller/pelatihanController.dart';
-
-class InputDataPelatihanPage extends StatefulWidget {
+class InputDataPelatihanPage extends StatelessWidget {
   const InputDataPelatihanPage({Key? key}) : super(key: key);
 
   @override
-  _InputDataPelatihanPageState createState() => _InputDataPelatihanPageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                padding: EdgeInsets.all(0),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'INPUT DATA PELATIHAN',
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Expanded(child: const InputDataForm()), // Gunakan Expanded di sini
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: const Color(0xFF0D47A1),
+    );
+  }
 }
 
-class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
-  final PelatihanController _controller = PelatihanController();
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _periodeController = TextEditingController();
-  final TextEditingController _startDateController = TextEditingController();
-  final TextEditingController _endDateController = TextEditingController();
-
-  int? _selectedLevelId;
-  int? _selectedVendorId;
-  int? _selectedBidangId;
-  int? _selectedMataKuliahId;
-
-  List<dynamic> _levels = [];
-  List<dynamic> _vendors = [];
-  List<dynamic> _bidangs = [];
-  List<dynamic> _matkuls = [];
-
-  bool isLoading = false;
+class InputDataForm extends StatefulWidget {
+  const InputDataForm({Key? key}) : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
-    _loadDropdownData();
+  InputDataFormState createState() => InputDataFormState();
+}
+
+class InputDataFormState extends State<InputDataForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _periodeController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _expiredDateController = TextEditingController();
+
+  String? _selectedJenis;
+  String? _selectedVendor;
+  String? _selectedBidang;
+  String? _selectedMataKuliah;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _periodeController.dispose();
+    _dateController.dispose();
+    _expiredDateController.dispose();
+    super.dispose();
   }
 
-  Future<void> _loadDropdownData() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> _submitData() async {
+    const String apiUrl = 'https://your-api-domain.com/api/pelatihans';
+
+    final Map<String, dynamic> data = {
+      'nama_pelatihan': _nameController.text,
+      'tanggal': _dateController.text,
+      'tanggal_akhir': _expiredDateController.text,
+      'periode': _periodeController.text,
+      'jenis': _selectedJenis,
+      'vendor': _selectedVendor,
+      'bidang': _selectedBidang,
+      'mata_kuliah': _selectedMataKuliah,
+    };
 
     try {
-      final dropdownData = await _controller.fetchDropdownOptions();
-      setState(() {
-        _levels = dropdownData['levels'];
-        _vendors = dropdownData['vendors'];
-        _bidangs = dropdownData['bidangs'];
-        _matkuls = dropdownData['matkuls'];
-      });
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 201) {
+        // Jika berhasil
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data berhasil dikirim')),
+        );
+      } else {
+        final responseBody = json.decode(response.body);
+        throw Exception(responseBody['message'] ?? 'Gagal mengirim data');
+      }
     } catch (e) {
+      // Jika gagal
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat data dropdown: $e')),
+        SnackBar(content: Text('Error: $e')),
       );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _submitForm() async {
-    if (_nameController.text.isEmpty ||
-        _selectedLevelId == null ||
-        _selectedVendorId == null ||
-        _selectedBidangId == null ||
-        _selectedMataKuliahId == null ||
-        _periodeController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Harap lengkapi semua data')),
-      );
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final pelatihan = PelatihanModel(
-        pelatihanId: 0,
-        namaPelatihan: _nameController.text,
-        tanggal: DateTime.parse(_startDateController.text),
-        tanggalAkhir: DateTime.parse(_endDateController.text),
-        levelId: _selectedLevelId!,
-        vendorId: _selectedVendorId!,
-        bidangId: _selectedBidangId!,
-        mkId: _selectedMataKuliahId!,
-        periode: _periodeController.text,
-        // pelatihanId: null,
-      );
-
-      await _controller.addPelatihan(pelatihan);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Pelatihan berhasil ditambahkan!')),
-      );
-
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0D47A1),
-        title: Text(
-          'Input Data Pelatihan',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextField('Nama Pelatihan', _nameController),
-                      _buildDropdownField('Level', _selectedLevelId, _levels),
-                      _buildDateField('Tanggal Mulai', _startDateController),
-                      _buildDropdownField('Vendor', _selectedVendorId, _vendors),
-                      _buildDateField('Tanggal Akhir', _endDateController),
-                      _buildDropdownField('Bidang', _selectedBidangId, _bidangs),
-                      _buildDropdownField(
-                          'Mata Kuliah', _selectedMataKuliahId, _matkuls),
-                      _buildTextField('Periode', _periodeController),
-                      const SizedBox(height: 30),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFEFB509),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            minimumSize: const Size(120, 40),
-                          ),
-                          onPressed: _submitForm,
-                          child: Text(
-                            'KIRIM',
-                            style: GoogleFonts.poppins(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTextField('Nama Pelatihan', _nameController),
+          _buildDropdownField('Level', _selectedJenis, ['Internasional', 'Nasional']),
+          _buildDateField('Tanggal', _dateController),
+          _buildDropdownField('Vendor', _selectedVendor, ['Vendor 1', 'Vendor 2', 'Vendor 3']),
+          _buildDateField('Tanggal Akhir', _expiredDateController),
+          _buildDropdownField('Bidang', _selectedBidang, ['Bidang 1', 'Bidang 2']),
+          _buildDropdownField('Mata Kuliah', _selectedMataKuliah, ['Mata Kuliah 1', 'Mata Kuliah 2']),
+          _buildTextField('Periode', _periodeController),
+      
+          const SizedBox(height: 30),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEFB509),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-        ),
+                minimumSize: const Size(120, 40),
+              ),
+              onPressed: _submitData, // Panggil fungsi submit di sini
+              child: Text(
+                'KIRIM',
+                style: GoogleFonts.poppins(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -181,20 +164,22 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 16,
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            hintText: 'Masukkan $label',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+        Container(
+          height: 45,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20),
+              border: InputBorder.none,
             ),
           ),
         ),
@@ -203,15 +188,14 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
     );
   }
 
-  Widget _buildDropdownField(
-      String label, int? selectedValue, List<dynamic> items) {
+  Widget _buildDropdownField(String label, String? selectedValue, List<String> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 16,
           ),
         ),
@@ -222,20 +206,17 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: DropdownButtonFormField<int>(
+          child: DropdownButtonFormField<String>(
             value: selectedValue,
             onChanged: (newValue) {
               setState(() {
-                if (label == 'Level') _selectedLevelId = newValue;
-                if (label == 'Vendor') _selectedVendorId = newValue;
-                if (label == 'Bidang') _selectedBidangId = newValue;
-                if (label == 'Mata Kuliah') _selectedMataKuliahId = newValue;
+                selectedValue = newValue;
               });
             },
-            items: items.map<DropdownMenuItem<int>>((item) {
-              return DropdownMenuItem<int>(
-                value: item['id'],
-                child: Text(item['name']),
+            items: items.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
               );
             }).toList(),
             decoration: const InputDecoration(
@@ -256,37 +237,38 @@ class _InputDataPelatihanPageState extends State<InputDataPelatihanPage> {
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 16,
           ),
         ),
         const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2101),
-            );
-
-            if (pickedDate != null) {
-              setState(() {
-                controller.text = pickedDate.toIso8601String().split('T')[0];
-              });
-            }
-          },
-          child: AbsorbPointer(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Pilih tanggal',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: TextField(
+            controller: controller,
+            readOnly: true,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+              border: InputBorder.none,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.calendar_today, color: Colors.grey),
+                onPressed: () async {
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      controller.text = "${picked.toLocal()}".split(' ')[0];
+                    });
+                  }
+                },
               ),
             ),
           ),

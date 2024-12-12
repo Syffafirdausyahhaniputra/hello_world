@@ -237,10 +237,10 @@ class _DashboardState extends State<Dashboard> {
                     );
                   } else {
                     // Arahkan ke halaman input pelatihan
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => InputDataPelatihanPage()),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => InputDataPelatihanPage()),
+                    );
                   }
                 },
                 child: Container(
