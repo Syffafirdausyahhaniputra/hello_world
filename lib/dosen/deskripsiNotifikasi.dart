@@ -1,192 +1,191 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../controller/NotifikasiPimpinanController.dart';
 
 class DeskripsiNotifikasiPage extends StatelessWidget {
-  final String status;
+  final String type;
+  final int id;
+  final String token;
+  final NotifikasiPimpinanController _controller =
+      NotifikasiPimpinanController();
 
-  DeskripsiNotifikasiPage({required this.status});
+  DeskripsiNotifikasiPage({
+    required this.type,
+    required this.id,
+    required this.token,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-
-    Color statusColor;
-    String statusText;
-    bool showDownloadButton = false;
-
-    // Menentukan warna dan teks berdasarkan status
-    if (status == 'Diterima') {
-      statusColor = Colors.green;
-      statusText = 'Pengajuan Diterima';
-      showDownloadButton = true;
-    } else if (status == 'Proses') {
-      statusColor = Colors.grey;
-      statusText = 'Pengajuan masih dalam proses';
-    } else {
-      statusColor = Colors.red;
-      statusText = 'Pengajuan ditolak';
-    }
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Back button and Username
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+      backgroundColor: const Color(0xFFF5F6FA),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0D47A1),
+        elevation: 0,
+        title: Text(
+          'Detail Notifikasi',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return FutureBuilder<Map<String, dynamic>>(
+            future: _controller.show(type: type, id: id, token: token),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Terjadi kesalahan: ${snapshot.error}',
+                    style: GoogleFonts.poppins(color: Colors.red, fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        'Zulfa Ulinnuha',
-                        style: TextStyle(
-                          fontSize: 16,
+                );
+              } else if (!snapshot.hasData || snapshot.data == null) {
+                return Center(
+                  child: Text(
+                    'Data tidak ditemukan.',
+                    style:
+                        GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
+                  ),
+                );
+              }
+
+              final data = snapshot.data!;
+
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '$type',
+                        style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          color: const Color(0xFF0D47A1),
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.account_circle),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: height * 0.02),
-
-              // Status Box
-              Container(
-                width: width,
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    statusText,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(height: height * 0.02),
-
-              // Certification Title and Category
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'AWS Certified Solutions',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Architect',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Cloud Computing',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: height * 0.02),
-
-              // Information Table
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTableRow('Bidang', ':Cloud Computing'),
-                    _buildTableRow('Mata Kuliah', ':- Jaringan Komputer\n- Konsep Teknologi Informasi'),
-                    _buildTableRow('Tanggal Acara', ':20 Januari 2021'),
-                    _buildTableRow('Berlaku Hingga', ':19 September 2025'),
-                    _buildTableRow('Vendor', ':Kemendikbud'),
-                    _buildTableRow('Jenis', ':Profesi'),
-                    _buildTableRow('Periode', ':2024 – ganjil'),
-                  ],
-                ),
-              ),
-              SizedBox(height: height * 0.03),
-
-              // Row with text and download button
-              if (showDownloadButton)
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Silahkan unduh surat tugas'),
-                      SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle download action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.yellow[700],
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        ),
-                        child: Text(
-                          'UNDUH',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ..._buildInfoItems(data),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-            ],
-          ),
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }
 
-  Widget _buildTableRow(String title, String content) {
+  List<Widget> _buildInfoItems(Map<String, dynamic> data) {
+    return [
+      _buildInfoItem('Judul', _truncateText(data['nama'] ?? '-', 50)),
+      _buildInfoItem('Bidang', _truncateText(data['bidang'] ?? '-', 50)),
+      _buildInfoItem('Tanggal', data['tanggal_acara'] ?? '-'),
+      _buildInfoItem('Mata Kuliah', _truncateText(data['matkul'] ?? '-', 50)),
+      _buildInfoItem('Kuota', data['kuota'] ?? '1'),
+      _buildInfoItem('Biaya', data['biaya'] ?? '-'),
+      _buildInfoItem('Lokasi', _truncateText(data['lokasi'] ?? '-', 50)),
+      _buildInfoItem('Vendor', _truncateText(data['vendor'] ?? '-', 50)),
+      _buildInfoItem('Periode', data['periode'] ?? '-'),
+      _buildInfoItem(
+          'Keterangan', _truncateText(data['keterangan'] ?? '-', 100)),
+      _buildInfoItem('Dosen', _buildDosenList(data['dosen_list'] ?? [])),
+    ];
+  }
+
+  Widget _buildInfoItem(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              '$title',
-              style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
             ),
           ),
-          Expanded(
-            flex: 7,
-            child: Text('$content'),
-          ),
+          const SizedBox(height: 4),
+          value is Widget
+              ? value
+              : Text(
+                  value.toString(),
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.black54,
+                  ),
+                ),
+          const Divider(thickness: 1, height: 20),
         ],
       ),
     );
+  }
+
+  Widget _buildDosenList(List<dynamic> dosen) {
+    if (dosen.isEmpty) {
+      return Text(
+        '-',
+        style: GoogleFonts.poppins(fontSize: 16, color: Colors.black54),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: dosen.map((dosenData) {
+        final namaDosen = _truncateText(dosenData['nama_dosen'] ?? '-', 30);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Row(
+            children: [
+              const Icon(Icons.person, size: 18, color: Colors.grey),
+              const SizedBox(width: 8),
+              Text(
+                namaDosen,
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.black87),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  String _truncateText(String text, int maxLength) {
+    return text.length > maxLength
+        ? '${text.substring(0, maxLength)}...'
+        : text;
   }
 }
