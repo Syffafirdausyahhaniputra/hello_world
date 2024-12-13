@@ -10,16 +10,15 @@ class BidangModel {
     required this.bidangNama,
   });
 
-  // Factory method to create BidangModel from JSON
   factory BidangModel.fromJson(Map<String, dynamic> json) {
+    final bidang = json['bidang'] ?? {}; 
     return BidangModel(
-      bidangId: json['bidang_id'] as int,
-      bidangKode: json['bidang_kode'] as String,
-      bidangNama: json['bidang_nama'] as String,
+      bidangId: bidang['bidang_id'] ?? 0, 
+      bidangKode: bidang['bidang_kode'] ?? '', 
+      bidangNama: bidang['bidang_nama'] ?? '', 
     );
   }
 
-  // Method to convert BidangModel to JSON
   Map<String, dynamic> toJson() {
     return {
       'bidang_id': bidangId,
