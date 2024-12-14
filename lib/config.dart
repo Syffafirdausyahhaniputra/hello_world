@@ -1,6 +1,6 @@
 class Config {
   // URL dasar API
-  static const String baseUrl = 'http://192.168.31.250:8000';
+  static const String baseUrl = 'http://192.168.1.180:8000';
 
   // Endpoint untuk login
   static const String loginEndpoint = '$baseUrl/api/login';
@@ -31,7 +31,6 @@ class Config {
   static const String kompetensiEndpoint =
       '$baseUrl/api/kompetensi/{prodi_kode}/show_ajax';
   static const String kompetensi = '$baseUrl/api/kompetensi';
-      
 
   static const String inputPelatihan = '$baseUrl/api/pelatihan/create';
   static const String inputpelatihan = '$baseUrl/api/pelatihan/store';
@@ -41,4 +40,6 @@ class Config {
 
   // Endpoint untuk mendapatkan data matkul
   static const String matkulList = '$baseUrl/api/matakuliah';
+
+  static const String detailBidang = '$baseUrl/api/bidang/show';
 }

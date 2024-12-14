@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/Controller/DetailBidang.dart';
+import 'package:hello_world/Model/BidangModel.dart';
 import 'informasi.dart';
 
 // Halaman daftar dosen
-class DosenBidangPage extends StatelessWidget {
-  const DosenBidangPage({Key? key}) : super(key: key);
+class DosenBidangPage extends StatefulWidget {
+  String? id;
+
+  DosenBidangPage({required String id, Key? key}) : super(key: key);
+
+  @override
+  State<DosenBidangPage> createState() => _DosenBidangPageState();
+}
+
+class _DosenBidangPageState extends State<DosenBidangPage> {
+  Detailbidang control = Detailbidang();
+  List<dynamic>? listDosen;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    control.getDetailBidangs(widget.id);
+  }
+
+  Future<void> setDetailBidamg() async{
+    Map<String,dynamic> apiRes = await control.getDetailBidangs(widget.id);
+
+    
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -54,7 +80,8 @@ class DosenBidangPage extends StatelessWidget {
               const SizedBox(height: 10),
               _buildSearchBox(),
               const SizedBox(height: 20),
-              _buildDosenList(context), // Tambahkan parameter context untuk navigasi
+              _buildDosenList(
+                  context), // Tambahkan parameter context untuk navigasi
             ],
           ),
         ),
@@ -70,7 +97,8 @@ class DosenBidangPage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: const Color(0xFF0D47A1), // Warna biru untuk border kotak pencarian
+          color: const Color(
+              0xFF0D47A1), // Warna biru untuk border kotak pencarian
           width: 2,
         ),
       ),
@@ -83,7 +111,8 @@ class DosenBidangPage extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: "CARI",
                 border: InputBorder.none,
-                hintStyle: TextStyle(color: Colors.grey), // Warna teks placeholder
+                hintStyle:
+                    TextStyle(color: Colors.grey), // Warna teks placeholder
               ),
               style: TextStyle(color: Colors.black), // Warna teks input
             ),
@@ -102,21 +131,16 @@ class DosenBidangPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          _buildDosenItem(
-            context,
-            name: "Zulfa Ulinnuha",
-            description: "Dosen Jurusan Teknologi Informasi",
-            isMain: true,
-          ),
-          const SizedBox(height: 16),
-          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang A"),
-          const SizedBox(height: 16),
-          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang B"),
-          const SizedBox(height: 16),
-          _buildDosenItem(context, name: "Nama Dosen Lain", description: "Bidang C"),
-        ],
+      child: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (BuildContext context, int inde) {
+          return Column(
+            children: [
+              _buildDosenItem(context,
+                  name: 'Zulfa ulihan', description: 'internet'),
+            ],
+          );
+        },
       ),
     );
   }
@@ -147,7 +171,8 @@ class DosenBidangPage extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: const Color(0xFFEFB509), // Warna kuning untuk avatar
+              backgroundColor:
+                  const Color(0xFFEFB509), // Warna kuning untuk avatar
               radius: 30,
               child: Icon(
                 Icons.person,
