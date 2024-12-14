@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/Controller/DetailBidang.dart';
 import 'package:hello_world/Model/BidangModel.dart';
+import 'package:hello_world/Model/DosenModel.dart';
 import 'informasi.dart';
 
 // Halaman daftar dosen
 class DosenBidangPage extends StatefulWidget {
-  String? id;
+  String id;
 
-  DosenBidangPage({required String id, Key? key}) : super(key: key);
+  DosenBidangPage({required this.id});
 
   @override
   State<DosenBidangPage> createState() => _DosenBidangPageState();
@@ -16,23 +17,29 @@ class DosenBidangPage extends StatefulWidget {
 class _DosenBidangPageState extends State<DosenBidangPage> {
   Detailbidang control = Detailbidang();
   List<dynamic>? listDosen;
+  bool isloading = true;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    control.getDetailBidangs(widget.id);
+    setDetailBidamg();
   }
 
-  Future<void> setDetailBidamg() async{
-    Map<String,dynamic> apiRes = await control.getDetailBidangs(widget.id);
+  Future<void> setDetailBidamg() async {
+    Map<String, dynamic> apiRes = await control.getDetailBidangs(widget.id);
 
-    
+    listDosen = apiRes['dosen'];
+
+    setState(() {
+      isloading = false;
+      listDosen = apiRes['dosen'];
+    });
+    print(apiRes);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -80,8 +87,9 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
               const SizedBox(height: 10),
               _buildSearchBox(),
               const SizedBox(height: 20),
-              _buildDosenList(
-                  context), // Tambahkan parameter context untuk navigasi
+              isloading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildDosenList(context),
             ],
           ),
         ),
@@ -125,24 +133,30 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
   // Widget untuk daftar dosen
   Widget _buildDosenList(BuildContext context) {
     return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D47A1), // Warna biru untuk container background
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(16.0),
-      child: ListView.builder(
-        itemCount: 1,
-        itemBuilder: (BuildContext context, int inde) {
-          return Column(
-            children: [
-              _buildDosenItem(context,
-                  name: 'Zulfa ulihan', description: 'internet'),
-            ],
-          );
-        },
-      ),
-    );
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color:
+              const Color(0xFF0D47A1), // Warna biru untuk container background
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: listDosen!.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                _buildDosenItem(
+                  context,
+                  name: listDosen![index]['dosen2']['user']['nama'],
+                  description: listDosen![index]['dosen2']['user']['nip'],
+                ),
+                SizedBox(height: 12),
+              ],
+            );
+          },
+        ));
   }
 
   // Widget untuk item dosen individual

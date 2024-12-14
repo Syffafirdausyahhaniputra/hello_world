@@ -319,16 +319,16 @@ class _DashboardPageState extends State<DashboardPage> {
       crossAxisSpacing: 20,
       children: [
         _buildCategoryCard(
-            '1', 'Teknologi Informasi', 'lib/assets/progamming.png', context),
+            'Teknologi Informasi', '1', 'lib/assets/progamming.png', context),
         _buildCategoryCard(
-            '2', 'Cloud Computing', 'lib/assets/rpl.png', context),
+            'Cloud Computing', '2', 'lib/assets/rpl.png', context),
         _buildCategoryCard(
-            '6', 'Analisis Data', 'lib/assets/database.png', context),
-        _buildCategoryCard('3', 'Data Mining',
+            'Analisis Data', '6', 'lib/assets/database.png', context),
+        _buildCategoryCard('Data Mining', '3',
             'lib/assets/information_management.png', context),
-        _buildCategoryCard('4', 'Manajemen Pemasaran',
+        _buildCategoryCard('Manajemen Pemasaran', '4',
             'lib/assets/cyber_security.png', context),
-        _buildCategoryCard('5', 'Algoritma Evolusioner',
+        _buildCategoryCard('Algoritma Evolusioner', '5',
             'lib/assets/data_mining.png', context),
       ],
     );
