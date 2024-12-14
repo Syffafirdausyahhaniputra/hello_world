@@ -23,13 +23,11 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setDetailBidamg();
+    setDetailBidang();
   }
 
-  Future<void> setDetailBidamg() async {
+  Future<void> setDetailBidang() async {
     Map<String, dynamic> apiRes = await control.getDetailBidangs(widget.id);
-
-    listDosen = apiRes['dosen'];
 
     setState(() {
       isloading = false;
@@ -149,6 +147,8 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
               children: [
                 _buildDosenItem(
                   context,
+                  bidangId: listDosen![index]['bidang_id'].toString(),
+                  dosenId: listDosen![index]['dosen_id'].toString(),
                   name: listDosen![index]['dosen2']['user']['nama'],
                   description: listDosen![index]['dosen2']['user']['nip'],
                 ),
@@ -162,6 +162,8 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
   // Widget untuk item dosen individual
   Widget _buildDosenItem(
     BuildContext context, {
+    required String bidangId,
+    required String dosenId,
     required String name,
     required String description,
     bool isMain = false,
@@ -172,7 +174,11 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SertifikasiPage(dosenName: name),
+            builder: (context) => SertifikasiPage(
+                dosenName: name,
+                dosenNip: description,
+                dosenId: dosenId,
+                bidangId: bidangId),
           ),
         );
       },

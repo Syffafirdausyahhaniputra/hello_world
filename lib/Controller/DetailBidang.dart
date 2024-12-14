@@ -38,4 +38,33 @@ class Detailbidang {
       throw Exception('Failed to load dashboard data');
     }
   }
+
+  Future<Map<String, dynamic>> getDetailDosen(String id, String idDosen) async {
+    final token = await Sharedpref.getToken();
+
+    final url = Uri.parse('${Config.detailBidangDosen}/${id}/${idDosen}');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        print('Error loading data: ${response.statusCode} - ${response.body}');
+        throw Exception('Failed to load dashboard data');
+      }
+    } catch (e) {
+      print('Error loading dashboard data: $e');
+      throw Exception('Failed to load dashboard data');
+    }
+  }
 }

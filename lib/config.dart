@@ -42,4 +42,5 @@ class Config {
   static const String matkulList = '$baseUrl/api/matakuliah';
 
   static const String detailBidang = '$baseUrl/api/bidang/show';
+  static const String detailBidangDosen = '$baseUrl/api/bidang/infodosen';
 }

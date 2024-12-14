@@ -1,37 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/Controller/BidangController.dart';
+import 'package:hello_world/Controller/DetailBidang.dart';
 
-class SertifikasiPage extends StatelessWidget {
+class SertifikasiPage extends StatefulWidget {
   final String dosenName;
-  final List<Map<String, String>> sertifikasiList = [
-    {
-      'title': 'AWS Certified Solutions Architect',
-      'category': 'Cloud Computing',
-      'date': '20 Oktober 2024',
-    },
-    {
-      'title': 'Google Cloud Engineer',
-      'category': 'Cloud Computing',
-      'date': '10 November 2023',
-    },
-    {
-      'title': 'Azure Fundamentals',
-      'category': 'Cloud Computing',
-      'date': '15 September 2023',
-    },
-    {
-      'title': 'Certified Kubernetes Administrator',
-      'category': 'DevOps',
-      'date': '22 Agustus 2023',
-    },
-    {
-      'title': 'Cisco Certified Network Associate (CCNA)',
-      'category': 'Networking',
-      'date': '30 Juli 2023',
-    },
-  ];
+  final String dosenNip;
+  final String dosenId;
+  final String bidangId;
 
-  // Hapus kata kunci const dari konstruktor
-  SertifikasiPage({Key? key, required this.dosenName}) : super(key: key);
+  SertifikasiPage(
+      {Key? key,
+      required this.dosenNip,
+      required this.dosenName,
+      required this.bidangId,
+      required this.dosenId})
+      : super(key: key);
+
+  @override
+  _SertifikasiPageState createState() => _SertifikasiPageState();
+}
+
+class _SertifikasiPageState extends State<SertifikasiPage> {
+  final Detailbidang control = Detailbidang();
+  List<dynamic>? sertifikasiList;
+  List<dynamic>? pelatihanList;
+  int jumlahSertifikasi = 0;
+  bool isloading = true;
+
+  // Daftar sertifikasi palsu
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    // Mengambil data sertifikasi dari API
+    final apiRes =
+        await control.getDetailDosen(widget.bidangId, widget.dosenId);
+
+    setState(() {
+      jumlahSertifikasi = apiRes['jumlahSertifikasiPelatihan'];
+      sertifikasiList = apiRes['sertifikasi'];
+      pelatihanList = apiRes['pelatihan'];
+      isloading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,19 +82,42 @@ class SertifikasiPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               // Menggunakan ListView.builder untuk daftar sertifikasi
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(), // Agar tidak berbenturan dengan scroll parent
-                itemCount: sertifikasiList.length,
-                itemBuilder: (context, index) {
-                  final sertifikasi = sertifikasiList[index];
-                  return _buildSertifikasiItem(
-                    sertifikasi['title']!,
-                    sertifikasi['category']!,
-                    sertifikasi['date']!,
-                  );
-                },
-              ),
+              isloading
+                  ? const CircularProgressIndicator()
+                  : Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics:
+                              const NeverScrollableScrollPhysics(), // Agar tidak berbenturan dengan scroll parent
+                          itemCount: sertifikasiList!.length,
+                          itemBuilder: (context, index) {
+                            final sertifikasi =
+                                sertifikasiList![index]['sertif'];
+                            return _buildSertifikasiItem(
+                              sertifikasi['nama_sertif']!,
+                              sertifikasi['bidang']['bidang_nama']!,
+                              sertifikasi['tanggal']!,
+                            );
+                          },
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics:
+                              const NeverScrollableScrollPhysics(), // Agar tidak berbenturan dengan scroll parent
+                          itemCount: pelatihanList!.length,
+                          itemBuilder: (context, index) {
+                            final pelatihan =
+                                pelatihanList![index]['pelatihan'];
+                            return _buildSertifikasiItem(
+                              pelatihan['nama_pelatihan']!,
+                              pelatihan['bidang']['bidang_nama']!,
+                              pelatihan['tanggal']!,
+                            );
+                          },
+                        ),
+                      ],
+                    )
             ],
           ),
         ),
@@ -109,15 +146,15 @@ class SertifikasiPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  dosenName,
+                  widget.dosenName,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black, // Warna teks hitam
                   ),
                 ),
-                const Text(
-                  '222222222',
+                Text(
+                  widget.dosenNip,
                   style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
                 const Text(
@@ -140,7 +177,7 @@ class SertifikasiPage extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                sertifikasiList.length.toString(),
+                jumlahSertifikasi.toString(),
                 style: const TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
