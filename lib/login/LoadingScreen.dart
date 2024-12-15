@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hello_world/Controller/BidangController.dart';
+import 'package:hello_world/Controller/LoginController.dart';
 import 'package:hello_world/dosen.dart';
 import 'package:hello_world/pimpinan.dart';
 import 'package:hello_world/sessionManager.dart';
@@ -21,7 +23,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     Future<void> checkSession() async {
+      await SessionManager.clearSession();
       Map<String, String?> userData = await SessionManager.getUserData();
+
       print("user data $userData");
       String level = userData['level'] ?? "09";
       print("user data $level");

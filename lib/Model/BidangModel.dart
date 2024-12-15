@@ -11,11 +11,14 @@ class BidangModel {
   });
 
   factory BidangModel.fromJson(Map<String, dynamic> json) {
-    final bidang = json['bidang'] ?? {}; 
+    final bidang = json;
+    if (json['bidang'] != null) {
+      final bidang = json['bidang'] ?? {};
+    }
     return BidangModel(
-      bidangId: bidang['bidang_id'] ?? 0, 
-      bidangKode: bidang['bidang_kode'] ?? '', 
-      bidangNama: bidang['bidang_nama'] ?? '', 
+      bidangId: bidang['bidang_id'] ?? 0,
+      bidangKode: bidang['bidang_kode'] ?? '',
+      bidangNama: bidang['bidang_nama'] ?? '',
     );
   }
 

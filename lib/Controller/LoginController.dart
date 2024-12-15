@@ -29,6 +29,12 @@ class LoginController {
       );
 
       print(response.body);
+      if (response.statusCode == 401) {
+        return {
+          'success': false,
+          'message': 'Username atau password salah',
+        };
+      }
 
       // Memproses respons
       if (response.statusCode == 200) {
