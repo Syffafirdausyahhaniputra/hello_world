@@ -10,6 +10,7 @@ import '../Model/DataPelatihanModel.dart';
 import '../header.dart';
 // import 'inputData.dart';
 import 'dataSertif.dart';
+import 'dropdown.dart';
 import 'sertif.dart';
 
 class Dashboard extends StatefulWidget {
@@ -240,7 +241,7 @@ class _DashboardState extends State<Dashboard> {
                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DropdownForm()),
+                          builder: (context) => DataPelatihanForm()),
     );
                   }
                 },
