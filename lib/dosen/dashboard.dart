@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart'; // Tambahkan import
 import '../Controller/DashboardController.dart';
 import '../Model/DataSertifikasiModel.dart';
 import '../Model/DataPelatihanModel.dart';
-import '../header.dart';
 // import 'inputData.dart';
 import 'dataSertif.dart';
 import 'dropdown.dart';
@@ -75,7 +74,6 @@ class _DashboardState extends State<Dashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Header(userName: userName),
                   SizedBox(height: height * 0.01),
                   Text(
                     'Selamat Datang',
