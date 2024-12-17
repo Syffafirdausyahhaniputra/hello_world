@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../header.dart'; // Import file header.dart
 import 'descRiwayat.dart'; // Import file descRiwayat.dart
 
 class HistoryPage extends StatelessWidget {
@@ -8,6 +7,11 @@ class HistoryPage extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
+    // Menampilkan alert saat halaman dibuka
+    Future.delayed(Duration.zero, () {
+      _showUnderDevelopmentDialog(context);
+    });
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -15,7 +19,6 @@ class HistoryPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Header(userName: 'Zulfa Ulinnuha'), // Gunakan Header dari header.dart
               SizedBox(height: height * 0.01),
               Text(
                 'Riwayat',
@@ -56,6 +59,28 @@ class HistoryPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // Fungsi untuk menampilkan alert dialog
+  void _showUnderDevelopmentDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,  // Menghindari menutup dialog dengan klik di luar
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Sedang Dalam Pengembangan'),
+          content: Text('Halaman ini sedang dalam pengembangan.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();  // Menutup dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
