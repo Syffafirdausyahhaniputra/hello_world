@@ -119,37 +119,66 @@ class _PelatihanPageState extends State<PelatihanPage> {
         children: [
           // Informasi pelatihan
           Text(
-            'Tingkat\t\t: ${data['level']}',
+            'Bidang Pelatihan\t\t: ${data['bidang']}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           Text(
-            'Bidang\t\t: ${data['bidang'] ?? 'Teknologi Informasi'}',
+            'Level Pelatihan\t\t: ${data['level']}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           Text(
-            'Tanggal Acara\t: 20 ${data['tanggal']}',
+            'Mata Kuliah\t\t: ${data['matkul'] ?? 'Teknologi Informasi'}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           Text(
-            'Bertempat\t: ${data['lokasi']}',
+            'Vendor\t: 20 ${data['vendor']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Tanggal Mulai\t: ${data['tanggal']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Tanggal Akhir\t: ${data['tanggal_akhir']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Kuota\t: ${data['kuota']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Lokasi\t: ${data['lokasi']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Biaya\t: ${data['biaya']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Periode\t: ${data['periode']}',
             style: TextStyle(
               fontSize: 16,
             ),
           ),
           SizedBox(height: 16), // Spacer
-
-          // Deskripsi pelatihan
-          Text(
-            'Online proctoring is a testing environment that allows you to take an exam from any private space, such as your home or office. You use your own computer for the exam, and converse with a proctor who remotely monitors your exam via both a screen-sharing application and your webcam. Most exam appointments are available 24 hours a day, seven days a week.',
-            style: TextStyle(fontSize: 14),
-          ),
-          SizedBox(height: 8),
         ],
       ),
     );

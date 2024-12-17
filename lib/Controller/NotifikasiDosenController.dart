@@ -18,7 +18,13 @@ class NotifikasiDosenController {
       try {
         final Map<String, dynamic> json = jsonDecode(response.body);
         if (json['success'] == true) {
-          return json['data']; // Mengembalikan daftar notifikasi
+          // Pastikan `data` adalah list, jika tidak, jadikan list kosong
+          final data = json['data'];
+          if (data is List<dynamic>) {
+            return data;
+          } else {
+            throw Exception('Data tidak valid: ${response.body}');
+          }
         } else {
           throw Exception(json['message'] ?? 'Gagal memuat data notifikasi.');
         }

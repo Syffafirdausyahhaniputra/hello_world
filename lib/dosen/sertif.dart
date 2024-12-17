@@ -119,6 +119,24 @@ class _SertifPageState extends State<SertifPage> {
         children: [
           // Informasi Sertifikasi
           Text(
+            'Jenis Sertifikasi\t\t: ${data['jenis']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Mata Kuliah\t\t: ${data['matkul']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Vendor\t\t: ${data['vendor']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          Text(
             'Bidang\t\t: ${data['bidang'] ?? 'Teknologi Informasi'}',
             style: TextStyle(
               fontSize: 16,
@@ -136,13 +154,15 @@ class _SertifPageState extends State<SertifPage> {
               fontSize: 16,
             ),
           ),
+          Text(
+            'Periode\t\t: ${data['periode']}',
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
           SizedBox(height: 16), // Spacer
 
-          // Deskripsi Sertifikasi
-          Text(
-            'Online proctoring is a testing environment that allows you to take an exam from any private space, such as your home or office. You use your own computer for the exam, and converse with a proctor who remotely monitors your exam via both a screen-sharing application and your webcam. Most exam appointments are available 24 hours a day, seven days a week.',
-            style: TextStyle(fontSize: 14),
-          ),
+          
           SizedBox(height: 8),
         ],
       ),
