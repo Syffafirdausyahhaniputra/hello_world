@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_world/core/sharedPref.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:hello_world/config.dart'; // Impor Config
+import 'package:hello_world/config.dart';
 import 'package:hello_world/Model/UserModel.dart';
 import 'package:hello_world/pimpinan/dosenbidang.dart';
 import 'package:hello_world/Controller/Dashboard2Controller.dart';
@@ -26,7 +26,8 @@ class _DashboardPageState extends State<DashboardPage> {
     _loadDashboardData();
   }
 
-  Future<void> _loadDashboardData() async {
+  // Previous _loadDashboardData method remains the same
+    Future<void> _loadDashboardData() async {
     try {
       // Mendapatkan token dari SharedPreferences
       final token = await Sharedpref.getToken();
@@ -129,63 +130,87 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen size for responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              user?.nama ?? 'Loading...',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Icon(
-              Icons.account_circle,
-              color: Colors.black,
-            ),
-          ],
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  user?.nama ?? 'Loading...',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: screenWidth > 600 ? 18 : 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.02),
+                Icon(
+                  Icons.account_circle,
+                  color: Colors.black,
+                  size: screenWidth > 600 ? 30 : 24,
+                ),
+              ],
+            );
+          },
         ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Selamat Datang',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: screenHeight * 0.02,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Center(
+                            child: Text(
+                              'Selamat Datang',
+                              style: TextStyle(
+                                fontSize: screenWidth > 600 ? 36 : 26,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          _buildInfoCard(
+                            jumlahSertifikasiPelatihan.toString(),
+                            'Sertifikasi dan Pelatihan',
+                            screenWidth,
+                          ),
+                          SizedBox(height: screenHeight * 0.03),
+                          _buildBidangSection(screenWidth, screenHeight),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    _buildInfoCard(
-                      jumlahSertifikasiPelatihan.toString(),
-                      'Sertifikasi dan Pelatihan',
-                    ),
-                    const SizedBox(height: 30),
-                    _buildBidangSection(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
     );
   }
 
-  Widget _buildInfoCard(String value, String label) {
+  Widget _buildInfoCard(String value, String label, double screenWidth) {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(screenWidth * 0.04),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -198,26 +223,27 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 50,
+            style: TextStyle(
+              fontSize: screenWidth > 600 ? 60 : 40,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: screenWidth > 600 ? 20 : 16,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBidangSection() {
+  Widget _buildBidangSection(double screenWidth, double screenHeight) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -226,26 +252,32 @@ class _DashboardPageState extends State<DashboardPage> {
             color: const Color(0xFF0D47A1),
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: const EdgeInsets.only(
-              top: 30.0, left: 16.0, right: 16.0, bottom: 16.0),
-          child: _buildGridCategories(),
+          padding: EdgeInsets.only(
+            top: screenHeight * 0.04,
+            left: screenWidth * 0.04,
+            right: screenWidth * 0.04,
+            bottom: screenWidth * 0.04,
+          ),
+          child: _buildGridCategories(screenWidth),
         ),
         Positioned(
           top: -20,
-          left: 16,
-          right: 16,
+          left: screenWidth * 0.04,
+          right: screenWidth * 0.04,
           child: Center(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 120.0, vertical: 8.0),
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.3,
+                vertical: 8.0,
+              ),
               decoration: BoxDecoration(
                 color: const Color(0xFFEFB509),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
+              child: Text(
                 'Bidang',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: screenWidth > 600 ? 20 : 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
@@ -258,78 +290,95 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildCategoryCard(
-      String title, String id, String iconPath, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DosenBidangPage(id: id),
+    String title, 
+    String id, 
+    String iconPath, 
+    BuildContext context, 
+    double screenWidth
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DosenBidangPage(id: id),
+              ),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D47A1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: constraints.maxWidth,
+                  height: constraints.maxWidth * 0.75, // Maintain aspect ratio
+                  padding: const EdgeInsets.all(1.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        iconPath,
+                        height: constraints.maxWidth * 0.4,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: constraints.maxWidth * 0.05),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: screenWidth > 600 ? 16 : 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF0D47A1),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 200,
-              height: 150,
-              padding: const EdgeInsets.all(1.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    iconPath,
-                    height: 70,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  Widget _buildGridCategories() {
+  Widget _buildGridCategories(double screenWidth) {
+    int crossAxisCount = screenWidth > 600 ? 3 : 2;
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 20,
-      crossAxisSpacing: 20,
+      crossAxisCount: crossAxisCount,
+      mainAxisSpacing: screenWidth * 0.05,
+      crossAxisSpacing: screenWidth * 0.05,
+      childAspectRatio: 1, // Ensure square-like grid items
       children: [
         _buildCategoryCard(
-            'Teknologi Informasi', '1', 'lib/assets/progamming.png', context),
+          'Teknologi Informasi', '1', 'lib/assets/progamming.png', context, screenWidth),
         _buildCategoryCard(
-            'Cloud Computing', '2', 'lib/assets/rpl.png', context),
+          'Cloud Computing', '2', 'lib/assets/rpl.png', context, screenWidth),
         _buildCategoryCard(
-            'Analisis Data', '6', 'lib/assets/database.png', context),
-        _buildCategoryCard('Data Mining', '3',
-            'lib/assets/information_management.png', context),
-        _buildCategoryCard('Manajemen Pemasaran', '4',
-            'lib/assets/cyber_security.png', context),
-        _buildCategoryCard('Algoritma Evolusioner', '5',
-            'lib/assets/data_mining.png', context),
+          'Analisis Data', '6', 'lib/assets/database.png', context, screenWidth),
+        _buildCategoryCard(
+          'Data Mining', '3', 'lib/assets/information_management.png', context, screenWidth),
+        _buildCategoryCard(
+          'Manajemen Pemasaran', '4', 'lib/assets/cyber_security.png', context, screenWidth),
+        _buildCategoryCard(
+          'Algoritma Evolusioner', '5', 'lib/assets/data_mining.png', context, screenWidth),
       ],
     );
   }

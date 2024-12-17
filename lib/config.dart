@@ -1,7 +1,7 @@
 class Config {
   // URL dasar API
 
-  static const String baseUrl = 'http://192.168.72.9:8000';
+  static const String baseUrl = 'http://192.168.78.249:8000';
 
   // Endpoint untuk login
   static const String loginEndpoint = '$baseUrl/api/login';
@@ -50,7 +50,7 @@ class Config {
   static const String jabatanList = '$baseUrl/api/jabatan';
 
     // Sertifikasi Endpoints
-  // static const String inputsertifikasi = '$baseUrl/api/inputsertifikasi/store';
-  // static const String inputSertifikasi = '$baseUrl/api/inputsertifikasi/create';
+  static const String inputsertifikasi = '$baseUrl/api/sertifikasi/store';
+  static const String inputSertifikasi = '$baseUrl/api/sertifikasi/create';
 
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hello_world/config.dart';
@@ -7,7 +9,7 @@ import 'package:hello_world/sessionManager.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:hello_world/dosen.dart';
-import '../Controller/sertifikasiController.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DataSertifikasiForm extends StatefulWidget {
   @override
@@ -22,12 +24,12 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _biayaController = TextEditingController();
-  final TextEditingController _kuotaController = TextEditingController();
-  final TextEditingController _lokasiController = TextEditingController();
+  final TextEditingController _masaController = TextEditingController();
   List<dynamic> jenis = [];
   List<dynamic> vendors = [];
   List<dynamic> bidangs = [];
   List<dynamic> matkuls = [];
+  File? _selectedFile;
   int? selectedJenis;
   int? selectedVendor;
   int? selectedBidang;
@@ -37,6 +39,16 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
   void initState() {
     super.initState();
     fetchDropdownData();
+  }
+
+    Future<void> _pickFile() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedFile= File(pickedFile.path);
+      });
+    }
   }
 
   Future<void> fetchDropdownData() async {
@@ -66,74 +78,74 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
     }
   }
 
-  Future<void> _submitForm() async {
-    Map<String, String?> userData = await SessionManager.getUserData();
-    String token = userData['token'] ?? "";
-    String id = userData['id'] ?? "";
+Future<void> _submitForm() async {
+  Map<String, String?> userData = await SessionManager.getUserData();
+  String token = userData['token'] ?? "";
+  String id = userData['id'] ?? "";
 
-    final Map<String, dynamic> requestData = {
-      "jenis_id": selectedJenis,
-      "bidang_id": selectedBidang,
-      "mk_id": selectedMatkul,
-      "vendor_id": selectedVendor,
-      "nama_pelatihan": _nameController.text,
-      "biaya": _biayaController.text,
-      "tanggal": _startDateController.text,
-      "tanggal_akhir": _endDateController.text,
-      "kuota": _kuotaController.text,
-      "lokasi": _lokasiController.text,
-      "periode": _periodeController.text,
-      "status": "Proses",
-      "dosen_id": id,
-      "keterangan" : "Mandiri",
-    };
+  final Map<String, dynamic> requestData = {
+    "jenis_id": selectedJenis,
+    "bidang_id": selectedBidang,
+    "mk_id": selectedMatkul,
+    "vendor_id": selectedVendor,
+    "nama_pelatihan": _nameController.text,
+    "biaya": _biayaController.text,
+    "tanggal": _startDateController.text,
+    "tanggal_akhir": _endDateController.text,
+    "masa berlakur": _masaController.text,
+    "periode": _periodeController.text,
+    "status": "Proses",
+    "dosen_id": id,
+    "keterangan" : "Mandiri",
+    "surat_tugas": null,
+  };
 
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/api/sertifikasi/store'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(requestData),
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/sertifikasi/store'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(requestData),
+    );
+
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData =
+          response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DosenPage(token: token),
+        ),
       );
-
-     print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final responseData =
-            response.body.isNotEmpty ? jsonDecode(response.body) : {};
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DosenPage(token: token),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data berhasil ditambahkan!')),
-        );
-      } else {
-        final errorData =
-            response.body.isNotEmpty ? jsonDecode(response.body) : {};
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  '${errorData['message'] ?? "Kesalahan tidak diketahui"}')),
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DosenPage(token: token),
-          ),
-        );
-      }
-    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errorss: $e')),
+        SnackBar(content: Text('Data berhasil ditambahkan!')),
+      );
+    } else {
+      final errorData =
+          response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                '${errorData['message'] ?? "Kesalahan tidak diketahui"}')),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DosenPage(token: token),
+        ),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Errorss: $e')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -157,10 +169,9 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
             children: [
               _buildTextField('Nama Sertifikasi', _nameController),
               _buildTextField('Biaya', _biayaController),
-              _buildTextField('Kuota', _kuotaController),
-              _buildTextField('Lokasi', _lokasiController),
               _buildDateField('Tanggal Mulai', _startDateController),
               _buildDateField('Tanggal Akhir', _endDateController),
+              _buildDateField('Masa Berlaku', _masaController),
               _buildTextField('Periode', _periodeController),
               DropdownButtonFormField<int>(
                 value: selectedJenis,
@@ -234,26 +245,16 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
                   });
                 },
               ),
-              const SizedBox(height: 30),
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEFB509),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    minimumSize: const Size(120, 40),
-                  ),
-                  onPressed: _submitForm,
-                  child: Text(
-                    'KIRIM',
-                    style: GoogleFonts.poppins(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+              ElevatedButton(
+                onPressed: _pickFile,
+                child: Text('Pilih Surat Tugas'),
+              ),
+              if (_selectedFile != null)
+                Text('File: ${_selectedFile!.path.split('/').last}'),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text('Submit'),
               ),
             ],
           ),

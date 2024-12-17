@@ -43,6 +43,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   multi_select_flutter: ^4.1.3
   http: ^1.2.2
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:
