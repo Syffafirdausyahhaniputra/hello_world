@@ -1,129 +1,263 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'notifikasiInputData.dart'; // Import halaman notifikasi
+import 'package:hello_world/config.dart';
+import 'package:hello_world/Model/DataSertifikasiModel.dart';
+import 'package:hello_world/Model/SertifikasiModel.dart';
+import 'package:hello_world/sessionManager.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:hello_world/dosen.dart';
+import '../Controller/sertifikasiController.dart';
 
-class InputDataSertifikasiPage extends StatelessWidget {
-  const InputDataSertifikasiPage({Key? key}) : super(key: key);
+class DataSertifikasiForm extends StatefulWidget {
+  @override
+  _DataSertifikasiFormState createState() => _DataSertifikasiFormState();
+}
+
+class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
+  final String baseUrl = Config.baseUrl;
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _periodeController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _biayaController = TextEditingController();
+  final TextEditingController _kuotaController = TextEditingController();
+  final TextEditingController _lokasiController = TextEditingController();
+  List<dynamic> jenis = [];
+  List<dynamic> vendors = [];
+  List<dynamic> bidangs = [];
+  List<dynamic> matkuls = [];
+  int? selectedJenis;
+  int? selectedVendor;
+  int? selectedBidang;
+  int? selectedMatkul;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownData();
+  }
+
+  Future<void> fetchDropdownData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('$baseUrl/api/sertifikasi/dropdown'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          jenis   = data['jenis'] ?? [];
+          vendors = data['vendors'] ?? [];
+          bidangs = data['bidangs'] ?? [];
+          matkuls = data['matkuls'] ?? [];
+        });
+      } else {
+        // Handle server errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load dropdown data')),
+        );
+      }
+    } catch (e) {
+      // Handle network errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching data: $e')),
+      );
+    }
+  }
+
+  Future<void> _submitForm() async {
+    Map<String, String?> userData = await SessionManager.getUserData();
+    String token = userData['token'] ?? "";
+    String id = userData['id'] ?? "";
+
+    final Map<String, dynamic> requestData = {
+      "jenis_id": selectedJenis,
+      "bidang_id": selectedBidang,
+      "mk_id": selectedMatkul,
+      "vendor_id": selectedVendor,
+      "nama_pelatihan": _nameController.text,
+      "biaya": _biayaController.text,
+      "tanggal": _startDateController.text,
+      "tanggal_akhir": _endDateController.text,
+      "kuota": _kuotaController.text,
+      "lokasi": _lokasiController.text,
+      "periode": _periodeController.text,
+      "status": "Proses",
+      "dosen_id": id,
+      "keterangan" : "Mandiri",
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/sertifikasi/store'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestData),
+      );
+
+     print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseData =
+            response.body.isNotEmpty ? jsonDecode(response.body) : {};
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DosenPage(token: token),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data berhasil ditambahkan!')),
+        );
+      } else {
+        final errorData =
+            response.body.isNotEmpty ? jsonDecode(response.body) : {};
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  '${errorData['message'] ?? "Kesalahan tidak diketahui"}')),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DosenPage(token: token),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errorss: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1),
-                ),
-                padding: EdgeInsets.all(0),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new),
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  'INPUT DATA SERTIFIKASI',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              Expanded(child: const InputDataForm()), // Gunakan Expanded di sini
-            ],
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0D47A1),
+        title: Text(
+          'Input Data Sertifikasi',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      backgroundColor: const Color(0xFF0D47A1),
-    );
-  }
-}
-
-class InputDataForm extends StatefulWidget {
-  const InputDataForm({Key? key}) : super(key: key);
-
-  @override
-  InputDataFormState createState() => InputDataFormState();
-}
-
-class InputDataFormState extends State<InputDataForm> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _noController = TextEditingController();
-  final TextEditingController _periodeController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController(); // Controller untuk tanggal
-  final TextEditingController _expiredDateController = TextEditingController(); // Controller untuk masa berlaku
-
-  String? _selectedJenis;
-  DateTime? _selectedDate;
-  String? _selectedVendor;
-  DateTime? _selectedExpired;
-  String? _selectedBidang;
-  String? _selectedMataKuliah;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _noController.dispose();
-    _dateController.dispose();
-    _expiredDateController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTextField('Nama Sertifikasi', _nameController),
-          _buildTextField('No. Sertifikat', _noController),
-          _buildDropdownField('Jenis', _selectedJenis, ['Jenis 1', 'Jenis 2', 'Jenis 3']),
-          _buildDateField('Tanggal', _dateController, (newDate) => setState(() => _selectedDate = newDate)),
-          _buildDropdownField('Vendor', _selectedVendor, ['Vendor 1', 'Vendor 2', 'Vendor 3']),
-          _buildDateField('Masa Berlaku', _expiredDateController, (newDate) => setState(() => _selectedExpired = newDate)),
-          _buildDropdownField('Bidang', _selectedBidang, ['Bidang 1', 'Bidang 2', 'Bidang 3']),
-          _buildDropdownField('Mata Kuliah', _selectedMataKuliah, ['Mata Kuliah 1', 'Mata Kuliah 2']),
-          _buildTextField('Periode', _periodeController),
-          const SizedBox(height: 30),
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEFB509),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+      body: SingleChildScrollView(
+        controller: ScrollController(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildTextField('Nama Sertifikasi', _nameController),
+              _buildTextField('Biaya', _biayaController),
+              _buildTextField('Kuota', _kuotaController),
+              _buildTextField('Lokasi', _lokasiController),
+              _buildDateField('Tanggal Mulai', _startDateController),
+              _buildDateField('Tanggal Akhir', _endDateController),
+              _buildTextField('Periode', _periodeController),
+              DropdownButtonFormField<int>(
+                value: selectedJenis,
+                decoration: const InputDecoration(
+                  labelText: 'Jenis',
+                  border: OutlineInputBorder(),
                 ),
-                minimumSize: const Size(120, 40),
+                items: jenis.map((level) {
+                  return DropdownMenuItem<int>(
+                    value: level['jenis_id'],
+                    child: Text(level['jenis_nama']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedJenis = value;
+                  });
+                },
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationPage(),
+              DropdownButtonFormField<int>(
+                value: selectedVendor,
+                decoration: const InputDecoration(
+                  labelText: 'Vendor',
+                  border: OutlineInputBorder(),
+                ),
+                items: vendors.map((vendor) {
+                  return DropdownMenuItem<int>(
+                    value: vendor['vendor_id'],
+                    child: Text(vendor['vendor_nama']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedVendor = value;
+                  });
+                },
+              ),
+              DropdownButtonFormField<int>(
+                value: selectedBidang,
+                decoration: const InputDecoration(
+                  labelText: 'Bidang',
+                  border: OutlineInputBorder(),
+                ),
+                items: bidangs.map((bidang) {
+                  return DropdownMenuItem<int>(
+                    value: bidang['bidang_id'],
+                    child: Text(bidang['bidang_nama']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedBidang = value;
+                  });
+                },
+              ),
+              DropdownButtonFormField<int>(
+                value: selectedMatkul,
+                decoration: const InputDecoration(
+                  labelText: 'Mata Kuliah',
+                  border: OutlineInputBorder(),
+                ),
+                items: matkuls.map((matkul) {
+                  return DropdownMenuItem<int>(
+                    value: matkul['mk_id'],
+                    child: Text(matkul['mk_nama']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedMatkul = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEFB509),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minimumSize: const Size(120, 40),
                   ),
-                );
-              },
-              child: Text(
-                'KIRIM',
-                style: GoogleFonts.poppins(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  onPressed: _submitForm,
+                  child: Text(
+                    'KIRIM',
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -135,22 +269,20 @@ class InputDataFormState extends State<InputDataForm> {
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 16,
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          height: 45,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20),
-              border: InputBorder.none,
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            hintText: 'Masukkan $label',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
             ),
           ),
         ),
@@ -159,40 +291,45 @@ class InputDataFormState extends State<InputDataForm> {
     );
   }
 
-  Widget _buildDropdownField(String label, String? selectedValue, List<String> items) {
+  Widget _buildDateField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: GoogleFonts.montserrat(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 16,
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: DropdownButtonFormField<String>(
-            value: selectedValue,
-            onChanged: (newValue) {
+        GestureDetector(
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2101),
+            );
+
+            if (pickedDate != null) {
               setState(() {
-                selectedValue = newValue;
+                controller.text = pickedDate.toIso8601String().split('T')[0];
               });
-            },
-            items: items.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 20),
-              border: InputBorder.none,
+            }
+          },
+          child: AbsorbPointer(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Pilih tanggal',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
           ),
         ),
@@ -200,56 +337,4 @@ class InputDataFormState extends State<InputDataForm> {
       ],
     );
   }
-
-  Widget _buildDateField(String label, TextEditingController controller, Function(DateTime) onDateSelected) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: GoogleFonts.montserrat(
-          color: Colors.white,
-          fontSize: 16,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: TextField(
-          controller: controller,
-          readOnly: true,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.calendar_today, color: Colors.grey),
-              onPressed: () async {
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-                if (picked != null) {
-                  onDateSelected(picked);
-                  // Update controller agar tanggal muncul di TextField
-                  controller.text = "${picked.day}-${picked.month}-${picked.year}";
-                }
-              },
-            ),
-          ),
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-          ),
-        ),
-      ),
-      const SizedBox(height: 16),
-    ],
-  );
-}
-
 }

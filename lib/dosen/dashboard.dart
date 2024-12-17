@@ -232,7 +232,7 @@ class _DashboardState extends State<Dashboard> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => InputDataSertifikasiPage()),
+                          builder: (context) => DataSertifikasiForm()),
                     );
                   } else {
                     // Arahkan ke halaman input pelatihan
