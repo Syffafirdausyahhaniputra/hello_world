@@ -128,121 +128,149 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    // Get screen size for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F9FF), // Light blue background
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: LayoutBuilder(
-          builder: (context, constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+        elevation: 2,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Dashboard',
+              style: TextStyle(
+                color: Color(0xFF0D47A1),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
               children: [
                 Text(
                   user?.nama ?? 'Loading...',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.black87,
                     fontSize: screenWidth > 600 ? 18 : 14,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(width: screenWidth * 0.02),
-                Icon(
-                  Icons.account_circle,
-                  color: Colors.black,
-                  size: screenWidth > 600 ? 30 : 24,
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    Icons.account_circle,
+                    color: const Color(0xFF0D47A1),
+                    size: screenWidth > 600 ? 30 : 24,
+                  ),
                 ),
               ],
-            );
-          },
+            ),
+          ],
         ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.04,
-                        vertical: screenHeight * 0.02,
-                      ),
+          : SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.04,
+                  vertical: screenHeight * 0.02,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Welcome Section with enhanced design
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Center(
-                            child: Text(
-                              'Selamat Datang',
-                              style: TextStyle(
-                                fontSize: screenWidth > 600 ? 36 : 26,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
+                          Text(
+                            'Selamat Datang',
+                            style: TextStyle(
+                              fontSize: screenWidth > 600 ? 36 : 28,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0D47A1),
                             ),
                           ),
-                          SizedBox(height: screenHeight * 0.02),
-                          _buildInfoCard(
-                            jumlahSertifikasiPelatihan.toString(),
-                            'Sertifikasi dan Pelatihan',
-                            screenWidth,
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Sistem Informasi Sertifikasi dan Pelatihan',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: screenHeight * 0.03),
-                          _buildBidangSection(screenWidth, screenHeight),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
+                    const SizedBox(height: 24),
+
+                    // Enhanced Stats Card
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.white, Color(0xFFE3F2FD)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: const Color(0xFF0D47A1),
+                          width: 2,
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Text(
+                            jumlahSertifikasiPelatihan.toString(),
+                            style: TextStyle(
+                              fontSize: screenWidth > 600 ? 60 : 48,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0D47A1),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Sertifikasi dan Pelatihan',
+                            style: TextStyle(
+                              fontSize: screenWidth > 600 ? 20 : 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Original Bidang Section (maintained as before)
+                    _buildBidangSection(screenWidth, screenHeight),
+                  ],
+                ),
+              ),
             ),
     );
   }
 
-  Widget _buildInfoCard(String value, String label, double screenWidth) {
-    return Container(
-      padding: EdgeInsets.all(screenWidth * 0.04),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: const Color(0xFF0D47A1),
-          width: 5,
-        ),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: screenWidth > 600 ? 60 : 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: screenWidth > 600 ? 20 : 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
+  // Original methods for Bidang section remain the same
   Widget _buildBidangSection(double screenWidth, double screenHeight) {
     return Stack(
       clipBehavior: Clip.none,
@@ -289,13 +317,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildCategoryCard(
-    String title, 
-    String id, 
-    String iconPath, 
-    BuildContext context, 
-    double screenWidth
-  ) {
+  Widget _buildCategoryCard(String title, String id, String iconPath, BuildContext context, double screenWidth) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
@@ -317,7 +339,7 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Container(
                   width: constraints.maxWidth,
-                  height: constraints.maxWidth * 0.75, // Maintain aspect ratio
+                  height: constraints.maxWidth * 0.75,
                   padding: const EdgeInsets.all(1.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -365,20 +387,14 @@ class _DashboardPageState extends State<DashboardPage> {
       crossAxisCount: crossAxisCount,
       mainAxisSpacing: screenWidth * 0.05,
       crossAxisSpacing: screenWidth * 0.05,
-      childAspectRatio: 1, // Ensure square-like grid items
+      childAspectRatio: 1,
       children: [
-        _buildCategoryCard(
-          'Teknologi Informasi', '1', 'lib/assets/progamming.png', context, screenWidth),
-        _buildCategoryCard(
-          'Cloud Computing', '2', 'lib/assets/rpl.png', context, screenWidth),
-        _buildCategoryCard(
-          'Analisis Data', '6', 'lib/assets/database.png', context, screenWidth),
-        _buildCategoryCard(
-          'Data Mining', '3', 'lib/assets/information_management.png', context, screenWidth),
-        _buildCategoryCard(
-          'Manajemen Pemasaran', '4', 'lib/assets/cyber_security.png', context, screenWidth),
-        _buildCategoryCard(
-          'Algoritma Evolusioner', '5', 'lib/assets/data_mining.png', context, screenWidth),
+        _buildCategoryCard('Teknologi Informasi', '1', 'lib/assets/progamming.png', context, screenWidth),
+        _buildCategoryCard('Cloud Computing', '2', 'lib/assets/rpl.png', context, screenWidth),
+        _buildCategoryCard('Analisis Data', '6', 'lib/assets/database.png', context, screenWidth),
+        _buildCategoryCard('Data Mining', '3', 'lib/assets/information_management.png', context, screenWidth),
+        _buildCategoryCard('Manajemen Pemasaran', '4', 'lib/assets/cyber_security.png', context, screenWidth),
+        _buildCategoryCard('Algoritma Evolusioner', '5', 'lib/assets/data_mining.png', context, screenWidth),
       ],
     );
   }

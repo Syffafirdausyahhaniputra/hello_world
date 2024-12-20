@@ -32,6 +32,7 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
     super.dispose();
   }
 
+  // Previous methods remain the same
   Future<void> setDetailBidang() async {
     Map<String, dynamic> apiRes = await control.getDetailBidangs(widget.id);
 
@@ -55,209 +56,268 @@ class _DosenBidangPageState extends State<DosenBidangPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen size for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F9FF),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 2,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF0D47A1),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.04,
-                  vertical: screenHeight * 0.02,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dosen Bidang',
-                      style: TextStyle(
-                        fontSize: screenWidth > 600 ? 36 : 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-                    _buildSearchBox(screenWidth),
-                    SizedBox(height: screenHeight * 0.02),
-                    isloading
-                        ? const Center(child: CircularProgressIndicator())
-                        : _buildDosenList(context, screenWidth),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  // Responsive Search Box
-  Widget _buildSearchBox(double screenWidth) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.04,
-        vertical: screenWidth * 0.02,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: const Color(0xFF0D47A1),
-          width: 2,
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey),
-          SizedBox(width: screenWidth * 0.02),
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filterDosen,
-              decoration: InputDecoration(
-                hintText: "CARI",
-                border: InputBorder.none,
-                hintStyle: const TextStyle(color: Colors.grey),
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.01,
-                ),
-              ),
-              style: const TextStyle(color: Colors.black),
-            ),
+        title: const Text(
+          'Dosen Bidang',
+          style: TextStyle(
+            color: Color(0xFF0D47A1),
+            fontWeight: FontWeight.bold,
           ),
-        ],
-      ),
-    );
-  }
-
-  // Responsive Dosen List
-  Widget _buildDosenList(BuildContext context, double screenWidth) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D47A1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: EdgeInsets.all(screenWidth * 0.04),
-      child: filteredDosen != null && filteredDosen!.isNotEmpty
-          ? ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: filteredDosen!.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: screenWidth * 0.03,
-                  ),
-                  child: _buildDosenItem(
-                    context,
-                    bidangId: filteredDosen![index]['bidang_id'].toString(),
-                    dosenId: filteredDosen![index]['dosen_id'].toString(),
-                    name: filteredDosen![index]['dosen2']['user']['nama'],
-                    description: filteredDosen![index]['dosen2']['user']['nip'],
-                    screenWidth: screenWidth,
-                  ),
-                );
-              },
-            )
-          : Center(
-              child: Text(
-                'Tidak ada dosen ditemukan',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: screenWidth * 0.04,
-                ),
-              ),
-            ),
-    );
-  }
-
-  // Responsive Dosen Item
-  Widget _buildDosenItem(
-    BuildContext context, {
-    required String bidangId,
-    required String dosenId,
-    required String name,
-    required String description,
-    required double screenWidth,
-    bool isMain = false,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SertifikasiPage(
-              dosenName: name,
-              dosenNip: description,
-              dosenId: dosenId,
-              bidangId: bidangId,
-            ),
-          ),
-        );
-      },
-      child: Container(
-        padding: EdgeInsets.all(screenWidth * 0.04),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Column(
           children: [
-            CircleAvatar(
-              backgroundColor: const Color(0xFFEFB509),
-              radius: screenWidth * 0.07,
-              child: Icon(
-                Icons.person,
-                color: Colors.black,
-                size: screenWidth * 0.06,
+            // Header Section with Search
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.04),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x1A000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(width: screenWidth * 0.04),
-            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: screenWidth > 600 ? 18 : 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  // Search Box
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.04,
+                      vertical: screenWidth * 0.02,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: screenWidth > 600 ? 16 : 14,
-                      color: Colors.black54,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F9FF),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: const Color(0xFF0D47A1),
+                        width: 1.5,
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.search,
+                          color: Color(0xFF0D47A1),
+                        ),
+                        SizedBox(width: screenWidth * 0.02),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: _filterDosen,
+                            decoration: const InputDecoration(
+                              hintText: "Cari Dosen...",
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
+
+            // List Dosen
+            Expanded(
+              child: isloading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Container(
+                      margin: EdgeInsets.all(screenWidth * 0.04),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Daftar Dosen',
+                            style: TextStyle(
+                              fontSize: screenWidth > 600 ? 24 : 20,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0D47A1),
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          Expanded(
+                            child: filteredDosen != null && filteredDosen!.isNotEmpty
+                                ? ListView.builder(
+                                    itemCount: filteredDosen!.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildDosenCard(
+                                        context,
+                                        bidangId: filteredDosen![index]['bidang_id'].toString(),
+                                        dosenId: filteredDosen![index]['dosen_id'].toString(),
+                                        name: filteredDosen![index]['dosen2']['user']['nama'],
+                                        nip: filteredDosen![index]['dosen2']['user']['nip'],
+                                        screenWidth: screenWidth,
+                                        index: index,
+                                      );
+                                    },
+                                  )
+                                : Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.search_off,
+                                          size: screenWidth * 0.15,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: screenHeight * 0.02),
+                                        const Text(
+                                          'Tidak ada dosen ditemukan',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDosenCard(
+    BuildContext context, {
+    required String bidangId,
+    required String dosenId,
+    required String name,
+    required String nip,
+    required double screenWidth,
+    required int index,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SertifikasiPage(
+                  dosenName: name,
+                  dosenNip: nip,
+                  dosenId: dosenId,
+                  bidangId: bidangId,
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Avatar with gradient background
+                Container(
+                  width: screenWidth * 0.14,
+                  height: screenWidth * 0.14,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF0D47A1),
+                        Color(0xFF1976D2),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: screenWidth * 0.08,
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.04),
+                
+                // Dosen information
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0D47A1),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        nip,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Arrow icon
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color(0xFF0D47A1),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

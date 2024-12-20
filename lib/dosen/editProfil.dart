@@ -303,22 +303,69 @@ class _EditProfileFormState extends State<EditProfileForm> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: _pickAvatar,
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: _selectedAvatar != null
-                ? FileImage(_selectedAvatar!)
-                : avatarUrl != null
-                    ? NetworkImage(avatarUrl ?? '')
-                    : null,
-            child: _selectedAvatar == null && avatarUrl == null
-                ? const Icon(Icons.person, size: 50, color: Colors.white)
-                : null,
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          // Profile Image Section
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              GestureDetector(
+                onTap: _pickAvatar,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundImage: _selectedAvatar != null
+                        ? FileImage(_selectedAvatar!)
+                        : avatarUrl != null
+                            ? NetworkImage(avatarUrl!) as ImageProvider
+                            : null,
+                    backgroundColor: Colors.blue.shade200,
+                    child: _selectedAvatar == null && avatarUrl == null
+                        ? const Icon(Icons.person, size: 50, color: Colors.white)
+                        : null,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    size: 20,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+        
         const SizedBox(height: 16),
         _buildTextField("Username", _usernameController, true),
         const SizedBox(height: 16),
@@ -375,8 +422,8 @@ class _EditProfileFormState extends State<EditProfileForm> {
             ),
           ),
         ),
-      ],
-    );
+        ],
+    ));
   }
 
   Widget _buildTextField(

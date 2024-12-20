@@ -2,23 +2,97 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config.dart';
-import '../Controller/LoginController.dart'; // Import LoginController
+import '../Controller/LoginController.dart';
 import '../dosen.dart';
 import '../pimpinan.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              const LoginForm(),
-            ],
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0D47A1),
+                  Color(0xFF1565C0),
+                ],
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Enhanced Logo Container
+                  Container(
+                    width: 200,
+                    height: 200,
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        // Background with subtle gradient
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white,
+                                Color(0xFFF5F5F5),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Logo Image
+                        Center(
+                          child: Container(
+                            width: 250,
+                            height: 250,
+                            padding: EdgeInsets.all(10),
+                            child: Image.asset(
+                              'lib/assets/logo_jti_certify.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        // Subtle border highlight
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.8),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Title and Subtitle
+                  SizedBox(height: 30),
+                  const LoginForm(),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -37,52 +111,51 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final LoginController _loginController = LoginController(Config.baseUrl);
+  bool _obscurePassword = true;
 
   Future<void> _handleLogin(BuildContext context) async {
     String username = _usernameController.text.trim();
     String password = _passwordController.text.trim();
 
-    // Validasi input kosong
     if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username dan password wajib diisi')),
-      );
+      _showErrorSnackbar(context, 'Username dan password wajib diisi');
       return;
     }
 
-    // Panggil metode login dari LoginController
     final result = await _loginController.login(username, password);
 
     if (result['success']) {
-      // Simpan token di SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', result['data']['token']);
 
       int roleId = result['data']['user']['role_id'];
-      // Navigasi berdasarkan role_id
       if (roleId == 2) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const PimpinanPage()),
         );
       } else if (roleId == 3) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => DosenPage(token: result['data']['token']),
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Role tidak valid')),
-        );
+        _showErrorSnackbar(context, 'Role tidak valid');
       }
     } else {
-      // Tampilkan pesan kesalahan
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'] ?? 'Login gagal')),
-      );
+      _showErrorSnackbar(context, result['message'] ?? 'Login gagal');
     }
+  }
+
+  void _showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -90,107 +163,129 @@ class _LoginFormState extends State<LoginForm> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'LOGIN',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: screenHeight * 0.03),
-        Container(
-          width: screenWidth * 0.85,
-          padding: const EdgeInsets.all(20.0),
-          decoration: ShapeDecoration(
-            color: const Color(0xFF0D47A1),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // JTI Certify Logo
+          SizedBox(height: screenHeight * 0.03),
+          Container(
+            width: screenWidth * 0.85,
+            padding: const EdgeInsets.all(20.0),
+            decoration: ShapeDecoration(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 15,
+                  offset: Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'LOGIN',
+                  style: GoogleFonts.poppins(
+                    color: Color(0xFF0D47A1),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildTextField(
+                  controller: _usernameController,
+                  label: 'Username',
+                  icon: Icons.person,
+                ),
+                const SizedBox(height: 20),
+                _buildTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  icon: Icons.lock,
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword 
+                        ? Icons.visibility_off 
+                        : Icons.visibility,
+                      color: Color(0xFF0D47A1),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFEFB509),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minimumSize: Size(screenWidth * 0.6, 50),
+                  ),
+                  onPressed: () {
+                    _handleLogin(context);
+                  },
+                  child: Text(
+                    'MASUK',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Username',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Password',
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEFB509),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  minimumSize: const Size(100, 40),
-                ),
-                onPressed: () {
-                  _handleLogin(context);
-                },
-                child: Text(
-                  'KIRIM',
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.montserrat(
+          color: Color(0xFF0D47A1),
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: Color(0xFF0D47A1),
+        ),
+        suffixIcon: suffixIcon,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: Color(0xFF0D47A1),
+            width: 1.5,
           ),
         ),
-      ],
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: Color(0xFFEFB509),
+            width: 2,
+          ),
+        ),
+      ),
     );
   }
 }

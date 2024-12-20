@@ -44,93 +44,147 @@ class _NotificationPageState extends State<NotificationPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 180.0,
+            expandedHeight: 220.0,
             floating: false,
             pinned: true,
             elevation: 0,
             backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-              title: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.notifications_active,
-                      size: 24,
-                      color: Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Notifikasi',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Pemberitahuan Terbaru',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              background: Container(
+              titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              title: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white,
-                      Colors.blue.withOpacity(0.1),
-                    ],
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -50,
-                      top: -20,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue.withOpacity(0.05),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 50,
-                      top: 40,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue.withOpacity(0.08),
-                        ),
-                      ),
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      spreadRadius: 1,
                     ),
                   ],
                 ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.orange.shade400,
+                            Colors.orange.shade300,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.orange.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.notifications_active,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ).animate()
+                      .scale(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                      )
+                      .fadeIn(),
+                    const SizedBox(width: 12),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Notifikasi',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ).animate()
+                          .fadeIn(delay: const Duration(milliseconds: 200))
+                          .slideX(begin: 0.2, end: 0),
+                        const Text(
+                          'Pemberitahuan Terbaru',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ).animate()
+                          .fadeIn(delay: const Duration(milliseconds: 300))
+                          .slideX(begin: 0.2, end: 0),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Gradient background
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.white,
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Animated decoration elements
+                  ...List.generate(5, (index) {
+                    return Positioned(
+                      right: -30 + (index * 20).toDouble(),
+                      top: -20 + (index * 15).toDouble(),
+                      child: Container(
+                        width: 150 - (index * 20),
+                        height: 150 - (index * 20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.blue.withOpacity(0.03 + (index * 0.01)),
+                        ),
+                      ).animate(
+                        onPlay: (controller) => controller.repeat(),
+                      ).scale(
+                        duration: Duration(seconds: 3 + index),
+                        begin: const Offset(1, 1),
+                        end: const Offset(1.1, 1.1),
+                      ).animate(
+                        delay: Duration(milliseconds: index * 200),
+                      ).fadeIn(duration: const Duration(milliseconds: 600)),
+                    );
+                  }),
+                  // Decorative icons
+                  Positioned(
+                    right: 40,
+                    top: 60,
+                    child: Icon(
+                      Icons.notifications_none,
+                      size: 100,
+                      color: Colors.orange.withOpacity(0.1),
+                    ).animate(
+                      onPlay: (controller) => controller.repeat(),
+                    ).scale(
+                      duration: const Duration(seconds: 4),
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.1, 1.1),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

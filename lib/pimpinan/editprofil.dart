@@ -16,41 +16,69 @@ class EditProfilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF0D47A1),
+              const Color(0xFF1565C0),
+              Colors.blue.shade600,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
             child: Column(
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new),
-                      color: Colors.white,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'EDIT PROFIL',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                // Custom App Bar
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new),
+                          color: Colors.white,
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                      const Expanded(
+                        child: Text(
+                          'Edit Profil',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 48), // Balance the layout
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                EditProfileForm(token: token),
+                
+                // Main Content Container
+                Container(
+                  margin: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  ),
+                  child: EditProfileForm(token: token),
+                ),
               ],
             ),
           ),
         ),
       ),
-      backgroundColor: const Color(0xFF0D47A1),
     );
   }
 }
@@ -174,84 +202,172 @@ class _EditProfileFormState extends State<EditProfileForm> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ),
+      );
     }
 
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: _pickAvatar,
-          child: CircleAvatar(
-            radius: 50,
-            backgroundImage: _selectedAvatar != null
-                ? FileImage(_selectedAvatar!)
-                : avatarUrl != null
-                    ? NetworkImage(avatarUrl ?? '')
-                    : null,
-            child: _selectedAvatar == null && avatarUrl == null
-                ? const Icon(Icons.person, size: 50, color: Colors.white)
-                : null,
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          // Profile Image Section
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              GestureDetector(
+                onTap: _pickAvatar,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundImage: _selectedAvatar != null
+                        ? FileImage(_selectedAvatar!)
+                        : avatarUrl != null
+                            ? NetworkImage(avatarUrl!) as ImageProvider
+                            : null,
+                    backgroundColor: Colors.blue.shade200,
+                    child: _selectedAvatar == null && avatarUrl == null
+                        ? const Icon(Icons.person, size: 50, color: Colors.white)
+                        : null,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    size: 20,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 16),
-        _buildTextField("Username", _usernameController, true),
-        const SizedBox(height: 16),
-        _buildTextField("Nama", _nameController, false),
-        const SizedBox(height: 16),
-        _buildTextField("NIP", _nipController, false),
-        const SizedBox(height: 16),
-        const SizedBox(height: 16),
-        _buildTextField("Old Password", _oldPasswordController, false,
-            obscureText: true),
-        const SizedBox(height: 16),
-        _buildTextField("Password", _passwordController, false,
-            obscureText: true),
-        const SizedBox(height: 30),
-        ElevatedButton(
-          onPressed: _saveProfile,
-          child: Text(
-            'SIMPAN',
-            style: GoogleFonts.poppins(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          const SizedBox(height: 32),
+
+          // Form Fields
+          _buildTextField("Username", _usernameController, true),
+          _buildTextField("Nama Lengkap", _nameController, false),
+          _buildTextField("NIP", _nipController, false),
+          _buildTextField("Password Lama", _oldPasswordController, false, obscureText: true),
+          _buildTextField("Password Baru", _passwordController, false, obscureText: true),
+          
+          const SizedBox(height: 32),
+
+          // Save Button
+          Container(
+            width: double.infinity,
+            height: 55,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade400, Colors.blue.shade600],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ElevatedButton(
+              onPressed: _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Text(
+                'Simpan Perubahan',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildTextField(
-      String label, TextEditingController controller, bool readOnly,
-      {bool obscureText = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16)),
-        const SizedBox(height: 8),
-        Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: controller,
-            readOnly: readOnly,
-            obscureText: obscureText,
-            decoration: const InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              border: InputBorder.none,
+    String label,
+    TextEditingController controller,
+    bool readOnly, {
+    bool obscureText = false,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white),
+            ),
+            child: TextField(
+              controller: controller,
+              readOnly: readOnly,
+              obscureText: obscureText,
+              style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                border: InputBorder.none,
+                hintText: 'Masukkan $label',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

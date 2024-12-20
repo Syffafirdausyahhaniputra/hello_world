@@ -80,6 +80,7 @@ flutter:
     - lib/assets/cyber_security.png
     - lib/assets/data_mining.png
     - lib/assets/sertif.png
+    - lib/assets/logo_jti_certify.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

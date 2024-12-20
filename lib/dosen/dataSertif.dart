@@ -2,10 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hello_world/Controller/ListAllDataController.dart';
-import '../header.dart'; // Import the Header component
-import 'sertif.dart'; // Pastikan nama file dan path benar
+import '../header.dart';
+import 'sertif.dart';
 import 'package:hello_world/Model/DataSertifikasiModel.dart';
 import 'package:hello_world/Model/DataPelatihanModel.dart';
+import 'package:google_fonts/google_fonts.dart'; // Add this package for custom fonts
 
 class DataSertifPage extends StatefulWidget {
   @override
@@ -27,14 +28,15 @@ class _DataSertifPageState extends State<DataSertifPage> {
     try {
       final result = await ListAllDataController.getListAllData();
       setState(() {
-        print(result);
         sertifikasiList = result['sertifikasi'];
         pelatihanList = result['pelatihan'];
-        print(sertifikasiList);
         isLoading = false;
       });
     } catch (e) {
       print('Error loading data: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load data'), backgroundColor: Colors.red),
+      );
     }
   }
 
@@ -43,126 +45,139 @@ class _DataSertifPageState extends State<DataSertifPage> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    if (isLoading) {
-      _loadData();
-    }
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: height * 0.04),
-              Stack(
+      backgroundColor: Color(0xFFF5F5F5), // Light grey background
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: Row(
                 children: [
-                  Header(
-                      userName: 'Zulfa Ulinnuha'), // Reuse the Header component
-                  Positioned(
-                    left: 0,
-                    top: 16,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 40, // Adjust the size as per your design
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Colors.black,
-                          size: 20, // Adjust icon size to fit inside the circle
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Icon(Icons.arrow_back, color: Colors.blue[900]),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Data Sertifikasi',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.blue[900],
                         ),
                       ),
-                    ),
+                      Text(
+                        'dan Pelatihan',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: height * 0.02),
-              Text(
-                'Data',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                'Sertifikasi dan Pelatihan',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: height * 0.02),
-              isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : _buildSertifList(
-                      context, width, height), // Pass context here
-            ],
-          ),
+            ),
+            Expanded(
+              child: isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[900]!),
+                      ),
+                    )
+                  : _buildSertifList(context, width, height),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildSertifList(BuildContext context, double width, double height) {
-    // Example data, you can replace with dynamic data or a list
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          TabBar(
+            indicatorColor: Colors.blue[900],
+            labelColor: Colors.blue[900],
+            unselectedLabelColor: Colors.grey,
+            tabs: [
+              Tab(text: 'Sertifikasi'),
+              Tab(text: 'Pelatihan'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildCertificationList(sertifikasiList, context, width, height),
+                _buildTrainingList(pelatihanList, context, width, height),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    return Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.blue[900],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            Column(
-              children: sertifikasiList.map((item) {
-                return Column(
-                  children: [
-                    _buildSertifItem(
-                      context: context, // Pass context here
-                      id: item.id,
-                      title: item.namaSertifikasi ?? '',
-                      subtitle: item.bidangSertifikasi ?? '',
-                      date: item.masaBerlaku ?? '',
-                      width: width * 0.9,
-                    ),
-                    SizedBox(height: height * 0.02),
-                  ],
-                );
-              }).toList(),
-            ),
-            Column(
-              children: pelatihanList.map((item) {
-                return Column(
-                  children: [
-                    _buildSertifItem(
-                      context: context, // Pass context here
-                      id: item.id,
-                      title: item.namaPelatihan ?? '',
-                      subtitle: item.bidangPelatihan ?? '',
-                      date: item.tanggal ?? '',
-                      width: width * 0.9,
-                    ),
-                    SizedBox(height: height * 0.02),
-                  ],
-                );
-              }).toList(),
-            ),
-          ],
-        ));
+  Widget _buildCertificationList(List<DataSertifikasiModel> list, BuildContext context, double width, double height) {
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final item = list[index];
+        return _buildSertifItem(
+          context: context,
+          id: item.id,
+          title: item.namaSertifikasi ?? '',
+          subtitle: item.bidangSertifikasi ?? '',
+          date: item.masaBerlaku ?? '',
+          width: width * 0.9,
+        );
+      },
+    );
+  }
+
+  Widget _buildTrainingList(List<DataPelatihanModel> list, BuildContext context, double width, double height) {
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final item = list[index];
+        return _buildSertifItem(
+          context: context,
+          id: item.id,
+          title: item.namaPelatihan ?? '',
+          subtitle: item.bidangPelatihan ?? '',
+          date: item.tanggal ?? '',
+          width: width * 0.9,
+        );
+      },
+    );
   }
 
   Widget _buildSertifItem({
-    required BuildContext context, // Add context as a parameter
+    required BuildContext context,
     required String title,
     required String subtitle,
     required String date,
@@ -172,47 +187,84 @@ class _DataSertifPageState extends State<DataSertifPage> {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-          context, // Use the passed context here
+          context,
           MaterialPageRoute(
-            builder: (context) => SertifPage(id: id), // Halaman sertif.dart
+            builder: (context) => SertifPage(id: id),
           ),
         );
       },
       child: Container(
-        width: width,
-        padding: const EdgeInsets.all(16.0),
+        margin: EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              date,
-              style: TextStyle(
-                color: Colors.black38,
-                fontSize: 12,
-              ),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.verified_outlined,
+                  color: Colors.blue[900],
+                  size: 30,
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue[900],
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      date,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: Colors.blue[900],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -21,149 +21,167 @@ class _KompetensiProdiPageState extends State<KompetensiProdiPage> {
 
   void _showBidangModal(int prodiId) async {
     try {
-      // Fetch data from controller
       final bidangList = await _controller.fetchBidangList(prodiId);
 
-      // Show modal dialog
       showDialog(
         context: context,
         builder: (context) {
           return Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Modal Header
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(10)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Detail Data Kompetensi Prodi',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Modal Header with gradient background
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue.shade700, Colors.blue.shade500],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Detail Kompetensi Prodi',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: const Icon(Icons.close, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Modal Body
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Informasi Alert
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          border: Border.all(color: Colors.blue.shade100),
-                          borderRadius: BorderRadius.circular(8),
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                          ),
                         ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.info, color: Colors.blue),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Berikut adalah detail data kompetensi prodi:',
-                                style: TextStyle(color: Colors.blue),
-                              ),
+                      ],
+                    ),
+                  ),
+
+                  // Modal Body
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Info Card
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.blue.shade50, Colors.blue.shade100],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ],
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.shade100.withOpacity(0.5),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.school, color: Colors.blue.shade700, size: 28),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  bidangList.first.bidangNama,
+                                  style: TextStyle(
+                                    color: Colors.blue.shade700,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 24),
 
-                      // Prodi Information
-                      Table(
-                        columnWidths: const {
-                          0: const IntrinsicColumnWidth(),
-                          1: const FlexColumnWidth(),
-                        },
-                        children: [
-                          TableRow(children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              child: Text(
-                                'Prodi:',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.right,
-                              ),
+                        // Bidang List
+                        Text(
+                          'Daftar Bidang Kompetensi',
+                          style: TextStyle(
+                            color: Colors.grey.shade800,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ...bidangList.map((bidang) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey.shade200),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Text(
-                                bidangList.first
-                                    .bidangNama, // Assuming all items share the same Prodi name
-                                textAlign: TextAlign.left,
-                              ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.check_circle, color: Colors.green.shade600),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    bidang.bidangNama,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ]),
-                          TableRow(children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8),
-                              child: Text(
-                                'Bidang:',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: bidangList
-                                    .map((bidang) =>
-                                        Text('- ${bidang.bidangNama}'))
-                                    .toList(),
-                              ),
-                            ),
-                          ]),
-                        ],
-                      ),
-                    ],
+                          ),
+                        )).toList(),
+                      ],
+                    ),
                   ),
-                ),
 
-                // Modal Footer
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Tutup'),
-                      ),
-                    ],
+                  // Modal Footer
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.check_circle_outline),
+                          label: const Text('Tutup'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            backgroundColor: Colors.blue.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
       );
     } catch (e) {
-      // Error handling
-      print("kenapa gabisa pencet detail $e");
+      print("Error showing detail: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal mengambil detail bidang')),
+        SnackBar(
+          content: const Text('Gagal mengambil detail bidang'),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
@@ -172,35 +190,128 @@ class _KompetensiProdiPageState extends State<KompetensiProdiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kompetensi Prodi'),
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [const Color.fromARGB(255, 255, 255, 255), Colors.blue.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Kompetensi Prodi',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
-      body: FutureBuilder<List<KompetensiProdi>>(
-        future: _kompetensiList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No data available'));
-          }
-
-          final kompetensiList = snapshot.data!;
-          return ListView.builder(
-            itemCount: kompetensiList.length,
-            itemBuilder: (context, index) {
-              final kompetensi = kompetensiList[index];
-              return Card(
-                child: ListTile(
-                  title: Text(kompetensi.prodiNama),
-                  subtitle: Text('Total Bidang: ${kompetensi.totalBidang}'),
-                  trailing: const Icon(Icons.info, color: Colors.blue),
-                  onTap: () => _showBidangModal(kompetensi.prodiId),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: FutureBuilder<List<KompetensiProdi>>(
+          future: _kompetensiList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error: ${snapshot.error}',
+                      style: TextStyle(color: Colors.red.shade400),
+                    ),
+                  ],
                 ),
               );
-            },
-          );
-        },
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.inbox, size: 48, color: Colors.grey.shade400),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Tidak ada data tersedia',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final kompetensiList = snapshot.data!;
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: kompetensiList.length,
+              itemBuilder: (context, index) {
+                final kompetensi = kompetensiList[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => _showBidangModal(kompetensi.prodiId),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.school, color: Colors.blue.shade700),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    kompetensi.prodiNama,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${kompetensi.totalBidang} Bidang Kompetensi',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.arrow_forward_ios, color: Colors.blue.shade400),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

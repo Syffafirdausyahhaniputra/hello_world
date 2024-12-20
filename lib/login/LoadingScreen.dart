@@ -60,12 +60,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 122.97,
-                height: 130,
+                width: 270,
+                height: 270,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                        "lib/assets/jti_polinema.png"), // Ganti dengan path gambar yang benar
+                        "lib/assets/logo_jti_certify.png"), // Ganti dengan path gambar yang benar
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -75,10 +75,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 width: 194,
                 height: 26,
                 child: Text(
-                  'Sertifikasi & Pelatihan',
+                  '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 13, 71, 161),
                     fontSize: 19,
                     fontFamily: 'Hammersmith One',
                     fontWeight: FontWeight.w400,

@@ -168,7 +168,7 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
       ),
       body: Stack(
         children: [
-          // Background gradient
+          // Background gradient - unchanged
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -181,105 +181,181 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
               ),
             ),
           ),
-          // Main content
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+          // Responsive scroll and padding
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final double maxWidth = constraints.maxWidth;
+              final double horizontalPadding = maxWidth * 0.05;
+
+              return SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Detail Sertifikasi',
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0D47A1),
-                        ),
-                        textAlign: TextAlign.center,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: 20.0,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 600, // Limit form width on larger screens
+                    ),
+                    child: Card(
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      SizedBox(height: 20),
-                      _buildTextField('Nama Sertifikasi', _nameController),
-                      _buildTextField('Biaya', _biayaController, 
-                        prefixIcon: Icon(Icons.attach_money, color: Color(0xFF0D47A1)),
-                        keyboardType: TextInputType.number
-                      ),
-                      _buildDateField('Tanggal Mulai', _startDateController),
-                      _buildDateField('Tanggal Akhir', _endDateController),
-                      _buildDateField('Masa Berlaku', _masaController),
-                      _buildTextField('Periode', _periodeController),
-                      
-                      // Styled Dropdown Sections
-                      _buildStyledDropdown(
-                        'Jenis',
-                        jenis,
-                        selectedJenis,
-                        (value) => setState(() => selectedJenis = value),
-                        (level) => level['jenis_nama'],
-                        (level) => level['jenis_id'],
-                      ),
-                      _buildStyledDropdown(
-                        'Vendor',
-                        vendors,
-                        selectedVendor,
-                        (value) => setState(() => selectedVendor = value),
-                        (vendor) => vendor['vendor_nama'],
-                        (vendor) => vendor['vendor_id'],
-                      ),
-                      _buildStyledDropdown(
-                        'Bidang',
-                        bidangs,
-                        selectedBidang,
-                        (value) => setState(() => selectedBidang = value),
-                        (bidang) => bidang['bidang_nama'],
-                        (bidang) => bidang['bidang_id'],
-                      ),
-                      _buildStyledDropdown(
-                        'Mata Kuliah',
-                        matkuls,
-                        selectedMatkul,
-                        (value) => setState(() => selectedMatkul = value),
-                        (matkul) => matkul['mk_nama'],
-                        (matkul) => matkul['mk_id'],
-                      ),
-                      
-                      // File Upload Section
-                      _buildFileUploadSection(),
-                      
-                      // Submit Button
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF0D47A1),
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Detail Sertifikasi',
+                              style: GoogleFonts.poppins(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0D47A1),
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          onPressed: _submitForm,
-                          child: Text(
-                            'Submit Sertifikasi',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                            SizedBox(height: 20),
+                            // Existing form fields with responsive sizing
+                            ..._buildResponsiveFormFields(maxWidth),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildResponsiveFormFields(double maxWidth) {
+    return [
+      _buildTextField('Nama Sertifikasi', _nameController),
+      _buildTextField('Biaya', _biayaController, 
+        prefixIcon: Icon(Icons.attach_money, color: Color(0xFF0D47A1)),
+        keyboardType: TextInputType.number
+      ),
+      _buildDateField('Tanggal Mulai', _startDateController),
+      _buildDateField('Tanggal Akhir', _endDateController),
+      _buildDateField('Masa Berlaku', _masaController),
+      _buildTextField('Periode', _periodeController),
+      
+      // Responsive dropdown and button sizes
+      _buildStyledDropdown(
+        'Jenis',
+        jenis,
+        selectedJenis,
+        (value) => setState(() => selectedJenis = value),
+        (level) => level['jenis_nama'],
+        (level) => level['jenis_id'],
+      ),
+      _buildStyledDropdown(
+        'Vendor',
+        vendors,
+        selectedVendor,
+        (value) => setState(() => selectedVendor = value),
+        (vendor) => vendor['vendor_nama'],
+        (vendor) => vendor['vendor_id'],
+      ),
+      _buildStyledDropdown(
+        'Bidang',
+        bidangs,
+        selectedBidang,
+        (value) => setState(() => selectedBidang = value),
+        (bidang) => bidang['bidang_nama'],
+        (bidang) => bidang['bidang_id'],
+      ),
+      _buildStyledDropdown(
+        'Mata Kuliah',
+        matkuls,
+        selectedMatkul,
+        (value) => setState(() => selectedMatkul = value),
+        (matkul) => matkul['mk_nama'],
+        (matkul) => matkul['mk_id'],
+      ),
+      
+      _buildFileUploadSection(maxWidth),
+      
+      // Responsive submit button
+      Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 20.0,
+          horizontal: maxWidth > 600 ? 24.0 : 16.0,
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF0D47A1),
+            padding: EdgeInsets.symmetric(
+              vertical: maxWidth > 600 ? 15 : 12,
+              horizontal: maxWidth > 600 ? 24 : 16,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
+          onPressed: _submitForm,
+          child: Text(
+            'Submit Sertifikasi',
+            style: GoogleFonts.poppins(
+              fontSize: maxWidth > 600 ? 18 : 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildFileUploadSection(double maxWidth) {
+return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: 10.0,
+        horizontal: maxWidth > 600 ? 0.0 : 16.0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton.icon(
+            icon: Icon(Icons.upload_file, color: Colors.white),
+            label: Text(
+              'Pilih Surat Tugas',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF0D47A1).withOpacity(0.8),
+              padding: EdgeInsets.symmetric(
+                vertical: maxWidth > 600 ? 12 : 10,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: _pickFile,
+          ),
+          if (_selectedFile != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Row(
+                children: [
+                  Icon(Icons.file_present, color: Color(0xFF0D47A1)),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _selectedFile!.path.split('/').last,
+                      style: GoogleFonts.montserrat(
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -332,51 +408,7 @@ class _DataSertifikasiFormState extends State<DataSertifikasiForm> {
     );
   }
 
-  // Enhanced File Upload Section
-  Widget _buildFileUploadSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ElevatedButton.icon(
-            icon: Icon(Icons.upload_file, color: Colors.white),
-            label: Text(
-              'Pilih Surat Tugas',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF0D47A1).withOpacity(0.8),
-              padding: EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: _pickFile,
-          ),
-          if (_selectedFile != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Row(
-                children: [
-                  Icon(Icons.file_present, color: Color(0xFF0D47A1)),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      _selectedFile!.path.split('/').last,
-                      style: GoogleFonts.montserrat(
-                        color: Colors.black87,
-                        // Removed the overflow parameter
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+
 
   // Enhanced TextField Method
   Widget _buildTextField(
