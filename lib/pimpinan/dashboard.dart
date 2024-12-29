@@ -144,34 +144,10 @@ class _DashboardPageState extends State<DashboardPage> {
             const Text(
               'Dashboard',
               style: TextStyle(
+                fontSize: 30,
                 color: Color(0xFF0D47A1),
                 fontWeight: FontWeight.bold,
               ),
-            ),
-            Row(
-              children: [
-                Text(
-                  user?.nama ?? 'Loading...',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: screenWidth > 600 ? 18 : 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE3F2FD),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.account_circle,
-                    color: const Color(0xFF0D47A1),
-                    size: screenWidth > 600 ? 30 : 24,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
