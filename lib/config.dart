@@ -30,7 +30,7 @@ class Config {
   // kompetensi prodi
   static const String kompetensiList = '$baseUrl/api/kompetensi/list';
   static const String kompetensiEndpoint =
-      '$baseUrl/api/kompetensi/{prodi_kode}/show_ajax';
+      '$baseUrl/api/kompetensi/{prodi_id}/show_ajax';
   static const String kompetensi = '$baseUrl/api/kompetensi';
 
   static const String inputPelatihan = '$baseUrl/api/pelatihan/create';

@@ -19,107 +19,105 @@ class _KompetensiProdiPageState extends State<KompetensiProdiPage> {
     _kompetensiList = _controller.fetchKompetensiList();
   }
 
-  void _showBidangModal(int prodiId) async {
-    try {
-      final bidangList = await _controller.fetchBidangList(prodiId);
+  void _showBidangModal(int prodiId, String prodiNama) async {
+  try {
+    // Fetch data bidang menggunakan fetchBidangList
+    final bidangList = await _controller.fetchBidangList(prodiId);
 
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Modal Header with gradient background
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.blue.shade700, Colors.blue.shade500],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+    // Debugging log untuk memastikan bidangList memiliki data
+    print('Bidang List: $bidangList');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Modal Header
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.shade700, Colors.blue.shade500],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Detail Kompetensi Prodi',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                          ),
-                        ),
-                      ],
-                    ),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Detail Kompetensi Prodi',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
 
-                  // Modal Body
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Info Card
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.blue.shade50, Colors.blue.shade100],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blue.shade100.withOpacity(0.5),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                // Modal Body
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Info Card
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue.shade50, Colors.blue.shade100],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.school, color: Colors.blue.shade700, size: 28),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Text(
-                                  bidangList.first.bidangNama,
-                                  style: TextStyle(
-                                    color: Colors.blue.shade700,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.school, color: Colors.blue.shade700, size: 28),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                prodiNama,
+                                style: TextStyle(
+                                  color: Colors.blue.shade700,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 24),
+                      ),
+                      const SizedBox(height: 24),
 
-                        // Bidang List
-                        Text(
-                          'Daftar Bidang Kompetensi',
-                          style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      // Bidang List
+                      Text(
+                        'Daftar Bidang Kompetensi',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 16),
-                        ...bidangList.map((bidang) => Padding(
+                      ),
+                      const SizedBox(height: 16),
+                      // Iterasi bidangList
+                      ...bidangList.map((bidang) {
+                        // Debugging untuk setiap item bidang
+                        print('Bidang Nama: ${bidang.bidangNama}');
+                        return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Container(
                             padding: const EdgeInsets.all(16),
@@ -134,57 +132,58 @@ class _KompetensiProdiPageState extends State<KompetensiProdiPage> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    bidang.bidangNama,
+                                    bidang.bidangNama, // Pastikan bidangNama ada di objek bidang
                                     style: const TextStyle(fontSize: 15),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        )).toList(),
-                      ],
-                    ),
+                        );
+                      }).toList(),
+                    ],
                   ),
+                ),
 
-                  // Modal Footer
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.check_circle_outline),
-                          label: const Text('Tutup'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            backgroundColor: Colors.blue.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
+                // Modal Footer
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: const Text('Tutup'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          backgroundColor: Colors.blue.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-      );
-    } catch (e) {
-      print("Error showing detail: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Gagal mengambil detail bidang'),
-          backgroundColor: Colors.red.shade600,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+          ),
+        );
+      },
+    );
+  } catch (e) {
+    print("Error showing detail: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Gagal mengambil detail bidang'),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -265,7 +264,7 @@ class _KompetensiProdiPageState extends State<KompetensiProdiPage> {
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () => _showBidangModal(kompetensi.prodiId),
+                      onTap: () => _showBidangModal(kompetensi.prodiId, kompetensi.prodiNama),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
